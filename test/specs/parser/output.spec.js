@@ -72,4 +72,19 @@ describe.only('template parser output', () => {
             type: 'ELEMENT',
         });
     });
+
+    it('parses an element with multiple attributes', () => {
+        expect(parseFixture('element_with_multiple_attributes.bia')).to.deep.equal({
+            attributes: {
+                class: 'abc',
+                style: 'def',
+                'data-ghi': 'jkl',
+                mno: 'pqr',
+            },
+            children: [],
+            textContent: null,
+            tagName: 'DIV',
+            type: 'ELEMENT',
+        });
+    });
 });
