@@ -27,10 +27,18 @@ export default function(source: string, options) {
 }
 
 function createDomTree(el) {
+    const nodeType = nodeTypes[el.nodeType];
+    const textContent = getTextContentIfTextNode(el, nodeType);
 
     return {
         tagName: el.tagName,
-        type: nodeTypes[el.nodeType],
+        textContent: textContent,
+        type: nodeType,
         children: Array.from(el.childNodes).map(createDomTree),
     };
+}
+
+// get the text content of a node, or null if it's not a text node
+function getTextContentIfTextNode(el, nodeType) {
+    return nodeType === 'TEXT' ? el.textContent : null;
 }

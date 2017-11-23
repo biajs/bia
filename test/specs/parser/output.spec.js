@@ -7,15 +7,17 @@ describe.only('template parser output', () => {
      
     it('parses an element with text', () => {
         expect(parseFixture('test/fixtures/element_with_text.bia')).to.deep.equal({
-            tagName: 'DIV',
-            type: 'ELEMENT',
             children: [
                 {
                     children: [],
                     type: 'TEXT',
+                    textContent: 'Hello world',
                     tagName: undefined,
                 },
             ],
+            tagName: 'DIV',
+            textContent: null,
+            type: 'ELEMENT',
         });
     });
 
@@ -25,6 +27,7 @@ describe.only('template parser output', () => {
                 {
                     children: [],
                     tagName: undefined,
+                    textContent: "\n        parent text\n        ",
                     type: 'TEXT',
                 },
                 {
@@ -33,20 +36,24 @@ describe.only('template parser output', () => {
                             //
                             children: [],
                             tagName: undefined,
+                            textContent: "\n            child text\n        ",
                             type: 'TEXT',
                         }
                     ],
                     tagName: 'SPAN',
+                    textContent: null,
                     type: 'ELEMENT',
                 },
                 {
                     children: [],
                     tagName: undefined,
+                    textContent: '\n    ',
                     type: 'TEXT',
                 }    
             ],            
             tagName: 'DIV',
             type: 'ELEMENT',
-        })
+            textContent: null
+        });
     });
 });
