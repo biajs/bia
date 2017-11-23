@@ -1,4 +1,4 @@
-import { parse } from './parse';
+import { parse } from './parse/index';
 
 /**
  * Compile source code into a component.

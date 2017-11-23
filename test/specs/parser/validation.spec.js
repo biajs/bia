@@ -1,7 +1,6 @@
 const { parse } = require('../../../');
 
 describe('parser validation', () => {
-
     it('throws an error if no template is defined', () => {
         expect(() => parse(``, { filename: 'foo.bia' })).to.throw(
             'Failed to parse foo.bia, no template block is defined.'
@@ -26,5 +25,5 @@ describe('parser validation', () => {
         `, { filename: 'foo.bia' })).to.throw(
             `Failed to parse foo.bia, template must contain exactly one root element.`
         );
-    })
+    });
 });
