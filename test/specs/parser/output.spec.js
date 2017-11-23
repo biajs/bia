@@ -3,12 +3,14 @@ const { parse } = require('../../../');
 describe.only('template parser output', () => {
 
     // helper function to parse fixtures
-    const parseFixture = f => parse(getFileContents(f, { filename: 'foo.bia' })).template;
+    const parseFixture = f => parse(getFileContents(`test/fixtures/${f}`, { filename: 'foo.bia' })).template;
      
     it('parses an element with text', () => {
-        expect(parseFixture('test/fixtures/element_with_text.bia')).to.deep.equal({
+        expect(parseFixture('element_with_text.bia')).to.deep.equal({
+            attributes: {},
             children: [
                 {
+                    attributes: {},
                     children: [],
                     type: 'TEXT',
                     textContent: 'Hello world',
@@ -22,18 +24,21 @@ describe.only('template parser output', () => {
     });
 
     it('parses an element with text and child element', () => {
-        expect(parseFixture('test/fixtures/element_with_text_and_child.bia')).to.deep.equal({
+        expect(parseFixture('element_with_text_and_child.bia')).to.deep.equal({
+            attributes: {},
             children: [
                 {
+                    attributes: {},
                     children: [],
                     tagName: undefined,
                     textContent: "\n        parent text\n        ",
                     type: 'TEXT',
                 },
                 {
+                    attributes: {},
                     children: [
                         {
-                            //
+                            attributes: {},
                             children: [],
                             tagName: undefined,
                             textContent: "\n            child text\n        ",
@@ -45,6 +50,7 @@ describe.only('template parser output', () => {
                     type: 'ELEMENT',
                 },
                 {
+                    attributes: {},
                     children: [],
                     tagName: undefined,
                     textContent: '\n    ',
@@ -54,6 +60,16 @@ describe.only('template parser output', () => {
             tagName: 'DIV',
             type: 'ELEMENT',
             textContent: null
+        });
+    });
+
+    it('parses an elements attributes', () => {
+        expect(parseFixture('element_with_attribute.bia')).to.deep.equal({
+            attributes: { foo: 'bar' },
+            children: [],
+            textContent: null,
+            tagName: 'DIV',
+            type: 'ELEMENT',
         });
     });
 });

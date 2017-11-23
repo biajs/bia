@@ -31,11 +31,21 @@ function createDomTree(el) {
     const textContent = getTextContentIfTextNode(el, nodeType);
 
     return {
+        attributes: getAttributes(el),
         tagName: el.tagName,
         textContent: textContent,
         type: nodeType,
         children: Array.from(el.childNodes).map(createDomTree),
     };
+}
+
+// get the attributes of a node as an object
+// <div foo="bar" /> => { foo: 'bar' }
+function getAttributes(el) {
+    return Array.from(el.attributes || []).reduce((attributes, attr) => {
+        attributes[attr.name] = attr.value;
+        return attributes;
+    }, {});
 }
 
 // get the text content of a node, or null if it's not a text node
