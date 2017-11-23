@@ -1,10 +1,12 @@
 {
-  "name": "bia",
+  "name": "biajs",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/bia.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rollup -c",
+    "pretest": "npm run build",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,13 @@
   "bugs": {
     "url": "https://github.com/biajs/bia/issues"
   },
-  "homepage": "https://github.com/biajs/bia#readme"
+  "homepage": "https://github.com/biajs/bia#readme",
+  "devDependencies": {
+    "mocha": "^4.0.1",
+    "rollup": "^0.51.8",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-typescript": "^0.8.1",
+    "typescript": "^2.6.1"
+  }
 }
