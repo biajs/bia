@@ -14,7 +14,7 @@ describe('template parser output', () => {
                     children: [],
                     type: 'TEXT',
                     textContent: 'Hello world',
-                    tagName: undefined,
+                    tagName: null,
                 },
             ],
             tagName: 'DIV',
@@ -30,7 +30,7 @@ describe('template parser output', () => {
                 {
                     attributes: {},
                     children: [],
-                    tagName: undefined,
+                    tagName: null,
                     textContent: "\n        parent text\n        ",
                     type: 'TEXT',
                 },
@@ -40,7 +40,7 @@ describe('template parser output', () => {
                         {
                             attributes: {},
                             children: [],
-                            tagName: undefined,
+                            tagName: null,
                             textContent: "\n            child text\n        ",
                             type: 'TEXT',
                         }
@@ -52,7 +52,7 @@ describe('template parser output', () => {
                 {
                     attributes: {},
                     children: [],
-                    tagName: undefined,
+                    tagName: null,
                     textContent: '\n    ',
                     type: 'TEXT',
                 }    
