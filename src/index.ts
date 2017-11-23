@@ -1,7 +1,6 @@
 import { parse } from './parse/parse';
 import createComponent from './generators/dom';
 
-
 /**
  * Compile source code into a component.
  * 

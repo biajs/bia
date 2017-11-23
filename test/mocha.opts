@@ -1,1 +1,1 @@
-test/test.js
+test/test.js --require ts-node/register

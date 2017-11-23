@@ -8,3 +8,7 @@ require('./setup');
 glob.sync('./test/**/*.spec.js').forEach(function(file) {
     require(path.resolve(file));
 });
+
+glob.sync('./test/**/*.spec.ts').forEach(function(file) {
+    require(path.resolve(file));
+});
