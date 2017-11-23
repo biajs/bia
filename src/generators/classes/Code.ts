@@ -1,10 +1,10 @@
 type CodeOptions = {
-    content?: Array<string>;
+    content?: Array<any>;
     id?: null | string;
 }
 
 export class Code {
-    public content: Array<any>;
+    public content: Array<Code|string>;
     public id: string;
     public options: CodeOptions;
 

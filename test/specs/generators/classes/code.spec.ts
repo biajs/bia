@@ -17,4 +17,15 @@ describe('Code', () => {
         expect(code.id).to.be.null;
         expect(code.content).to.deep.equal(['console.log(1)']);
     });
+
+    // it('throws an error if duplicate ids exist', () => {
+    //     expect(() => new Code({
+    //         content: [
+    //             new Code({ id: 'foo' })
+    //         ],
+    //         id: 'foo',
+    //     })).to.throw(
+    //         'some error'
+    //     );
+    // })
 })
