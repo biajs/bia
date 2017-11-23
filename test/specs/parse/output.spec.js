@@ -1,6 +1,6 @@
 const { parse } = require('../../../');
 
-describe.only('template parser output', () => {
+describe('template parser output', () => {
 
     // helper function to parse fixtures
     const parseFixture = f => parse(getFileContents(`test/fixtures/${f}`, { filename: 'foo.bia' })).template;

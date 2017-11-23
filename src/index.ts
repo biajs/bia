@@ -1,4 +1,6 @@
-import { parse } from './parse/index';
+import { parse } from './parse/parse';
+import createComponent from './generators/dom';
+
 
 /**
  * Compile source code into a component.
@@ -7,7 +9,17 @@ import { parse } from './parse/index';
  * @param options
  */
 function compile(source: string) {
-    parse(source);
+    try {
+        const parsedSource = parse(source);
+        const createComponent = createComponent(parsedSource);
+
+        return {
+            createComponent,
+            parsedSource,
+        };
+    } catch (err) {
+        throw err;
+    }
 }
 
-export { compile, parse };
+export { createComponent, parse };

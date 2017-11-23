@@ -6,8 +6,6 @@ import parseTemplate from './template';
  * @param source
  */
 export function parse(source: string, options) {
-    
-    
     return {
         template: parseTemplate(source, options),
     };
