@@ -5,6 +5,6 @@ var path = require('path');
 require('./setup');
 
 // require all files that end in .spec.js
-glob.sync('./**/*.spec.js').forEach(function(file) {
+glob.sync('./test/**/*.spec.js').forEach(function(file) {
     require(path.resolve(file));
 });

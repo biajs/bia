@@ -1,3 +1,4 @@
+import { parse } from './parse';
 
 /**
  * Compile source code into a component.
@@ -5,6 +6,8 @@
  * @param source 
  * @param options
  */
-export function compile(source: string) {
-    return {};
+function compile(source: string) {
+    parse(source);
 }
+
+export { compile, parse };
