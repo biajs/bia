@@ -19,7 +19,33 @@ describe('JsObject', () => {
         expect(obj.getDescendentIds()).to.deep.equal(['bar', 'baz', 'yar']);
     });
 
-    it('validates that ids are unique');
+    it('validates that ids are unique', () => {
+        expect(() => new JsObject({
+            id: 'foo',
+            properties: {
+                foo: new JsObject({ id: 'foo' }),
+            },
+        })).to.throw(
+            'Invalid code structure, duplicate id "foo" defined.'
+        );
+    });
+
+    it('throws an error if a duplicate id is added', () => {
+        const obj1 = new JsObject({ id: 'obj1' });
+        const obj2 = new JsObject({ id: 'obj2' });
+        
+        expect(() => obj1.addProperty('foo', new JsObject({ id: 'obj1' }))).to.throw(
+            'Failed to add property "foo", doing so would create a duplicate "obj1" id.'
+        );
+
+        expect(() => obj2.addProperty('foo', new JsObject({
+            properties: {
+                foo: new JsObject({ id: 'obj2' }),
+            },
+        }))).to.throw(
+            'Failed to add property "foo", doing so would create a duplicate "obj2" id.'
+        );;
+    })
 
     it('can check for the existence of properties', () => {
         const obj = new JsObject({

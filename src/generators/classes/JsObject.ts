@@ -6,7 +6,7 @@ interface JsObjectOptions extends BaseCodeOptions {
 }
 
 /**
- * Javascript Object.
+ * Javascript object.
  */
 export class JsObject extends BaseCode {
     public properties: Object;
@@ -31,6 +31,11 @@ export class JsObject extends BaseCode {
         // make sure that key is not already taken
         if (this.hasProperty(key)) {
             throw `Failed to add property "${key}" to object, that key is already defined.`;
+        }
+
+        // make sure that the property being added doesn't duplicate our id
+        if (this.id && (value.id === this.id || value.getDescendentIds().includes(this.id))) {
+            throw `Failed to add property "${key}", doing so would create a duplicate "${this.id}" id.`;
         }
 
         // and if it wasn't go ahead and attach our new property
