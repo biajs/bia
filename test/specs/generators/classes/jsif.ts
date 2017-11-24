@@ -1,4 +1,4 @@
-import { JsIf } from '../../../../src/generators/classes';
+import { JsVariable, JsIf, JsFunction } from '../../../../src/generators/classes';
 import { JsCode } from '../../../../src/generators/classes/JsCode';
 import { expect } from 'chai';
 

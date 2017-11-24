@@ -2,11 +2,13 @@ import { BaseCode, BaseCodeOptions } from './BaseCode';
 
 export interface JsVariableWithValue {
     name: string,
-    value: number|string,
+    value: number|string|BaseCode,
 }
 
 export interface JsVariableOptions extends BaseCodeOptions {
-    define: JsVariableWithValue | string | Array<JsVariableWithValue | string>;
+    define?: Array<JsVariableWithValue | string>;
+    name?: string,
+    value?: number|string|BaseCode,
 };
 
 /**
@@ -21,9 +23,19 @@ export class JsVariable extends BaseCode {
     constructor(options: JsVariableOptions) {
         super(options);
 
-        this.define = Array.isArray(options.define)
-            ? options.define
-            : [options.define];
+        this.define = [];
+
+        // name/value syntax, used for declaring a single var
+        if (typeof options.name === 'string') {
+            this.define.push(typeof options.value === 'undefined'
+                ? options.name
+                : { name: options.name, value: options.value });
+        }
+
+        // define syntax, used for declaring multiple vars
+        if (options.define) {
+            this.define = this.define.concat(options.define);
+        }
     }
 
     /**

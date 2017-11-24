@@ -1,24 +1,20 @@
-import { JsVariable } from '../../../../src/generators/classes';
+import { JsVariable, JsFunction, JsIf, JsCode} from '../../../../src/generators/classes';
 import { expect } from 'chai';
 
 describe('JsVariable', () => {
     it('can define a single variable with no value', () => {
-        const vars = new JsVariable({ 
-            define: 'foo',
-        });
+        const output = new JsVariable({ name: 'foo' });
 
-        expect(String(vars)).to.equal('var foo;');
+        expect(String(output)).to.equal('var foo;');
     });
-
-    it('can define a single variable with default value', () => {
-        const vars = new JsVariable({ 
-            define: { 
-                name: 'foo', 
-                value: 1,
-            },
+    
+    it('can define a single variable with a default value', () => {
+        const output = new JsVariable({
+            name: 'foo',
+            value: 1
         });
 
-        expect(String(vars)).to.equal('var foo = 1;');
+        expect(String(output)).to.equal('var foo = 1;');
     });
 
     it('can define multiple variables with no values', () => {
