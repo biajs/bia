@@ -1,4 +1,9 @@
 import { Code } from './Code';
 import { JsObject } from './JsObject';
+import { JsFunction } from './JsFunction';
 
-export { Code, JsObject };
+export { 
+    Code, 
+    JsFunction,
+    JsObject,
+};

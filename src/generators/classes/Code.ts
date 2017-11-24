@@ -1,6 +1,6 @@
 import { BaseCode, BaseCodeOptions, DescendentCode } from './BaseCode';
 
-interface CodeOptions extends BaseCodeOptions {
+export interface CodeOptions extends BaseCodeOptions {
     content?: Array<any>
 }
 
