@@ -6,9 +6,62 @@ describe('JsObject', () => {
 
     it('validates that ids are unique');
 
-    it('can add properties');
+    it('can check for the existence of properties', () => {
+        const obj = new JsObject({
+            properties: {
+                foo: new JsObject({}),
+            },
+        });
 
-    it('can remove properties');
+        expect(obj.hasProperty('foo')).to.be.true;
+        expect(obj.hasProperty('bar')).to.be.false;
+    });
+
+    it('can add a property', () => {
+        const obj = new JsObject({});
+
+        obj.addProperty('foo', new JsObject({}));
+        
+        expect(String(obj)).to.equal('{\n    foo: {}\n}');
+    });
+
+    it('can remove a property', () => {
+        const obj = new JsObject({
+            properties: {
+                foo: new JsObject({}),
+                bar: new JsObject({}),
+            },
+        });
+
+        obj.removeProperty('foo');
+
+        expect(String(obj)).to.equal('{\n    bar: {}\n}');
+    });
+
+    it('can get a property', () => {
+        let foo = new JsObject({});
+        let bar = new JsObject({ properties: { foo } });
+
+        expect(bar.getProperty('foo')).to.equal(foo);
+    });
+    
+    it('throws an error if adding a property that already exists', () => {
+        const obj = new JsObject({
+            properties: { foo: new JsObject({}) },
+        });
+
+        expect(() => obj.addProperty('foo', new JsObject({}))).to.throw(
+            'Failed to add property "foo" to object, that key is already defined.'
+        );
+    });
+
+    it('throws an error if removing a property that does not exist', () => {
+        const obj = new JsObject({});
+
+        expect(() => obj.removeProperty('foo')).to.throw(
+            'Failed to remove property "foo" from object, that key is not defined.'
+        );
+    });
 
     it('casts empty objects to a string', () => {
         expect(String(new JsObject({}))).to.equal('{}');

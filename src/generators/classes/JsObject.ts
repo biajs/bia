@@ -17,6 +17,62 @@ export class JsObject extends Code {
     }
 
     /**
+     * Add a property to the object.
+     * 
+     * @param  {string} key
+     * @param  {Code}   value 
+     * @return {void}
+     */
+    public addProperty(key: string, value): void {
+        // make sure that key is not already taken
+        if (this.hasProperty(key)) {
+            throw `Failed to add property "${key}" to object, that key is already defined.`;
+        }
+
+        // and if it wasn't go ahead and attach our new property
+        this.properties[key] = value;
+    }
+
+    /**
+     * Get a property from the object.
+     * 
+     * @param  {string} key
+     */
+    public getProperty(key: string): any {
+        // make sure the key is defined
+        if (!this.hasProperty(key)) {
+            throw `Failed to get property "${key}", that property is not defined.`;
+        }
+
+        return this.properties[key];
+    }
+
+    /**
+     * Determine if an object has a particular property.
+     * 
+     * @param  {string} key
+     * @return {boolean}
+     */
+    public hasProperty(key: string): boolean {
+        return typeof this.properties[key] !== 'undefined';
+    }
+
+    /**
+     * Remove a property from the object.
+     * 
+     * @param  {string} key 
+     * @return {void}
+     */
+    public removeProperty(key: string): void {
+        // make sure the key is defined
+        if (!this.hasProperty(key)) {
+            throw `Failed to remove property "${key}" from object, that key is not defined.`;
+        }
+
+        delete this.properties[key];
+    }
+
+    /**
      * Cast to string.
      * 
      * @return {string}
