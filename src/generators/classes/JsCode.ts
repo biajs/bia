@@ -1,19 +1,19 @@
 import { BaseCode, BaseCodeOptions, DescendentCode } from './BaseCode';
 
-export interface CodeOptions extends BaseCodeOptions {
+export interface JsCodeOptions extends BaseCodeOptions {
     content?: Array<any>
 }
 
 /**
  * Raw code objects.
  */
-export class Code extends BaseCode {
-    public content: Array<Code|string>;
+export class JsCode extends BaseCode {
+    public content: Array<JsCode|string>;
 
     /**
      * Constructor.
      */
-    constructor(options: CodeOptions) {
+    constructor(options: JsCodeOptions) {
         super(options);
         this.content = options.content || [];
         this.validateId();

@@ -1,4 +1,4 @@
-import { Code, JsObject } from '../../../../src/generators/classes';
+import { JsObject } from '../../../../src/generators/classes';
 import { expect } from 'chai';
 
 describe('JsObject', () => {

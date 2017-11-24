@@ -1,5 +1,5 @@
 describe('code generators', () => {
-    require('./code');
+    require('./jscode');
     require('./jsfunction');
     require('./jsif');
     require('./jsobject');

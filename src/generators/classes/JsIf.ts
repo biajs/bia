@@ -1,12 +1,12 @@
-import { Code, CodeOptions } from './Code';
+import { JsCode, JsCodeOptions } from './JsCode';
 import { BaseCode, BaseCodeOptions, DescendentCode } from './BaseCode';
 import { indent } from '../../utils/string';
 
-export interface JsIfOptions extends CodeOptions {
+export interface JsIfOptions extends JsCodeOptions {
     condition: string;
-    content?: Array<Code|string>
+    content?: Array<JsCode|string>
     elseIf?: Array<JsIf>;
-    else?: Array<Code|string>;
+    else?: Array<JsCode|string>;
 }
 
 /**
@@ -14,9 +14,9 @@ export interface JsIfOptions extends CodeOptions {
  */
 export class JsIf extends BaseCode {
     public condition: string;
-    public content: Array<Code|string>;
+    public content: Array<JsCode|string>;
     public elseIf: Array<JsIf>;
-    public else: Array<Code|string> | null;
+    public else: Array<JsCode|string> | null;
 
     /**
      * Constructor.

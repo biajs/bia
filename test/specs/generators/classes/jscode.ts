@@ -1,10 +1,10 @@
-import { Code } from '../../../../src/generators/classes/Code';
+import { JsCode } from '../../../../src/generators/classes/JsCode';
 import { expect } from 'chai';
 
-describe('Code', () => {
+describe('JsCode', () => {
     it('can be instantiated with only an id', () => {
         const options = { id: 'foo' };
-        const code = new Code(options);
+        const code = new JsCode(options);
 
         expect(code.id).to.equal('foo');
         expect(code.content).to.deep.equal([]);
@@ -12,19 +12,19 @@ describe('Code', () => {
     });
 
     it('can be instantiated with string content', () => {
-        const code = new Code({ content: ['console.log(1)'] });
+        const code = new JsCode({ content: ['console.log(1)'] });
 
         expect(code.id).to.be.null;
         expect(code.content).to.deep.equal(['console.log(1)']);
     });
 
     it('throws an error if a child has a taken id', () => {
-        expect(() => new Code({
+        expect(() => new JsCode({
             id: 'foo',
             content: [
-                new Code({ 
+                new JsCode({ 
                     content: [
-                        new Code({ id: 'foo' }),
+                        new JsCode({ id: 'foo' }),
                     ],
                 }),
             ],
@@ -35,7 +35,7 @@ describe('Code', () => {
 
     it('can be cast to a string', () => {
         // convert code with only string content
-        expect(String(new Code({
+        expect(String(new JsCode({
             content: [
                 `let foo = 1;`,
                 `console.log(foo);`
@@ -43,10 +43,10 @@ describe('Code', () => {
         }))).to.equal('let foo = 1;\nconsole.log(foo);');
   
         // convert code with string and child code
-        expect(String(new Code({
+        expect(String(new JsCode({
             content: [
                 'let bar = 2;',
-                new Code({ content: ['console.log(bar);'] }),
+                new JsCode({ content: ['console.log(bar);'] }),
             ],
         }))).to.equal('let bar = 2;\nconsole.log(bar);');
     });

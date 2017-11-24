@@ -1,11 +1,11 @@
-import { Code } from './Code';
+import { JsCode } from './JsCode';
 import { JsObject } from './JsObject';
 import { JsFunction } from './JsFunction';
 import { JsIf } from './JsIf';
 import { JsVariable } from './JsVariable';
 
 export { 
-    Code, 
+    JsCode, 
     JsFunction,
     JsIf,
     JsObject,

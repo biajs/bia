@@ -1,5 +1,5 @@
 import { JsIf } from '../../../../src/generators/classes';
-import { Code } from '../../../../src/generators/classes/Code';
+import { JsCode } from '../../../../src/generators/classes/JsCode';
 import { expect } from 'chai';
 
 describe('JsIf', () => {
@@ -15,7 +15,7 @@ describe('JsIf', () => {
         const branch = new JsIf({
             condition: 'foo',
             content: [
-                new Code({ id: 'if' }),
+                new JsCode({ id: 'if' }),
             ],
             elseIf: [
                 new JsIf({ 
@@ -25,12 +25,12 @@ describe('JsIf', () => {
                         new JsIf({ id: 'elseIf2', condition: 'baz' })
                     ],
                     else: [
-                        new Code({ id: 'else2' })
+                        new JsCode({ id: 'else2' })
                     ],
                 }),
             ],
             else: [
-                new Code({ id: 'else' })
+                new JsCode({ id: 'else' })
             ],
         });
 
@@ -48,7 +48,7 @@ describe('JsIf', () => {
             id: 'foo',
             condition: '1',
             content: [
-                new Code({ id: 'foo' }),
+                new JsCode({ id: 'foo' }),
             ],
         })).to.throw(
             'Invalid code structure, duplicate id "foo" defined.'

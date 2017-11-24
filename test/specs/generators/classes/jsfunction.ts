@@ -1,5 +1,5 @@
 import { JsFunction } from '../../../../src/generators/classes';
-import { Code } from '../../../../src/generators/classes/Code';
+import { JsCode } from '../../../../src/generators/classes/JsCode';
 import { expect } from 'chai';
 
 describe('JsFunction', () => {
@@ -31,7 +31,7 @@ describe('JsFunction', () => {
         expect(() => new JsFunction({
             id: 'foo',
             content: [
-                new Code({ id: 'foo' }),
+                new JsCode({ id: 'foo' }),
             ],
         })).to.throw(
             'Invalid code structure, duplicate id "foo" defined.'

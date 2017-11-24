@@ -1,7 +1,7 @@
-import { Code, CodeOptions } from './Code';
+import { JsCode, JsCodeOptions } from './JsCode';
 import { indent } from '../../utils/string';
 
-interface JsFunctionOptions extends CodeOptions {
+interface JsFunctionOptions extends JsCodeOptions {
     name?: string,
     signature?: Array<string>,
 }
@@ -9,7 +9,7 @@ interface JsFunctionOptions extends CodeOptions {
 /**
  * Javascript function.
  */
-export class JsFunction extends Code {
+export class JsFunction extends JsCode {
     public name: string;
     public signature: Array<string>;
 
