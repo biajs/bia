@@ -6,7 +6,8 @@
   "scripts": {
     "build": "rollup -c",
     "pretest": "npm run build",
-    "test": "mocha"
+    "test": "mocha",
+    "test-watch": "mocha --watch test/**/*.spec.ts --watch-extensions ts"
   },
   "repository": {
     "type": "git",

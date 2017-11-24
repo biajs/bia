@@ -1,3 +1,6 @@
+// string to use for indentation
+export const indentationString = '    ';
+
 // https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType#Node_type_constants
 export const nodeTypes = {
     '1': 'ELEMENT',

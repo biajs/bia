@@ -1,9 +1,9 @@
-type CodeOptions = {
+export interface CodeOptions {
     content?: Array<any>;
     id?: null | string;
 }
 
-type DescendentCode = {
+export interface DescendentCode {
     code: Code;
     parent: Code;
 }
@@ -13,12 +13,26 @@ export class Code {
     public id: string;
     public options: CodeOptions;
 
+    /**
+     * Constructor.
+     */
     constructor(options: CodeOptions) {
         this.content = options.content || [];
         this.id = options.id || null;
         this.options = options;
 
         this.validateId();
+    }
+    
+    /**
+     * Get the ids of all descendent code instances.
+     * 
+     * @return {Array<string>}
+     */
+    public getDescendentIds(): Array<string> {
+        return this.getDescendents()
+            .map(descendent => descendent.code.id)
+            .filter(id => id !== null);
     }
 
     /**
@@ -38,14 +52,12 @@ export class Code {
     }
 
     /**
-     * Get the ids of all descendent code instances.
+     * Convert code object to a string.
      * 
-     * @return {Array<string>}
+     * @return {string}
      */
-    public getDescendentIds(): Array<string> {
-        return this.getDescendents()
-            .map(descendent => descendent.code.id)
-            .filter(id => id !== null);
+    public toString(): string {
+        return this.content.join('\n');
     }
 
     /**

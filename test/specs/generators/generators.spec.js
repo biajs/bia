@@ -8,8 +8,6 @@ describe('generators', () => {
     it('generates a text element', () => {
         const parsedElement = parseFixture('element_with_text.bia');
         const output = createComponent(parsedElement);
-
-        console.log ('output', output);
         
         // function c(data) {
 	    //     const el = document.createElement(data.tagName),
