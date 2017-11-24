@@ -3,4 +3,5 @@ describe('code generators', () => {
     require('./jsfunction');
     require('./jsif');
     require('./jsobject');
+    require('./jsvariable');
 });

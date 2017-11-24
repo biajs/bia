@@ -42,12 +42,13 @@ export class JsIf extends BaseCode {
         const ifContent = this.content;
         const elseContent = this.else || [];
 
+        // build up an array of our else-if branch descendents
         const elseIfContent = (this.elseIf || []).reduce((descendents, code) => {
             descendents.push({ parent: this, code });
             return descendents.concat(code.getDescendents());
         }, []);
 
-        
+        // and concatenate them onto the descendents from our if & else branches
         return [...ifContent, ...elseContent].reduce((descendents, code) => {
             if (typeof code !== 'string') {
                 descendents.push({ parent: this, code });
