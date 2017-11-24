@@ -1,38 +1,22 @@
-export interface CodeOptions {
-    content?: Array<any>;
-    id?: null | string;
+import { BaseCode, BaseCodeOptions, DescendentCode } from './BaseCode';
+
+interface CodeOptions extends BaseCodeOptions {
+    content?: Array<any>
 }
 
-export interface DescendentCode {
-    code: Code;
-    parent: Code;
-}
-
-export class Code {
+/**
+ * Raw code objects.
+ */
+export class Code extends BaseCode {
     public content: Array<Code|string>;
-    public id: string;
-    public options: CodeOptions;
 
     /**
      * Constructor.
      */
     constructor(options: CodeOptions) {
+        super(options);
         this.content = options.content || [];
-        this.id = options.id || null;
-        this.options = options;
-
         this.validateId();
-    }
-    
-    /**
-     * Get the ids of all descendent code instances.
-     * 
-     * @return {Array<string>}
-     */
-    public getDescendentIds(): Array<string> {
-        return this.getDescendents()
-            .map(descendent => descendent.code.id)
-            .filter(id => id !== null);
     }
 
     /**
@@ -50,7 +34,7 @@ export class Code {
             return descendents;
         }, []);
     }
-
+        
     /**
      * Convert code object to a string.
      * 
@@ -58,14 +42,5 @@ export class Code {
      */
     public toString(): string {
         return this.content.join('\n');
-    }
-
-    /**
-     * Validate that this code instances id is unique.
-     */
-    public validateId() {
-        if (this.id && this.getDescendentIds().includes(this.id)) {
-            throw `Invalid code structure, duplicate id "${this.id}" defined.`;
-        }
     }
 }

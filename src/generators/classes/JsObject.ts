@@ -1,19 +1,23 @@
-import { Code, CodeOptions } from './Code';
+import { BaseCode, BaseCodeOptions, DescendentCode } from './BaseCode';
 import { indent } from '../../utils/string';
 
-interface JsObjectOptions extends CodeOptions {
+interface JsObjectOptions extends BaseCodeOptions {
     properties?: Object;
 }
 
-export class JsObject extends Code {
+/**
+ * Javascript Object.
+ */
+export class JsObject extends BaseCode {
     public properties: Object;
 
     /**
-     * Constructor
+     * Constructor.
      */
     constructor(options: JsObjectOptions) {
         super(options);
         this.properties = options.properties || {};
+        this.validateId();
     }
 
     /**
@@ -31,6 +35,21 @@ export class JsObject extends Code {
 
         // and if it wasn't go ahead and attach our new property
         this.properties[key] = value;
+    }
+
+    /**
+     * Create an array of all descendent code instances.
+     * 
+     * @return {Array<DescendentCode>}
+     */
+    public getDescendents(): Array<DescendentCode> {
+        return Object.keys(this.properties).reduce((descendents, key) => {
+            const code = this.properties[key];
+
+            descendents.push({ parent: this, code });
+
+            return descendents.concat(code.getDescendents());
+        }, []);
     }
 
     /**

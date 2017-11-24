@@ -2,7 +2,22 @@ import { Code, JsObject } from '../../../../src/generators/classes';
 import { expect } from 'chai';
 
 describe('JsObject', () => {
-    it('treats properties as descendent code');
+    it('treats properties as descendent code', () => {
+        const obj = new JsObject({
+            id: 'foo',
+            properties: {
+                bar: new JsObject({ id: 'bar' }),
+                baz: new JsObject({ 
+                    id: 'baz',
+                    properties: {
+                        yar: new JsObject({ id: 'yar' }),
+                    },
+                }),
+            },
+        });
+
+        expect(obj.getDescendentIds()).to.deep.equal(['bar', 'baz', 'yar']);
+    });
 
     it('validates that ids are unique');
 
