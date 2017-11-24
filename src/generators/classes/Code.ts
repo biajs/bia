@@ -22,7 +22,7 @@ export class Code extends BaseCode {
     /**
      * Create an array of all descendent code instances.
      * 
-     * @return {Array<Code>}
+     * @return {Array<DescendentCode>}
      */
     public getDescendents(): Array<DescendentCode> {
         return this.content.reduce((descendents, code) => {

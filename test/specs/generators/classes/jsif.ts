@@ -11,6 +11,50 @@ describe('JsIf', () => {
         expect(branch.condition).to.equal('foo === bar');
     });
 
+    it('treats if content, else if content, and else content as descendent code', () => {
+        const branch = new JsIf({
+            condition: 'foo',
+            content: [
+                new Code({ id: 'if' }),
+            ],
+            elseIf: [
+                new JsIf({ 
+                    condition: 'bar', 
+                    id: 'elseIf',
+                    elseIf: [
+                        new JsIf({ id: 'elseIf2', condition: 'baz' })
+                    ],
+                    else: [
+                        new Code({ id: 'else2' })
+                    ],
+                }),
+            ],
+            else: [
+                new Code({ id: 'else' })
+            ],
+        });
+
+        expect(branch.getDescendentIds()).to.deep.equal([
+            'if', 
+            'else',
+            'elseIf',
+            'else2',
+            'elseIf2',
+        ]);
+    });
+
+    it('throws an error if descendent code has a duplicate id', () => {
+        expect(() => new JsIf({
+            id: 'foo',
+            condition: '1',
+            content: [
+                new Code({ id: 'foo' }),
+            ],
+        })).to.throw(
+            'Invalid code structure, duplicate id "foo" defined.'
+        );
+    });
+
     it('can be cast to a string', () => {
         const branch = new JsIf({
             condition: 'foo === bar',

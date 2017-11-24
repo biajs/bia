@@ -1,8 +1,10 @@
 import { Code, CodeOptions } from './Code';
+import { BaseCode, BaseCodeOptions, DescendentCode } from './BaseCode';
 import { indent } from '../../utils/string';
 
 export interface JsIfOptions extends CodeOptions {
     condition: string;
+    content?: Array<Code|string>
     elseIf?: Array<JsIf>;
     else?: Array<Code|string>;
 }
@@ -10,8 +12,9 @@ export interface JsIfOptions extends CodeOptions {
 /**
  * Javascript if statement
  */
-export class JsIf extends Code {
+export class JsIf extends BaseCode {
     public condition: string;
+    public content: Array<Code|string>;
     public elseIf: Array<JsIf>;
     public else: Array<Code|string> | null;
 
@@ -22,22 +25,51 @@ export class JsIf extends Code {
      */
     constructor(options: JsIfOptions) {
         super(options);
+        this.content = options.content || [];
         this.condition = options.condition;
-        this.elseIf = options.elseIf || [];
+        this.elseIf = options.elseIf || null;
         this.else = options.else || null;
+
+        this.validateId();
+    }
+
+    /**
+     * Create an array of all descendent code instances.
+     * 
+     * @return {Array<DescendentCode>}
+     */
+    public getDescendents(): Array<DescendentCode> {
+        const ifContent = this.content;
+        const elseContent = this.else || [];
+
+        const elseIfContent = (this.elseIf || []).reduce((descendents, code) => {
+            descendents.push({ parent: this, code });
+            return descendents.concat(code.getDescendents());
+        }, []);
+
+        
+        return [...ifContent, ...elseContent].reduce((descendents, code) => {
+            if (typeof code !== 'string') {
+                descendents.push({ parent: this, code });
+                descendents = descendents.concat(code.getDescendents());
+            }
+
+            return descendents;
+        }, []).concat(elseIfContent);
     }
 
     /**
      * Cast an if statement to a string.
      */
     public toString(): string {
-
         // build up our basic if branch
         let source = `if (${this.condition}) {\n${indent(String(this.content))}\n}`;
 
-        // append any elseIf branches
-        this.elseIf.forEach(elseIf => source += ` else ${String(elseIf)}`);
-    
+        // append elseIf branches if there are any
+        if (this.elseIf) {
+           this.elseIf.forEach(elseIf => source += ` else ${String(elseIf)}`);
+        }
+        
         // tack on our else branch if there is one
         if (this.else) {
             source += ` else {\n${indent(String(this.else))}\n}`;
