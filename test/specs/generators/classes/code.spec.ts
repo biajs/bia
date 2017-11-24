@@ -18,14 +18,18 @@ describe('Code', () => {
         expect(code.content).to.deep.equal(['console.log(1)']);
     });
 
-    // it('throws an error if duplicate ids exist', () => {
-    //     expect(() => new Code({
-    //         content: [
-    //             new Code({ id: 'foo' })
-    //         ],
-    //         id: 'foo',
-    //     })).to.throw(
-    //         'some error'
-    //     );
-    // })
-})
+    it('throws an error if a child has a taken id', () => {
+        expect(() => new Code({
+            id: 'foo',
+            content: [
+                new Code({ 
+                    content: [
+                        new Code({ id: 'foo' }),
+                    ],
+                }),
+            ],
+        })).to.throw(
+            'Invalid code structure, duplicate id "foo" defined.'
+        );
+    });
+});
