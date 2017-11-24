@@ -38,7 +38,7 @@ describe('JsFunction', () => {
         );
     });
 
-    it('can be cast to a string)', () => {
+    it('can be cast to a string', () => {
         const fn = String(new JsFunction({
             name: 'sum',
             signature: ['a', 'b'],

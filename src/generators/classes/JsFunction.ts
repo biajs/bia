@@ -15,6 +15,8 @@ export class JsFunction extends Code {
 
     /**
      * Constructor.
+     * 
+     * @param  {JsFunctionOptions} options
      */
     constructor(options: JsFunctionOptions) {
         super(options);
