@@ -1,5 +1,5 @@
 import { parse } from './parse/parse';
-import createComponent from './generators/dom';
+import generateCode from './generators/dom/dom';
 
 /**
  * Compile source code into a component.
@@ -7,18 +7,15 @@ import createComponent from './generators/dom';
  * @param source 
  * @param options
  */
-function compile(source: string) {
+export function compile(source: string, options: any) {
     try {
-        const parsedSource = parse(source);
-        const createComponent = createComponent(parsedSource);
+        const parsedSource = parse(source, options);
+        const code = generateCode(parsedSource, options);
 
         return {
-            createComponent,
-            parsedSource,
+            code,
         };
     } catch (err) {
         throw err;
     }
 }
-
-export { createComponent, parse };

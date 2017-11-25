@@ -1,3 +1,7 @@
+export interface CompileOptions {
+    fileName: 'string';
+};
+
 export enum NodeType {
     ELEMENT = 'ELEMENT',
     TEXT = 'TEXT',

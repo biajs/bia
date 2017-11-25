@@ -30,9 +30,13 @@ export class JsFunction extends JsCode {
      * @return {string}
      */
     public toString(): string {
-        const signature = this.signature.join(', ');
-        const content = indent(this.content.join('\n'));
+        if (this.content.length) {
+            const signature = this.signature.join(', ');
+            const content = indent(this.content.join('\n'));
 
-        return `function ${this.name}(${signature}) {\n${content}\n}`;
+            return `function ${this.name}(${signature}) {\n${content}\n}`;
+        }
+        
+        return `function ${this.name}() {}`;
     }
 }
