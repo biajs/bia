@@ -29,6 +29,33 @@ export default function(name: string, template) {
 }
 
 /**
+ * Hydrate the node if neccessary.
+ * 
+ * @param  {Object} node
+ * @return {Object} 
+ */
+function addHydrationCall(node) {
+    if (nodeRequiresHydration(node)) {
+        return new JsCode({
+            content: [
+                `this.h();`,
+            ],
+        });
+    }
+}
+
+/**
+ * Create a dom element.
+ */
+function createElement(node, varName) {
+    return new JsCode({
+        content: [
+            `div = createElement('div');`
+        ],
+    });
+}
+
+/**
  * Define the variables neccessary to build a dom fragment.
  * 
  * @param  {Object} template
@@ -45,12 +72,13 @@ function defineFragmentVariables(template) {
  * 
  * @param  {Object}
  */
-function fragmentFunctionsObject(template) {
+function fragmentFunctionsObject(node) {
     // this will eventually hold create, destroy, mount, and unmount
     return new JsObject({
         properties: {
-            c: getCreateFn(template),
-            m: getMountFn(template),
+            c: getCreateFn(node),
+            h: getHydrateFn(node),
+            m: getMountFn(node),
         },
     });
 }
@@ -68,6 +96,7 @@ function getCreateFn(node) {
             createElement(node, 'div'),
             setTextContent(node, 'div'),
             setInnerHTML(node, 'div'),
+            addHydrationCall(node),
             null,
             `return div;`,
         ],
@@ -75,12 +104,49 @@ function getCreateFn(node) {
 }
 
 /**
- * Function to insert a fragment into the dom.
+ * Function to hydrate a node's dom elements.
  * 
- * @param  {Object} template
+ * @param {Object} node
  * @return {Object} 
  */
-function getMountFn(template) {
+function getHydrateFn(node) {
+    // if the node doesn't need hydration, use noop
+    if (!nodeRequiresHydration(node)) {
+        return new JsCode({ content: ['noop'] });
+    }
+
+    // otherwise, return our hydration fn
+    const content = [];
+
+    // attach any classes our element has
+    if (typeof node.attributes.class !== 'undefined') {
+        content.push(`div.className = "${escapeJavascriptString(node.attributes.class)}";`);
+    }
+
+    // attach inline styles
+    // @todo: refactor and move this logic to a global helper fn
+    if (typeof node.attributes.style !== 'undefined') {
+        node.attributes.style.split(';').forEach((style) => {
+            const delimeterPosition = style.indexOf(':');
+            const property = escapeJavascriptString(style.slice(0, delimeterPosition).trim());
+            const value = escapeJavascriptString(style.slice(delimeterPosition + 1).trim());
+
+            if (property.length && value.length) {
+                content.push(`div.style.setProperty('${property}', '${value}')`);
+            }
+        });
+    }
+
+    return new JsFunction({ content });
+}
+
+/**
+ * Function to insert a fragment into the dom.
+ * 
+ * @param  {Object} node
+ * @return {Object} 
+ */
+function getMountFn(node) {
     return new JsFunction({
         name: 'm',
         signature: ['target'],
@@ -91,14 +157,13 @@ function getMountFn(template) {
 }
 
 /**
- * Create a dom element.
+ * Determine if a node requires hydration or not.
+ * 
+ * @param  {Object} node
+ * @return {boolean}
  */
-function createElement(node, varName) {
-    return new JsCode({
-        content: [
-            `div = createElement('div');`
-        ],
-    });
+function nodeRequiresHydration(node): boolean {
+    return Object.keys(node.attributes).length > 0;
 }
 
 /**

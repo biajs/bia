@@ -17,8 +17,8 @@ export default function() {
             createElement(),
             null,
             replaceNode(),
-            // null,
-            // noop(),
+            null,
+            noop(),
         ],
     });
 }
