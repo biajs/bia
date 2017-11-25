@@ -26,7 +26,7 @@ export class JsCode extends BaseCode {
      */
     public getDescendents(): Array<DescendentCode> {
         return this.content.reduce((descendents, code) => {
-            if (typeof code !== 'string') {
+            if (code && typeof code !== 'string') {
                 descendents.push({ parent: this, code });
                 descendents = descendents.concat(code.getDescendents());
             }

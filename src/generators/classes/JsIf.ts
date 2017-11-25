@@ -64,7 +64,9 @@ export class JsIf extends BaseCode {
      */
     public toString(): string {
         // build up our basic if branch
-        let source = `if (${this.condition}) {\n${indent(String(this.content))}\n}`;
+        let source = `if (${this.condition}) {\n` +
+            `${indent(String(this.content.join('\n')))}\n` + 
+        `}`;
 
         // append elseIf branches if there are any
         if (this.elseIf) {
@@ -73,7 +75,9 @@ export class JsIf extends BaseCode {
         
         // tack on our else branch if there is one
         if (this.else) {
-            source += ` else {\n${indent(String(this.else))}\n}`;
+            source += ` else {\n` + 
+                `${indent(String(this.else.join('\n')))}\n` +
+            `}`;
         }
 
         return source;
