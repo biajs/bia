@@ -13,9 +13,10 @@ export enum NodeType {
 };
 
 export interface ParsedNode {
-    attributes: any,
-    children: Array<any>,
+    attributes: any;
+    children: Array<any>;
+    innerHTML: string;
     tagName: string | null;
-    textContent: null | string,
-    type: NodeType,
+    textContent: null | string;
+    type: NodeType;
 };

@@ -37,6 +37,7 @@ function createDomTree(el): ParsedNode {
 
     return {
         attributes: getAttributes(el),
+        innerHTML: getInnerHTML(el),
         tagName: getTagName(el),
         textContent: getTextContent(el, nodeType),
         type: nodeType,
@@ -51,6 +52,12 @@ function getAttributes(el): Object {
         attributes[attr.name] = attr.value;
         return attributes;
     }, {});
+}
+
+// get an element's inner html
+// <div><span>foo</span></div> -> '<span>foo</span>'
+function getInnerHTML(el): string {
+    return el.innerHTML;
 }
 
 // get an element's tagName, or null if there is none

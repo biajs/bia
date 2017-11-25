@@ -67,6 +67,7 @@ function getCreateFn(node) {
         content: [
             createElement(node, 'div'),
             setTextContent(node, 'div'),
+            setInnerHTML(node, 'div'),
             null,
             `return div;`,
         ],
@@ -101,6 +102,22 @@ function createElement(node, varName) {
 }
 
 /**
+ * If a component has child elements, set it's inner html.
+ */
+function setInnerHTML(node, varName) {
+    const hasChildElements = node.children.length > 0
+        && node.children.find(child => child.type === 'ELEMENT');
+
+    if (hasChildElements) {
+        return new JsCode({
+            content: [
+                `${varName}.innerHTML = '${escapeJavascriptString(node.innerHTML)}';`,
+            ],
+        });
+    }
+}
+
+/**
  * Set the text content directly if a node only has child text.
  */
 function setTextContent(node, varName: string) {
@@ -109,7 +126,7 @@ function setTextContent(node, varName: string) {
 
         return new JsCode({
             content: [
-                `${varName}.textContent = '${escapeJavascriptString(textContent)}';`
+                `${varName}.textContent = '${escapeJavascriptString(textContent)}';`,
             ],
         });
     }
