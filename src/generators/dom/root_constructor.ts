@@ -1,7 +1,7 @@
 import { 
     JsCode,
     JsFunction,
-} from '../classes';
+} from '../classes/index';
 
 import createFragment from './create_fragment';
 import uniqueId from '../../utils/unique_id';

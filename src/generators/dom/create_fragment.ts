@@ -4,7 +4,7 @@ import {
     JsFunction,
     JsObject,
     JsVariable,
-} from '../classes';
+} from '../classes/index';
 
 /**
  * Build up a functions to control a dom fragment.
@@ -64,7 +64,6 @@ function getCreateFn(template) {
         name: 'c',
         content: [
             `div = createElement('div');`,
-            `div.innerHTML = 'foooooo';`
         ],
     });
 }

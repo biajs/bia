@@ -4,7 +4,7 @@ import {
     JsFunction,
     JsObject,
     JsVariable,
-} from '../classes';
+} from '../classes/index';
 
 /**
  * These functions will be defined globally.
