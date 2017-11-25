@@ -6,6 +6,9 @@ const chaiSubset = require('chai-subset');
 
 chai.use(chaiSubset);
 
+// simulate a global browser environment
+require('browser-env')();
+
 // alias chai expect so we don't have to import it everywhere
 global.expect = expect;
 

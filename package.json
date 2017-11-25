@@ -5,7 +5,6 @@
   "main": "dist/bia.js",
   "scripts": {
     "build": "rollup -c",
-    "pretest": "npm run build",
     "test": "mocha",
     "test-watch": "mocha --watch test/**/*.spec.ts --watch-extensions ts"
   },
@@ -22,6 +21,7 @@
   "devDependencies": {
     "@types/mocha": "^2.2.44",
     "@types/node": "^8.0.53",
+    "browser-env": "^3.2.3",
     "chai": "^4.1.2",
     "chai-subset": "^1.6.0",
     "jsdom": "^11.4.0",

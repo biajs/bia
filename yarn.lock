@@ -122,6 +122,12 @@ braces@^1.8.2:
     preserve "^0.2.0"
     repeat-element "^1.1.2"
 
+browser-env@^3.2.3:
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/browser-env/-/browser-env-3.2.3.tgz#e999fd26e2c8065d4762468cf89c708e7db7d44d"
+  dependencies:
+    window "4.2.3"
+
 browser-process-hrtime@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/browser-process-hrtime/-/browser-process-hrtime-0.1.2.tgz#425d68a58d3447f02a04aa894187fce8af8b7b8e"
@@ -574,7 +580,7 @@ jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
 
-jsdom@^11.4.0:
+jsdom@11.4.0, jsdom@^11.4.0:
   version "11.4.0"
   resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-11.4.0.tgz#a3941a9699cbb0d61f8ab86f6f28f4ad5ea60d04"
   dependencies:
@@ -1163,6 +1169,12 @@ whatwg-url@^6.3.0:
     lodash.sortby "^4.7.0"
     tr46 "^1.0.0"
     webidl-conversions "^4.0.1"
+
+window@4.2.3:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/window/-/window-4.2.3.tgz#654678b8478e012f5118c39287132092482a0d89"
+  dependencies:
+    jsdom "11.4.0"
 
 wordwrap@~1.0.0:
   version "1.0.0"

@@ -1,4 +1,5 @@
 import { JsCode } from '../classes/index';
+import defineExport from './define_export';
 import defineGlobalFunctions from './global_functions';
 import defineRootConstructor from './root_constructor';
 
@@ -13,6 +14,8 @@ export default function(parsedSource, options) {
             defineGlobalFunctions(),
             null,
             defineRootConstructor(parsedSource, options),
+            null,
+            defineExport(options),
         ],
     });
 

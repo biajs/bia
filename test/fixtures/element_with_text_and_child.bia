@@ -1,9 +1,0 @@
-<template>
-    <div>
-        parent text
-        <span>
-            child text
-        </span>
-    </div>
-</template>
-        
