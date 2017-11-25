@@ -56,14 +56,15 @@ function fragmentFunctionsObject(template) {
 /**
  * Function to create a new dom fragment.
  * 
- * @param  {Object} template
+ * @param  {Object} node
  * @return {Object}
  */
-function getCreateFn(template) {
+function getCreateFn(node) {
     return new JsFunction({
         name: 'c',
         content: [
-            `div = createElement('div');`,
+            createElement(node, 'div'),
+            setTextContent(node, 'div'),
             null,
             `return div;`,
         ],
@@ -84,4 +85,30 @@ function getMountFn(template) {
             `replaceNode(target, div);`,
         ],
     });
+}
+
+/**
+ * Create a dom element.
+ */
+function createElement(node, varName) {
+    return new JsCode({
+        content: [
+            `div = createElement('div');`
+        ],
+    });
+}
+
+/**
+ * Set the text content directly if a node only has child text.
+ */
+function setTextContent(node, varName: string) {
+    if (node.children.length === 1 && node.children[0].type === 'TEXT') {
+        const { textContent } = node.children[0];
+
+        return new JsCode({
+            content: [
+                `${varName}.textContent = '${textContent}';`
+            ],
+        });
+    }
 }
