@@ -16,7 +16,7 @@ export default function() {
         content: [
             createElement(),
             null,
-            insertNode(),
+            replaceNode(),
             null,
             noop(),
         ],
@@ -45,13 +45,13 @@ function createElement() {
  * 
  * @return {Object}
  */
-function insertNode() {
+function replaceNode() {
     return new JsFunction({
-        id: 'insertNode',
-        name: 'insertNode',
-        signature: ['node', 'target'],
+        id: 'replaceNode',
+        name: 'replaceNode',
+        signature: ['target', 'node'],
         content: [
-            `target.insertBefore(node);`,
+            `target.replaceWith(node);`,
         ],
     });
 }

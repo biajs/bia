@@ -26,6 +26,6 @@ describe('compilation', () => {
         const testFn = require('./' + name + '/test').default;
 
         // call the test function and hand it our component constructor
-        testFn(Component);
+        testFn(Component, code);
     });
 });

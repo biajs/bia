@@ -64,6 +64,8 @@ function getCreateFn(template) {
         name: 'c',
         content: [
             `div = createElement('div');`,
+            null,
+            `return div;`,
         ],
     });
 }
@@ -79,7 +81,7 @@ function getMountFn(template) {
         name: 'm',
         signature: ['target'],
         content: [
-            `insertNode(div, target);`,
+            `replaceNode(target, div);`,
         ],
     });
 }

@@ -89,7 +89,7 @@ describe('JsIf', () => {
         expect(String(branch)).to.equal('if (foo === bar) {\n    return 1;\n} else {\n    return 2;\n}');
     });
     
-    it.only('can render multiple lines of content', () => {
+    it('can render multiple lines of content', () => {
         const code = new JsIf({
             condition: '1',
             content: [

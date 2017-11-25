@@ -1,11 +1,13 @@
-export default function(EmptyNode) {
-    describe.only('EmptyNode', () => {
-        it('does stuff', () => {
+import { expect } from 'chai';
+
+export default function(EmptyNode, code) {
+    describe('EmptyNode', () => {
+        it('renders an empty node', () => {
             const vm = new EmptyNode({
                 el: document.createElement('div'),
             });
 
-            console.log (vm);
+            expect(vm._el.outerHTML).to.equal('<div></div>');
         });
     });
 }
