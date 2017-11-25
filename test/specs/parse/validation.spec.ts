@@ -1,8 +1,9 @@
-const { parse } = require('../../../');
+import { parse } from '../../../src/parse/parse';
+const { expect } = require('chai');
 
 describe('parser validation', () => {
     it('throws an error if no template is defined', () => {
-        expect(() => parse(``, { filename: 'foo.bia' })).to.throw(
+        expect(() => parse(``, { fileName: 'foo.bia' })).to.throw(
             'Failed to parse foo.bia, no template block is defined.'
         );
     });
@@ -11,7 +12,7 @@ describe('parser validation', () => {
         expect(() => parse(`
             <template><div></div></template>
             <template><div></div></template>
-        `, { filename: 'foo.bia' })).to.throw(
+        `, { fileName: 'foo.bia' })).to.throw(
             `Failed to parse foo.bia, only one template block may be defined.`
         );
     });
@@ -22,7 +23,7 @@ describe('parser validation', () => {
                 <div>foo</div>
                 <div>bar</div>
             </template>
-        `, { filename: 'foo.bia' })).to.throw(
+        `, { fileName: 'foo.bia' })).to.throw(
             `Failed to parse foo.bia, template must contain exactly one root element.`
         );
     });

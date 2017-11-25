@@ -4,10 +4,10 @@ var path = require('path');
 // set up our test environment
 require('./setup');
 
-// require all files that end in .spec.js
-glob.sync('./test/**/*.spec.js').forEach(function(file) {
-    require(path.resolve(file));
-});
+// // require all files that end in .spec.js
+// glob.sync('./test/**/*.spec.js').forEach(function(file) {
+//     require(path.resolve(file));
+// });
 
 glob.sync('./test/**/*.spec.ts').forEach(function(file) {
     require(path.resolve(file));

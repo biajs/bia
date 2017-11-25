@@ -2,7 +2,7 @@ import { compile } from '../../../src/index'
 const fs = require('fs');
 const path = require('path');
 
-describe('compilation', () => {
+describe.skip('compilation', () => {
     
     // helper functions to render a component
     const isDirectory = p => fs.lstatSync(p).isDirectory();
@@ -23,7 +23,7 @@ describe('compilation', () => {
             });
 
             // save the compiled code to a js file
-            fs.writeFileSync(path.resolve(__dirname, name, 'component.js'), code);
+            fs.writeFileSync(path.resolve(__dirname, name, 'compiled.js'), code);
 
             // @todo...
             // import the file we just created

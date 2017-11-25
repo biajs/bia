@@ -1,6 +1,10 @@
 const { expect } = require('chai');
 const fs = require('fs');
 const path = require('path');
+const chai = require('chai');
+const chaiSubset = require('chai-subset');
+
+chai.use(chaiSubset);
 
 // alias chai expect so we don't have to import it everywhere
 global.expect = expect;

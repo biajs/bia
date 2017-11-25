@@ -23,6 +23,6 @@ function createFragment0(vm, state) {
     };
 }
 
-function empty_node() {
+function EmptyNode() {
     this.$fragment = createFragment0(this);
 }
