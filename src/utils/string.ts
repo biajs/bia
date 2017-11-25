@@ -1,5 +1,11 @@
 import { indentationString } from './constants';
 
+export function escapeQuotes(source: string): string {
+    return source
+        .replace(/'/g, '&#39;')
+        .replace(/"/g, '&#34;');
+}
+
 /**
  * Indent a string.
  * 

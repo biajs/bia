@@ -6,6 +6,8 @@ import {
     JsVariable,
 } from '../classes/index';
 
+import { escapeQuotes } from '../../utils/string';
+
 /**
  * Build up a functions to control a dom fragment.
  * 
@@ -107,7 +109,7 @@ function setTextContent(node, varName: string) {
 
         return new JsCode({
             content: [
-                `${varName}.textContent = '${textContent}';`
+                `${varName}.textContent = '${escapeQuotes(textContent)}';`
             ],
         });
     }
