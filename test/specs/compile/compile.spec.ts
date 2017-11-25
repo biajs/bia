@@ -20,7 +20,7 @@ describe('compilation', () => {
             format: 'fn',
             name: name,
         });
-        
+
         const Component = new Function(code)();
 
         const testFn = require('./' + name + '/test').default;

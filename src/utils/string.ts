@@ -1,9 +1,16 @@
 import { indentationString } from './constants';
 
-export function escapeQuotes(source: string): string {
+/**
+ * Escape a string for use as javascript source.
+ * 
+ * @param  {string} source
+ * @return {string}
+ */
+export function escapeJavascriptString(source: string): string {
     return source
-        .replace(/'/g, '&#39;')
-        .replace(/"/g, '&#34;');
+        .replace(/\n/g, '\\r\\n')     // new lines
+        .replace(/'/g, '\\\'')        // single quotes
+        .replace(/"/g, '\\\"')        // double quotes
 }
 
 /**

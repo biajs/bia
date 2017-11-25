@@ -10,7 +10,6 @@ export default function(parsedSource, options) {
     const code = new JsCode({
         content: [
             `// bia v${version}`,
-            null,
             defineGlobalFunctions(),
             null,
             defineRootConstructor(parsedSource, options),

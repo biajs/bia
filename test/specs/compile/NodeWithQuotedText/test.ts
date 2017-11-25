@@ -6,8 +6,8 @@ export default function(NodeWithQuotedText, code) {
             const vm = new NodeWithQuotedText({
                 el: document.createElement('div'),
             });
-
-            expect(vm._el.outerHTML).to.equal('<div>Foo&amp;#39;s &amp;#34;bar&amp;#34;</div>');
+            
+            expect(vm._el.outerHTML).to.equal('<div>Foo\'s \"bar\"</div>');
         });
     });
 }
