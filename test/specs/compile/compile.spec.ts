@@ -14,7 +14,7 @@ describe('compilation', () => {
         const name = getDirName(dir);
         const source = fs.readFileSync(path.resolve(__dirname, dir, name + '.bia'), 'utf8');
 
-        // compile our fixture into a function
+        // compile our fixture into a constructor fn
         const { code } = compile(source, {
             fileName: name + '.bia',
             format: 'fn',
