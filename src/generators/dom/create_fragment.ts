@@ -215,11 +215,17 @@ function setInnerHTML(node, varName) {
  */
 function setTextContent(node, varName: string) {
     if (node.children.length === 1 && node.children[0].type === 'TEXT') {
+        let textContent: string = '';
         const textNode = node.children[0];
 
-        const textContent = textNode.textInterpolations.reduce((text, interpolation) => {
-            return text.replace(interpolation.text, new Function(`return (${interpolation.expression})`)());
-        }, textNode.textContent);
+        try {
+            textContent = textNode.textInterpolations.reduce((text, interpolation) => {
+                return text.replace(interpolation.text, new Function(`return (${interpolation.expression})`)());
+            }, textNode.textContent)
+        } catch (err) {
+            // @todo handle invalid expressions inside text interpolations
+            throw err;
+        }
 
         return new JsCode({
             content: [
