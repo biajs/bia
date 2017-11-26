@@ -30,6 +30,7 @@ function createDomTree(el: HTMLElement): ParsedNode {
     return {
         attributes: getAttributes(el),
         children: Array.from(el.childNodes).map(createDomTree),
+        dataAttributes: getDataAttributes(el),
         innerHTML: getInnerHTML(el),
         staticClasses: getStaticClasses(el),
         staticStyles: getStaticStyles(el),
@@ -47,6 +48,12 @@ function getAttributes(el: HTMLElement): Object {
         attributes[attr.name] = attr.value;
         return attributes;
     }, {});
+}
+
+// get the data attributes of a node as an object
+// <div data-foo="bar" data-one-two="three" /> -> { foo: 'bar', oneTwo: 'three' }
+function getDataAttributes(el: HTMLElement): Object {
+    return {...el.dataset};
 }
 
 // get an element's inner html

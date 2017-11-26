@@ -1,0 +1,3 @@
+<template>
+    <div data-foo="bar" data-hello-world="yar"></div>
+</template>

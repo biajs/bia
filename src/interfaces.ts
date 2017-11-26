@@ -16,6 +16,7 @@ export enum NodeType {
 export interface ParsedNode {
     attributes: any;
     children: Array<any>;
+    dataAttributes: Object;
     innerHTML: string;
     staticClasses: Array<string>;
     staticStyles: Object;

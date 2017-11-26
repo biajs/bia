@@ -120,4 +120,15 @@ describe('compilation', () => {
         // </div>
         expect(vm.$el.outerHTML).to.equal('<div>\n        <span>3</span>\n    </div>');
     });
+
+    it('NodeWithDataAttributes', () => {
+        const Component = createComponent('NodeWithDataAttributes', {
+            filename: 'NodeWithDataAttributes.bia',
+            name: 'NodeWithDataAttributes',
+        });
+
+        const vm = new Component({ el });
+    
+        expect(vm.$el.outerHTML).to.equal('<div data-foo="bar" data-one-two="three"></div>');
+    });
 });

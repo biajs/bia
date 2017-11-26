@@ -31,6 +31,7 @@ function createFragment1(vm, state) {
         },
         h: function h() {
             setClass(div, 'foo')
+
             setStyle(div, 'color', 'red');
         },
         m: function m(target) {

@@ -9,26 +9,30 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function createFragment15(vm, state) {
+function createFragment3(vm, state) {
     var div;
 
     return {
         c: function c() {
             div = createElement('div');
             vm.$el = div;
-            div.textContent = 'Hello world';
+
+            this.h();
 
             return div;
         },
-        h: noop,
+        h: function h() {
+            div.dataset.foo = 'bar'
+            div.dataset.oneTwo = 'three'
+        },
         m: function m(target) {
             replaceNode(target, div);
         }
     };
 }
 
-function NodeWithText(options) {
-    this.$fragment = createFragment15(this);
+function NodeWithDataAttributes(options) {
+    this.$fragment = createFragment3(this);
 
     if (options.el) {
         this.$fragment.c();
@@ -36,4 +40,4 @@ function NodeWithText(options) {
     }
 }
 
-export default NodeWithText;
+export default NodeWithDataAttributes;

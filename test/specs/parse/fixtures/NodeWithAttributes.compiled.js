@@ -9,7 +9,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function createFragment9(vm, state) {
+function createFragment10(vm, state) {
     var div;
 
     return {
@@ -22,7 +22,7 @@ function createFragment9(vm, state) {
             return div;
         },
         h: function h() {
-
+            div.dataset.baz = 'yar'
         },
         m: function m(target) {
             replaceNode(target, div);
@@ -31,7 +31,7 @@ function createFragment9(vm, state) {
 }
 
 function NodeWithAttributes(options) {
-    this.$fragment = createFragment9(this);
+    this.$fragment = createFragment10(this);
 
     if (options.el) {
         this.$fragment.c();

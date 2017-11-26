@@ -82,6 +82,24 @@ function attachClasses(node: ParsedNode) {
 }
 
 /**
+ * Attach data attributes to a node.
+ * 
+ * @param  {ParsedNode}     node
+ * @return {JsCode}
+ */
+function attachDataAttributes(node: ParsedNode) {
+    const attrNames = Object.keys(node.dataAttributes);
+
+    if (attrNames.length > 0) {
+        const content = attrNames.map(name => {
+            return `div.dataset.${name} = '${escapeJavascriptString(node.dataAttributes[name])}'`
+        });
+
+        return new JsCode({ content });
+    }
+}
+
+/**
  * Attach styles to a node.
  * 
  * @param  {ParsedNode}     node
@@ -215,6 +233,7 @@ function getHydrateFn(node: ParsedNode): JsCode {
     // otherwise, return our hydration fn
     const content = [
         attachClasses(node),
+        attachDataAttributes(node),
         attachStyles(node),
     ];
 

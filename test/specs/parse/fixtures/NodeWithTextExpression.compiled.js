@@ -9,7 +9,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function createFragment14(vm, state) {
+function createFragment16(vm, state) {
     var div;
 
     return {
@@ -28,7 +28,7 @@ function createFragment14(vm, state) {
 }
 
 function NodeWithTextExpression(options) {
-    this.$fragment = createFragment14(this);
+    this.$fragment = createFragment16(this);
 
     if (options.el) {
         this.$fragment.c();

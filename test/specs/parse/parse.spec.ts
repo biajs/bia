@@ -105,4 +105,13 @@ describe('parsing', () => {
             ],
         });
     });
+
+    it('NodeWithDataAttributes', () => {
+        expect(parseTemplate('NodeWithDataAttributes', {})).to.containSubset({
+            dataAttributes: {
+                foo: 'bar',
+                helloWorld: 'yar',
+            },
+        });
+    })
 });
