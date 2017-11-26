@@ -1,5 +1,5 @@
 import parseTemplate from './template';
-import { validateCompileOptions } from './validate';
+import { validateOptions } from './validate';
 import { CompileOptions } from '../interfaces';
 
 /**
@@ -9,7 +9,7 @@ import { CompileOptions } from '../interfaces';
  */
 export function parse(source: string, options: CompileOptions) {
     try {
-        validateCompileOptions(options);
+        validateOptions(options);
     } catch (err) {
         throw err;
     }
