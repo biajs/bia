@@ -1,31 +1,88 @@
-import { compile } from '../../../src/index'
+import { create } from '../../../src/index';
+import { expect } from 'chai';
 const fs = require('fs');
 const path = require('path');
 
-describe('compilation', () => {    
+describe('compilation', () => {
+    let el; 
 
-    // helper functions to render a component
-    const isDirectory = p => fs.lstatSync(p).isDirectory();
-    const getDirName = p => p.split(path.sep).pop();
-    const getDirectories = p => fs.readdirSync(p).map(name => path.join(p, name)).filter(isDirectory);
+    // create a new in-memory div for each test
+    beforeEach(() => {
+        el = document.createElement('div');
+    });
 
-    // loop over all child directories of the current path
-    getDirectories(path.resolve(__dirname)).forEach((dir) => {
-        const name = getDirName(dir);
-        const source = fs.readFileSync(path.resolve(__dirname, dir, name + '.bia'), 'utf8');
+    // helper function to compile source code to a component
+    let createComponent = (name, options) => {
+        const source = fs.readFileSync(path.resolve(__dirname, 'fixtures', name + '.bia'), 'utf8');
 
-        // compile our fixture into a constructor fn
-        const { code } = compile(source, {
-            fileName: name + '.bia',
-            format: 'fn',
-            name: name,
+        return create(source, options);
+    }
+
+    it('EmptyNode', () => {
+        const Component = createComponent('EmptyNode', {
+            fileName: 'EmptyNode.bia',
+            name: 'EmptyNode',
         });
 
-        const Component = new Function(code)();
+        const vm = new Component({ el });
 
-        const testFn = require('./' + name + '/test').default;
+        expect(vm._el.outerHTML).to.equal(`<div></div>`);
+    });
 
-        // call the test function and hand it our component constructor
-        testFn(Component, code);
+    it('NodeWithAttributes', () => {
+        const Component = createComponent('NodeWithAttributes', {
+            fileName: 'NodeWithAttributes.bia',
+            name: 'NodeWithAttributes',
+        });
+
+        const vm = new Component({ el });
+
+        expect(vm._el.outerHTML).to.equal('<div class="foo" style="color: red;"></div>');
+    });
+
+    it('NodeWithChild', () => {
+        const Component = createComponent('NodeWithChild', {
+            fileName: 'NodeWithChild.bia',
+            name: 'NodeWithChild',
+        });
+
+        const vm = new Component({
+            el: document.createElement('div'),
+        });
+
+        expect(vm._el.outerHTML).to.equal('<div>\n        <span>Aloha</span>\n    </div>')
+    });
+
+    it('NodeWithMultipleLinesOfText', () => {
+        const Component = createComponent('NodeWithMultipleLinesOfText', {
+            fileName: 'NodeWithMultipleLinesOfText.bia',
+            name: 'NodeWithMultipleLinesOfText',
+        });
+
+        const vm = new Component({ el });
+
+        expect(vm._el.outerHTML).to.equal('<div>\r\n        Hello world\r\n        foo bar baz\r\n    </div>');
+    });
+
+    it('NodeWithQuotedText', () => {
+        const Component = createComponent('NodeWithQuotedText', {
+            fileName: 'NodeWithQuotedText.bia',
+            name: 'NodeWithQuotedText',
+        });
+
+        const vm = new Component ({ el });
+        
+        expect(vm._el.outerHTML).to.equal('<div>Foo\'s \"bar\"</div>');
+    });
+
+    it('NodeWithText', () => {
+        const Component = createComponent('NodeWithText', {
+            fileName: 'NodeWithText.bia',
+            name: 'NodeWithText',
+        });
+
+        const vm = new Component({ el });
+
+        expect(vm._el.outerHTML).to.equal('<div>Hello world</div>');
     });
 });

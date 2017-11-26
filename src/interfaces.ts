@@ -1,5 +1,6 @@
 export interface CompileOptions {
     fileName: 'string';
+    name: 'string';
 };
 
 export enum NodeType {
