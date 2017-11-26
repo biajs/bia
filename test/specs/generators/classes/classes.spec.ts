@@ -3,5 +3,6 @@ describe('code generators', () => {
     require('./JsFunction');
     require('./JsIf');
     require('./JsObject');
+    require('./JsReturn');
     require('./JsVariable');
 });

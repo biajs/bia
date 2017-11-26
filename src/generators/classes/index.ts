@@ -1,7 +1,8 @@
 import { JsCode } from './JsCode';
-import { JsObject } from './JsObject';
 import { JsFunction } from './JsFunction';
 import { JsIf } from './JsIf';
+import { JsObject } from './JsObject';
+import { JsReturn } from './JsReturn';
 import { JsVariable } from './JsVariable';
 
 export { 
@@ -9,5 +10,6 @@ export {
     JsFunction,
     JsIf,
     JsObject,
+    JsReturn,
     JsVariable,
 };
