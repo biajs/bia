@@ -29,7 +29,7 @@ function createFragment1(vm, state) {
 
             return div;
         },
-        h: function () {
+        h: function h() {
             setClass(div, 'foo')
             setStyle(div, 'color', 'red');
         },

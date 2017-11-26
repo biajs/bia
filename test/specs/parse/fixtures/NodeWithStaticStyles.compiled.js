@@ -29,7 +29,7 @@ function createFragment12(vm, state) {
 
             return div;
         },
-        h: function () {
+        h: function h() {
             setClass(div, '')
             setStyle(div, 'color', 'red');
             setStyle(div, 'font-size', '20px');

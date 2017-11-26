@@ -215,6 +215,7 @@ function getHydrateFn(node: ParsedNode): JsCode {
     ];
 
     return new JsFunction({
+        name: 'h',
         content,
     });
 }

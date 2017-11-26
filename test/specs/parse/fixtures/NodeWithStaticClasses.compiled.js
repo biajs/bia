@@ -25,7 +25,7 @@ function createFragment11(vm, state) {
 
             return div;
         },
-        h: function () {
+        h: function h() {
             setClass(div, 'foo bar')
 
         },
