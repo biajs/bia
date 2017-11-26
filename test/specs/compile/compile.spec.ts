@@ -104,4 +104,18 @@ describe('compilation', () => {
         // <div>{{ 1 + 2 }}</div>
         expect(vm.$el.outerHTML).to.equal('<div>3</div>');
     });
+
+    it('NodeWithTextExpressionInChild', () => {
+        const Component = createComponent('NodeWithTextExpressionInChild', {
+            filename: 'NodeWithTextExpressionInChild.bia',
+            name: 'NodeWithTextExpressionInChild',
+        });
+
+        const vm = new Component({ el });
+        
+        // <div>
+        //     <span>{{ 1 + 2 }}</span>
+        // </div>
+        expect(vm.$el.outerHTML).to.equal('<div>\n        <span>3</span>\n    </div>');
+    });
 });

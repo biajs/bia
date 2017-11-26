@@ -58,13 +58,11 @@ function getInnerHTML(el: HTMLElement): string {
 // get the interpolations of a text node
 // {{ foo }} -> [{ expression: 'foo', text: '{{ foo }}' }]
 function getInterpolations(el: HTMLElement, nodeType: NodeType): Array<any> {
-    // if this isn't a text node, do nothing
-    if (nodeType !== 'TEXT') {
-        return [];
-    }
+    const textContent = nodeType === 'TEXT'
+        ? el.textContent
+        : el.innerHTML;
 
-    // otherwise find interpolations in our text node
-    return (el.textContent.match(/\{\{.*?}}/g) || []).map(text => {
+    return (textContent.match(/\{\{.*?}}/g) || []).map(text => {
         const expression = text.slice(2, text.length - 2).trim();
 
         return { expression, text };

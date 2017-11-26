@@ -1,4 +1,9 @@
 import { 
+    ParsedNode,
+    TextInterpolation,
+} from '../../interfaces';
+
+import { 
     JsIf,
     JsCode,
     JsFunction,
@@ -31,10 +36,10 @@ export default function(name: string, template) {
 /**
  * Hydrate the node if neccessary.
  * 
- * @param  {Object} node
- * @return {Object} 
+ * @param  {ParsedNode}     node
+ * @return {void|JsCode} 
  */
-function addHydrationCall(node) {
+function addHydrationCall(node: ParsedNode) {
     if (nodeRequiresHydration(node)) {
         return new JsCode({
             content: [
@@ -47,10 +52,10 @@ function addHydrationCall(node) {
 /**
  * Attach classes to a node.
  * 
- * @param  {Object} node
+ * @param  {ParsedNode}     node
  * @return {JsCode}
  */
-function attachClasses(node) {
+function attachClasses(node: ParsedNode) {
     // start with all of our static classes that we know will be attached
     const classes = node.staticClasses.slice(0);
 
@@ -66,10 +71,10 @@ function attachClasses(node) {
 /**
  * Attach styles to a node.
  * 
- * @param  {Object} node
+ * @param  {ParsedNode}     node
  * @return {JsCode}
  */
-function attachStyles(node) {
+function attachStyles(node: ParsedNode) {
     // start with all of our static styles that we know will be attached
     const styles = Object.keys(node.staticStyles).reduce((content, styleProperty) => {
         const property = escapeJavascriptString(styleProperty);
@@ -89,8 +94,12 @@ function attachStyles(node) {
 
 /**
  * Create a dom element.
+ * 
+ * @param  {ParsedNode}     node
+ * @param  {varName}        string
+ * @return {JsCode}
  */
-function createElement(node, varName) {
+function createElement(node: ParsedNode, varName: string) {
     return new JsCode({
         content: [
             `div = createElement('div');`,
@@ -114,9 +123,10 @@ function defineFragmentVariables(template) {
 /**
  * Define the functions neccessary to build a dom fragment.
  * 
- * @param  {Object}
+ * @param  {ParsedNode}     node
+ * @return {JsObject}
  */
-function fragmentFunctionsObject(node) {
+function fragmentFunctionsObject(node: ParsedNode): JsObject {
     // this will eventually hold create, destroy, mount, and unmount
     return new JsObject({
         properties: {
@@ -125,6 +135,30 @@ function fragmentFunctionsObject(node) {
             m: getMountFn(node),
         },
     });
+}
+
+/**
+ * Interpolate text.
+ * 
+ * @param  {string}                     rawText
+ * @param  {Array<TextInterpolation>}   interpolations 
+ * @return {string}
+ */
+function interpolateText(rawText: string, interpolations: Array<TextInterpolation>): string {
+    let text = '';
+
+    try {
+        text = interpolations.reduce((text, interpolation) => {
+            const interpolate = new Function(`return (${interpolation.expression})`);
+
+            return text.replace(interpolation.text, interpolate());
+        }, rawText)
+    } catch (err) {
+        // @todo handle invalid expressions inside text interpolations
+        throw err;
+    }
+
+    return text;
 }
 
 /**
@@ -150,10 +184,10 @@ function getCreateFn(node) {
 /**
  * Function to hydrate a node's dom elements.
  * 
- * @param {Object} node
- * @return {Object} 
+ * @param  {ParsedNode}     node
+ * @return {JsFunction} 
  */
-function getHydrateFn(node) {
+function getHydrateFn(node: ParsedNode): JsCode {
     // if the node doesn't need hydration, use noop
     if (!nodeRequiresHydration(node)) {
         return new JsCode({ content: ['noop'] });
@@ -171,10 +205,10 @@ function getHydrateFn(node) {
 /**
  * Function to insert a fragment into the dom.
  * 
- * @param  {Object} node
- * @return {Object} 
+ * @param  {ParsedNode}     node
+ * @return {JsFunction} 
  */
-function getMountFn(node) {
+function getMountFn(node: ParsedNode): JsFunction {
     return new JsFunction({
         name: 'm',
         signature: ['target'],
@@ -187,24 +221,30 @@ function getMountFn(node) {
 /**
  * Determine if a node requires hydration or not.
  * 
- * @param  {Object} node
+ * @param  {ParsedNode}     node
  * @return {boolean}
  */
-function nodeRequiresHydration(node): boolean {
+function nodeRequiresHydration(node: ParsedNode): boolean {
     return Object.keys(node.attributes).length > 0;
 }
 
 /**
  * If a component has child elements, set it's inner html.
+ * 
+ * @param  {ParsedNode}     node
+ * @param  {string}         varName
+ * @return {JsCode|void}
  */
-function setInnerHTML(node, varName) {
+function setInnerHTML(node: ParsedNode, varName: string): JsCode|void {
     const hasChildElements = node.children.length > 0
         && node.children.find(child => child.type === 'ELEMENT');
 
     if (hasChildElements) {
+        const innerHTML = interpolateText(node.innerHTML, node.textInterpolations);
+
         return new JsCode({
             content: [
-                `${varName}.innerHTML = '${escapeJavascriptString(node.innerHTML)}';`,
+                `${varName}.innerHTML = '${escapeJavascriptString(innerHTML)}';`,
             ],
         });
     }
@@ -212,20 +252,16 @@ function setInnerHTML(node, varName) {
 
 /**
  * Set the text content directly if a node only has child text.
+ * 
+ * @param  {ParsedNode}     node
+ * @param  {string}         varName
+ * @return {JsCode|void}
  */
-function setTextContent(node, varName: string) {
+function setTextContent(node: ParsedNode, varName: string): JsCode|void {
     if (node.children.length === 1 && node.children[0].type === 'TEXT') {
-        let textContent: string = '';
         const textNode = node.children[0];
 
-        try {
-            textContent = textNode.textInterpolations.reduce((text, interpolation) => {
-                return text.replace(interpolation.text, new Function(`return (${interpolation.expression})`)());
-            }, textNode.textContent)
-        } catch (err) {
-            // @todo handle invalid expressions inside text interpolations
-            throw err;
-        }
+        const textContent = interpolateText(textNode.textContent, textNode.textInterpolations);
 
         return new JsCode({
             content: [
