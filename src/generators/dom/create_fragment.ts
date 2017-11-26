@@ -116,28 +116,71 @@ function getHydrateFn(node) {
     }
 
     // otherwise, return our hydration fn
-    const content = [];
-
-    // attach any classes our element has
-    if (typeof node.attributes.class !== 'undefined') {
-        content.push(`div.className = "${escapeJavascriptString(node.attributes.class)}";`);
-    }
-
-    // attach inline styles
-    // @todo: refactor and move this logic to a global helper fn
-    if (typeof node.attributes.style !== 'undefined') {
-        node.attributes.style.split(';').forEach((style) => {
-            const delimeterPosition = style.indexOf(':');
-            const property = escapeJavascriptString(style.slice(0, delimeterPosition).trim());
-            const value = escapeJavascriptString(style.slice(delimeterPosition + 1).trim());
-
-            if (property.length && value.length) {
-                content.push(`div.style.setProperty('${property}', '${value}')`);
-            }
-        });
-    }
+    const content = [
+        attachClasses(node),
+        attachStyles(node),
+    ];
 
     return new JsFunction({ content });
+}
+
+/**
+ * Attach classes to a node.
+ * 
+ * @param  {Object} node
+ * @return {JsCode}
+ */
+function attachClasses(node) {
+    // start with all of our static classes that we know will be attached
+    const classes = node.staticClasses.slice(0);
+
+    // @todo: handle dynamic classes
+
+    return new JsCode({
+        content: [
+            `div.className = '${escapeJavascriptString(classes.join(' '))}';`,
+        ]
+    });
+}
+
+/**
+ * Attach styles to a node.
+ * 
+ * @param  {Object} node
+ * @return {JsCode}
+ */
+function attachStyles(node) {
+    // start with all of our static styles that we know will be attached
+    const styles = Object.keys(node.staticStyles).reduce((content, styleProperty) => {
+        const property = escapeJavascriptString(styleProperty);
+        const value = escapeJavascriptString(node.staticStyles[styleProperty]);
+
+        content.push(`div.style.setProperty('${property}', '${value}');`);
+
+        return content;
+    }, []);
+
+    // @todo: handle dynamic styles
+
+    return new JsCode({
+        content: styles,
+    })
+
+    // return Object.keys(styles)
+    //     .map(name =>`${name}: ${styles[name]}`)
+    //     .join('; ');
+    // @todo: refactor and move this logic to a global helper fn
+    // if (typeof node.attributes.style !== 'undefined') {
+    //     node.attributes.style.split(';').forEach((style) => {
+    //         const delimeterPosition = style.indexOf(':');
+    //         const property = escapeJavascriptString(style.slice(0, delimeterPosition).trim());
+    //         const value = escapeJavascriptString(style.slice(delimeterPosition + 1).trim());
+
+    //         if (property.length && value.length) {
+    //             content.push(`div.style.setProperty('${property}', '${value}')`);
+    //         }
+    //     });
+    // }
 }
 
 /**

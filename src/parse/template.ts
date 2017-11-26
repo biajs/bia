@@ -38,6 +38,8 @@ function createDomTree(el): ParsedNode {
     return {
         attributes: getAttributes(el),
         innerHTML: getInnerHTML(el),
+        staticClasses: getStaticClasses(el),
+        staticStyles: getStaticStyles(el),
         tagName: getTagName(el),
         textContent: getTextContent(el, nodeType),
         type: nodeType,
@@ -58,6 +60,40 @@ function getAttributes(el): Object {
 // <div><span>foo</span></div> -> '<span>foo</span>'
 function getInnerHTML(el): string {
     return el.innerHTML;
+}
+
+// get an element's static classes
+// <div class="foo bar" /> -> ['foo', 'bar']
+function getStaticClasses(el): Array<string> {
+    return el.classList 
+        ? Array.from(el.classList) 
+        : [];
+}
+
+// get an element's static styles
+// <div style="color: red" /> -> { color: 'red' }
+function getStaticStyles(el): Object {
+    // text nodes have no style
+    if (!el.style) {
+        return {};
+    }
+
+    const { cssText } = el.style;
+
+    // @todo: throw an error if interpolation happens here
+
+    return cssText.split(';')
+        .map(style => style.trim())
+        .filter(style => style.length)
+        .reduce((styles, style) => {
+            const delimeterPosition = style.indexOf(':');
+            const property = style.slice(0, delimeterPosition).trim();
+            const value = style.slice(delimeterPosition + 1).trim();
+
+            styles[property] = value;
+
+            return styles;
+        }, {});
 }
 
 // get an element's tagName, or null if there is none

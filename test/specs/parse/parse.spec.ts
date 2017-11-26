@@ -74,4 +74,19 @@ describe('parsing', () => {
             ],
         });
     });
+
+    it('NodeWithStaticClasses', () => {
+        expect(parseTemplate('NodeWithStaticClasses', {})).to.containSubset({
+            staticClasses: ['foo', 'bar'],
+        });
+    });
+
+    it('NodeWithStaticStyles', () => {
+        expect(parseTemplate('NodeWithStaticStyles', {})).to.containSubset({
+            staticStyles: {
+                color: 'red',
+                'font-size': '20px',
+            },
+        });
+    });
 });

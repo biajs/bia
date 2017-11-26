@@ -17,6 +17,8 @@ export interface ParsedNode {
     attributes: any;
     children: Array<any>;
     innerHTML: string;
+    staticClasses: Array<string>;
+    staticStyles: Object;
     tagName: string | null;
     textContent: null | string;
     type: NodeType;
