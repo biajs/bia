@@ -27,7 +27,6 @@ function createFragment11(vm, state) {
         },
         h: function h() {
             setClass(div, 'foo bar')
-
         },
         m: function m(target) {
             replaceNode(target, div);

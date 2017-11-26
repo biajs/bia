@@ -62,18 +62,22 @@ function addHydrationCall(node: ParsedNode) {
  * @return {JsCode}
  */
 function attachClasses(node: ParsedNode) {
+    const content = [];
+    const globalFunctions = [];
+
     // start with all of our static classes that we know will be attached
-    const classes = node.staticClasses.slice(0);
+    if (node.staticClasses.length) {
+        const classes = node.staticClasses.slice(0);
+
+        content.push(`setClass(div, '${escapeJavascriptString(classes.join(' '))}')`);
+        globalFunctions.push(setClass());
+    }
 
     // @todo: handle dynamic classes
-
+    
     return new JsCode({
-        globalFunctions: [
-            setClass(),
-        ],
-        content: [
-            `setClass(div, '${escapeJavascriptString(classes.join(' '))}')`,
-        ]
+        content,
+        globalFunctions,
     });
 }
 

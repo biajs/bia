@@ -1,8 +1,4 @@
 // bia v0.0.0
-function setClass(el, className) {
-    el.className = className;
-}
-
 function createElement(tag) {
     return document.createElement(tag);
 }
@@ -26,7 +22,6 @@ function createFragment9(vm, state) {
             return div;
         },
         h: function h() {
-            setClass(div, '')
 
         },
         m: function m(target) {

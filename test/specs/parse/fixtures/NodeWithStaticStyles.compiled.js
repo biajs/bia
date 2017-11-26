@@ -1,8 +1,4 @@
 // bia v0.0.0
-function setClass(el, className) {
-    el.className = className;
-}
-
 function setStyle(el, name, value) {
     el.style.setProperty(name, value);
 }
@@ -30,7 +26,6 @@ function createFragment12(vm, state) {
             return div;
         },
         h: function h() {
-            setClass(div, '')
             setStyle(div, 'color', 'red');
             setStyle(div, 'font-size', '20px');
         },

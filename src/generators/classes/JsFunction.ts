@@ -33,7 +33,7 @@ export class JsFunction extends JsCode {
     public toString(): string {
         if (this.content.length) {
             const signature = this.signature.join(', ');
-            const content = indent(this.content.join('\n'));
+            const content = indent(this.content.join('\n').trim());
 
             return `function ${this.name}(${signature}) {\n${content}\n}`;
         }
