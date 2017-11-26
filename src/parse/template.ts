@@ -42,6 +42,7 @@ function createDomTree(el): ParsedNode {
         staticStyles: getStaticStyles(el),
         tagName: getTagName(el),
         textContent: getTextContent(el, nodeType),
+        textInterpolations: getInterpolations(el, nodeType),
         type: nodeType,
         children: Array.from(el.childNodes).map(createDomTree),
     };
@@ -60,6 +61,22 @@ function getAttributes(el): Object {
 // <div><span>foo</span></div> -> '<span>foo</span>'
 function getInnerHTML(el): string {
     return el.innerHTML;
+}
+
+// get the interpolations of a text node
+// {{ foo }} -> [{ expression: 'foo', text: '{{ foo }}' }]
+function getInterpolations(el, nodeType: string): Array<any> {
+    // if this isn't a text node, do nothing
+    if (nodeType !== 'TEXT') {
+        return [];
+    }
+
+    // otherwise find interpolations in our text node
+    return (el.textContent.match(/\{\{.*?}}/g) || []).map(text => {
+        const expression = text.slice(2, text.length - 2).trim();
+
+        return { expression, text };
+    });
 }
 
 // get an element's static classes

@@ -89,4 +89,20 @@ describe('parsing', () => {
             },
         });
     });
+
+    it('NodeWithTextExpression', () => {
+        expect(parseTemplate('NodeWithTextExpression', {})).to.containSubset({
+            children: [
+                {
+                    type: 'TEXT',
+                    textInterpolations: [
+                        {
+                            expression: '2 + 2',
+                            text: '{{ 2 + 2 }}',
+                        },
+                    ],
+                },
+            ],
+        });
+    });
 });

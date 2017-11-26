@@ -21,5 +21,11 @@ export interface ParsedNode {
     staticStyles: Object;
     tagName: string | null;
     textContent: null | string;
+    textInterpolations: Array<TextInterpolation>;
     type: NodeType;
+};
+
+export interface TextInterpolation {
+    expression: string;
+    text: string;
 };
