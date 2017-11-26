@@ -68,6 +68,27 @@ function noop() {
     });
 }
 
+/**
+ * Set an element's classes.
+ * 
+ * @return {JsFunction}
+ */
+export function setClass() {
+    return new JsFunction({
+        id: 'setClass',
+        name: 'setClass',
+        signature: ['el', 'className'],
+        content: [
+            `el.className = className;`,
+        ],
+    });
+}
+
+/**
+ * Set a style on an element.
+ * 
+ * @return {JsFunction}
+ */
 export function setStyle() {
     return new JsFunction({
         id: 'setStyle',

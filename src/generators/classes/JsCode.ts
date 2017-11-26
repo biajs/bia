@@ -52,15 +52,16 @@ export class JsCode extends BaseCode {
             .map(descendent => descendent.code.globalFunctions)
             .reduce((globalFns, descendentGlobalFns) => globalFns.concat(descendentGlobalFns), [])
             .reduce((uniqueFns, fn) => {
-                if (!uniqueFns.find(uniqueFn => uniqueFn.id === fn.name)) {
+                if (!uniqueFns.find(uniqueFn => uniqueFn !== null && uniqueFn.id === fn.name)) {
                     uniqueFns.push(fn);
+                    uniqueFns.push(null); // <- add newline after each global fn
                 }
 
                 return uniqueFns;
             }, []);
 
         // make sure no global fns are using the same name, and throw an error if there is
-        const duplicateFns = getDuplicateMembers(globalFns.map(fn => fn.name));
+        const duplicateFns = getDuplicateMembers(globalFns.filter(fn => fn).map(fn => fn.name));
 
         if (duplicateFns.length > 0) {
             throw `Multiple global functions were declared using the name '${duplicateFns[0]}'.`;

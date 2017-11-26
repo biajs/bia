@@ -13,6 +13,7 @@ import {
 } from '../classes/index';
 
 import {
+    setClass,
     setStyle,
 } from './global_functions';
 
@@ -67,8 +68,11 @@ function attachClasses(node: ParsedNode) {
     // @todo: handle dynamic classes
 
     return new JsCode({
+        globalFunctions: [
+            setClass(),
+        ],
         content: [
-            `div.className = '${escapeJavascriptString(classes.join(' '))}';`,
+            `setClass(div, '${escapeJavascriptString(classes.join(' '))}')`,
         ]
     });
 }

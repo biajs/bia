@@ -1,4 +1,4 @@
-describe('code generators', () => {
+describe('code generation', () => {
     require('./JsCode');
     require('./JsFunction');
     require('./JsIf');

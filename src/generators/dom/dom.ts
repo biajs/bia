@@ -9,7 +9,6 @@ const version = '0.0.0';
 export default function(parsedSource, options) {
     const code = new JsCode({
         content: [
-            `// bia v${version}`,
             defineGlobalFunctions(),
             null,
             defineRootConstructor(parsedSource, options),
@@ -19,5 +18,5 @@ export default function(parsedSource, options) {
         root: true,
     });
 
-    return String(code);
+    return `// bia v${version}\n${code}`;
 }
