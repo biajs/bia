@@ -68,7 +68,7 @@ describe('JsCode', () => {
             ],
         });
 
-        expect(String(code)).to.equal('function someGlobalFn() {}\nlet foo = 1;');
+        expect(String(code)).to.equal('function someGlobalFn() {}\n\nlet foo = 1;');
     });
 
     it('should add a single function if a global is declared twice', () => {
