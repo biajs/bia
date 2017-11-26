@@ -1,4 +1,7 @@
+import { JsFunction } from './JsFunction';
+
 export interface BaseCodeOptions {
+    globalFunctions?: Array<JsFunction>;
     id?: null | string;
 }
 
@@ -11,6 +14,7 @@ export interface DescendentCode {
  * Base code class.
  */
 export abstract class BaseCode {
+    public globalFunctions: Array<JsFunction>;
     public id: string;
     public options: BaseCodeOptions;
 
@@ -20,6 +24,7 @@ export abstract class BaseCode {
     constructor(options: BaseCodeOptions) {
         this.id = options.id || null;
         this.options = options;
+        this.globalFunctions = options.globalFunctions || [];
     }
 
     /**

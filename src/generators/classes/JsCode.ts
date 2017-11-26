@@ -1,7 +1,9 @@
 import { BaseCode, BaseCodeOptions, DescendentCode } from './BaseCode';
+import { getDuplicateMembers } from '../../utils/array';
 
 export interface JsCodeOptions extends BaseCodeOptions {
-    content?: Array<any>
+    content?: Array<any>;
+    root?: boolean;
 }
 
 /**
@@ -9,13 +11,17 @@ export interface JsCodeOptions extends BaseCodeOptions {
  */
 export class JsCode extends BaseCode {
     public content: Array<JsCode|string>;
+    public root: boolean;
 
     /**
      * Constructor.
      */
     constructor(options: JsCodeOptions) {
         super(options);
+
         this.content = options.content || [];
+        this.root = options.root || false;
+
         this.validateId();
     }
 
@@ -34,6 +40,34 @@ export class JsCode extends BaseCode {
             return descendents;
         }, []);
     }
+
+    /**
+     * Find any global functions defined by descendent code.
+     * 
+     * @return Array<JsFunction>
+     */
+    public getDescendentGlobalFunctions(): Array<any> {
+        // create a unique array of every global fn declared by a descendent
+        const globalFns = this.getDescendents()
+            .map(descendent => descendent.code.globalFunctions)
+            .reduce((globalFns, descendentGlobalFns) => globalFns.concat(descendentGlobalFns), [])
+            .reduce((uniqueFns, fn) => {
+                if (!uniqueFns.find(uniqueFn => uniqueFn.id === fn.name)) {
+                    uniqueFns.push(fn);
+                }
+
+                return uniqueFns;
+            }, []);
+
+        // make sure no global fns are using the same name, and throw an error if there is
+        const duplicateFns = getDuplicateMembers(globalFns.map(fn => fn.name));
+
+        if (duplicateFns.length > 0) {
+            throw `Multiple global functions were declared using the name '${duplicateFns[0]}'.`;
+        }
+
+        return globalFns;
+    }
         
     /**
      * Convert code object to a string.
@@ -41,6 +75,12 @@ export class JsCode extends BaseCode {
      * @return {string}
      */
     public toString(): string {
-        return this.content.join('\n');
+        // if we are the root code, hoist and global
+        // functions declared by descendent code.
+        const content = this.root
+            ? this.getDescendentGlobalFunctions()
+            : [];
+
+        return content.concat(this.content).join('\n').trim();
     }
 }

@@ -1,4 +1,4 @@
-import { JsCode } from '../../../../src/generators/classes/JsCode';
+import { JsCode, JsFunction } from '../../../../src/generators/classes/index';
 import { expect } from 'chai';
 
 describe('JsCode', () => {
@@ -49,5 +49,65 @@ describe('JsCode', () => {
                 new JsCode({ content: ['console.log(bar);'] }),
             ],
         }))).to.equal('let bar = 2;\nconsole.log(bar);');
+    });
+
+    it('can add functions to the global scope', () => {
+        const code = new JsCode({
+            root: true,
+            content: [
+                // add code before our descendent defines a global fn
+                `let foo = 1;`,
+
+                // now add descendent code that defines a global. this fn
+                // should get hoisted to the top of the parent scope
+                new JsCode({
+                    globalFunctions: [
+                        new JsFunction({ id: 'someGlobalFn', name: 'someGlobalFn' }),
+                    ],
+                }),
+            ],
+        });
+
+        expect(String(code)).to.equal('function someGlobalFn() {}\nlet foo = 1;');
+    });
+
+    it('should add a single function if a global is declared twice', () => {
+        const code = new JsCode({
+            root: true,
+            content: [
+                new JsCode({
+                    globalFunctions: [
+                        new JsFunction({ id: 'someGlobalFn', name: 'someGlobalFn'  }),
+                    ],
+                }),
+                new JsCode({
+                    globalFunctions: [
+                        new JsFunction({ id: 'someGlobalFn', name: 'someGlobalFn' }),
+                    ],
+                }),
+            ],
+        });
+
+        expect(String(code)).to.equal('function someGlobalFn() {}');
+    });
+
+    it('throws an error if two global functions have the same name', () => {
+        expect(() => String(new JsCode({
+            root: true,
+            content: [
+                new JsCode({
+                    globalFunctions: [
+                        new JsFunction({ id: 'foo', name: 'nonUniqueFnName'  }),
+                    ],
+                }),
+                new JsCode({
+                    globalFunctions: [
+                        new JsFunction({ id: 'bar', name: 'nonUniqueFnName' }),
+                    ],
+                }),
+            ],
+        }))).to.throw(
+            `Multiple global functions were declared using the name 'nonUniqueFnName'.`
+        );
     });
 });
