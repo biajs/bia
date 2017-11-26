@@ -16,6 +16,7 @@ export default function(parsedSource, options) {
             null,
             defineExport(options),
         ],
+        root: true,
     });
 
     return String(code);

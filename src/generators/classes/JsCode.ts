@@ -75,8 +75,7 @@ export class JsCode extends BaseCode {
      * @return {string}
      */
     public toString(): string {
-        // if we are the root code, hoist and global
-        // functions declared by descendent code.
+        // if root, hoist global functions declared by descendents
         const content = this.root
             ? this.getDescendentGlobalFunctions()
             : [];

@@ -67,3 +67,14 @@ function noop() {
         id: 'noop',
     });
 }
+
+export function setStyle() {
+    return new JsFunction({
+        id: 'setStyle',
+        name: 'setStyle',
+        signature: ['el', 'name', 'value'],
+        content: [
+            `el.style.setProperty(name, value);`,
+        ],
+    });
+}

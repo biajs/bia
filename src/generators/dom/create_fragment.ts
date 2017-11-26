@@ -4,12 +4,17 @@ import {
 } from '../../interfaces';
 
 import { 
-    JsIf,
     JsCode,
     JsFunction,
+    JsIf,
     JsObject,
+    JsReturn,
     JsVariable,
 } from '../classes/index';
+
+import {
+    setStyle,
+} from './global_functions';
 
 import { escapeJavascriptString } from '../../utils/string';
 
@@ -28,8 +33,8 @@ export default function(name: string, template) {
             null,
 
             // return an object with methods to control our dom fragment
-            `return ${fragmentFunctionsObject(template)};`,
-        ]
+            new JsReturn({ value: fragmentFunctionsObject(template) }),
+        ],
     });
 }
 
@@ -80,14 +85,20 @@ function attachStyles(node: ParsedNode) {
         const property = escapeJavascriptString(styleProperty);
         const value = escapeJavascriptString(node.staticStyles[styleProperty]);
 
-        content.push(`div.style.setProperty('${property}', '${value}');`);
+        content.push(`setStyle(div, '${property}', '${value}');`);
 
         return content;
     }, []);
 
     // @todo: handle dynamic styles
 
+    // attach our setStyle function if neccessary
+    const globalFunctions = styles.length
+        ? [setStyle()]
+        : [];
+    
     return new JsCode({
+        globalFunctions,
         content: styles,
     });
 }
@@ -129,6 +140,7 @@ function defineFragmentVariables(template) {
 function fragmentFunctionsObject(node: ParsedNode): JsObject {
     // this will eventually hold create, destroy, mount, and unmount
     return new JsObject({
+        id: 'OBJECTTTTTTT',
         properties: {
             c: getCreateFn(node),
             h: getHydrateFn(node),
@@ -199,7 +211,9 @@ function getHydrateFn(node: ParsedNode): JsCode {
         attachStyles(node),
     ];
 
-    return new JsFunction({ content });
+    return new JsFunction({
+        content,
+    });
 }
 
 /**

@@ -3,6 +3,8 @@ import { expect } from 'chai';
 const fs = require('fs');
 const path = require('path');
 
+import { JsCode, JsReturn, JsFunction, JsObject } from '../../../src/generators/classes/index';
+
 describe('compilation', () => {
     let el; 
 
