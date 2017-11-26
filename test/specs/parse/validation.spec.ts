@@ -20,7 +20,7 @@ describe('validation', () => {
     // options
     //
     describe('options', () => {
-        // @todo: add tests that use nvalid config objects. 
+        // @todo: add tests that use invalid config objects. 
         //        need to disable typescript to do this.
     });
 
