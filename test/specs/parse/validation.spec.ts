@@ -1,4 +1,5 @@
 import { parse } from '../../../src/parse/parse';
+import { validateCompileOptions } from '../../../src/parse/validate';
 const { expect } = require('chai');
 const path = require('path');
 const fs = require('fs');
@@ -10,7 +11,7 @@ describe('validation', () => {
         const source = fs.readFileSync(path.resolve(__dirname, 'fixtures', name + '.bia'), 'utf8');
 
         return parse(source, {
-            fileName: name + '.bia',
+            filename: name + '.bia',
             name: name,
             ...options,
         });
@@ -20,15 +21,21 @@ describe('validation', () => {
     // options
     //
     describe('options', () => {
-        // @todo
+        // @todo: add tests that use nvalid config objects. 
+        //        need to disable typescript to do this.
     });
 
     //
     // template
     //
     describe('template', () => {
+        const opts = {
+            filaname: 'Options.bia',
+            name: 'OptionsStub',
+        };
+
         it('throws an error if no template is defined', () => {
-            expect(() => parseFixture('NoTemplate', {})).to.throw(
+            expect(() => parseFixture('NoTemplate', opts)).to.throw(
                 'Failed to parse NoTemplate.bia, no template block is defined.'
             );
         });

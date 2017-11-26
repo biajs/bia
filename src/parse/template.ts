@@ -17,15 +17,15 @@ export default function(source: string, options) {
     const templates = document.querySelectorAll('template');
 
     if (templates.length === 0) {
-        throw `Failed to parse ${options.fileName}, no template block is defined.`;
+        throw `Failed to parse ${options.filename}, no template block is defined.`;
     } else if (templates.length > 1) {
-        throw `Failed to parse ${options.fileName}, only one template block may be defined.`;
+        throw `Failed to parse ${options.filename}, only one template block may be defined.`;
     }
     
     const template = document.querySelector('template').content;
 
     if (template.childElementCount !== 1) {
-        throw `Failed to parse ${options.fileName}, template must contain exactly one root element.`;
+        throw `Failed to parse ${options.filename}, template must contain exactly one root element.`;
     }
 
     return createDomTree(template.children[0]);

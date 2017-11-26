@@ -1,5 +1,5 @@
 export interface CompileOptions {
-    fileName: 'string';
+    filename: 'string';
     name: 'string';
 };
 

@@ -20,7 +20,7 @@ describe('compilation', () => {
 
     it('EmptyNode', () => {
         const Component = createComponent('EmptyNode', {
-            fileName: 'EmptyNode.bia',
+            filename: 'EmptyNode.bia',
             name: 'EmptyNode',
         });
 
@@ -31,7 +31,7 @@ describe('compilation', () => {
 
     it('NodeWithAttributes', () => {
         const Component = createComponent('NodeWithAttributes', {
-            fileName: 'NodeWithAttributes.bia',
+            filename: 'NodeWithAttributes.bia',
             name: 'NodeWithAttributes',
         });
 
@@ -42,7 +42,7 @@ describe('compilation', () => {
 
     it('NodeWithChild', () => {
         const Component = createComponent('NodeWithChild', {
-            fileName: 'NodeWithChild.bia',
+            filename: 'NodeWithChild.bia',
             name: 'NodeWithChild',
         });
 
@@ -55,7 +55,7 @@ describe('compilation', () => {
 
     it('NodeWithMultipleLinesOfText', () => {
         const Component = createComponent('NodeWithMultipleLinesOfText', {
-            fileName: 'NodeWithMultipleLinesOfText.bia',
+            filename: 'NodeWithMultipleLinesOfText.bia',
             name: 'NodeWithMultipleLinesOfText',
         });
 
@@ -66,7 +66,7 @@ describe('compilation', () => {
 
     it('NodeWithQuotedText', () => {
         const Component = createComponent('NodeWithQuotedText', {
-            fileName: 'NodeWithQuotedText.bia',
+            filename: 'NodeWithQuotedText.bia',
             name: 'NodeWithQuotedText',
         });
 
@@ -77,7 +77,7 @@ describe('compilation', () => {
 
     it('NodeWithText', () => {
         const Component = createComponent('NodeWithText', {
-            fileName: 'NodeWithText.bia',
+            filename: 'NodeWithText.bia',
             name: 'NodeWithText',
         });
 

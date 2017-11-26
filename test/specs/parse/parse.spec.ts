@@ -9,7 +9,7 @@ describe('parsing', () => {
     const parseTemplate = (name, opts) => {
         const parseOptions = {
             name: name,
-            fileName: name + '.bia',
+            filename: name + '.bia',
             ...opts,   
         }
 
