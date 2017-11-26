@@ -50,7 +50,8 @@ function addHydrationCall(node) {
 function createElement(node, varName) {
     return new JsCode({
         content: [
-            `div = createElement('div');`
+            `div = createElement('div');`,
+            `vm.$el = div;`
         ],
     });
 }
@@ -164,23 +165,7 @@ function attachStyles(node) {
 
     return new JsCode({
         content: styles,
-    })
-
-    // return Object.keys(styles)
-    //     .map(name =>`${name}: ${styles[name]}`)
-    //     .join('; ');
-    // @todo: refactor and move this logic to a global helper fn
-    // if (typeof node.attributes.style !== 'undefined') {
-    //     node.attributes.style.split(';').forEach((style) => {
-    //         const delimeterPosition = style.indexOf(':');
-    //         const property = escapeJavascriptString(style.slice(0, delimeterPosition).trim());
-    //         const value = escapeJavascriptString(style.slice(delimeterPosition + 1).trim());
-
-    //         if (property.length && value.length) {
-    //             content.push(`div.style.setProperty('${property}', '${value}')`);
-    //         }
-    //     });
-    // }
+    });
 }
 
 /**

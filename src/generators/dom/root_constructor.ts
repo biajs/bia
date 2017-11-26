@@ -22,7 +22,7 @@ export default function(parsedSource, options) {
                 signature: ['options'],
                 content: [
                     // define this component's fragment
-                    `this._fragment = ${createFragmentFn}(this);`,
+                    `this.$fragment = ${createFragmentFn}(this);`,
                     null,
                     mountIfStatement(),
                 ],
@@ -41,8 +41,8 @@ function mountIfStatement() {
         id: 'rootFnMountIfStatement',
         condition: 'options.el',
         content: [
-            `this._el = this._fragment.c();`, // <- create the component instance
-            `this._fragment.m(options.el);`, // <- mount it to our target el
+            `this.$fragment.c();`, // <- create the component instance
+            `this.$fragment.m(options.el);`, // <- mount it to our target el
         ],
     });
 }

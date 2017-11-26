@@ -26,7 +26,7 @@ describe('compilation', () => {
 
         const vm = new Component({ el });
 
-        expect(vm._el.outerHTML).to.equal(`<div></div>`);
+        expect(vm.$el.outerHTML).to.equal(`<div></div>`);
     });
 
     it('NodeWithAttributes', () => {
@@ -37,7 +37,7 @@ describe('compilation', () => {
 
         const vm = new Component({ el });
 
-        expect(vm._el.outerHTML).to.equal('<div class="foo" style="color: red;"></div>');
+        expect(vm.$el.outerHTML).to.equal('<div class="foo" style="color: red;"></div>');
     });
 
     it('NodeWithChild', () => {
@@ -50,7 +50,7 @@ describe('compilation', () => {
             el: document.createElement('div'),
         });
 
-        expect(vm._el.outerHTML).to.equal('<div>\n        <span>Aloha</span>\n    </div>')
+        expect(vm.$el.outerHTML).to.equal('<div>\n        <span>Aloha</span>\n    </div>')
     });
 
     it('NodeWithMultipleLinesOfText', () => {
@@ -61,7 +61,7 @@ describe('compilation', () => {
 
         const vm = new Component({ el });
 
-        expect(vm._el.outerHTML).to.equal('<div>\r\n        Hello world\r\n        foo bar baz\r\n    </div>');
+        expect(vm.$el.outerHTML).to.equal('<div>\r\n        Hello world\r\n        foo bar baz\r\n    </div>');
     });
 
     it('NodeWithQuotedText', () => {
@@ -72,7 +72,7 @@ describe('compilation', () => {
 
         const vm = new Component ({ el });
         
-        expect(vm._el.outerHTML).to.equal('<div>Foo\'s \"bar\"</div>');
+        expect(vm.$el.outerHTML).to.equal('<div>Foo\'s \"bar\"</div>');
     });
 
     it('NodeWithText', () => {
@@ -83,6 +83,6 @@ describe('compilation', () => {
 
         const vm = new Component({ el });
 
-        expect(vm._el.outerHTML).to.equal('<div>Hello world</div>');
+        expect(vm.$el.outerHTML).to.equal('<div>Hello world</div>');
     });
 });
