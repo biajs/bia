@@ -45,6 +45,49 @@ function addHydrationCall(node) {
 }
 
 /**
+ * Attach classes to a node.
+ * 
+ * @param  {Object} node
+ * @return {JsCode}
+ */
+function attachClasses(node) {
+    // start with all of our static classes that we know will be attached
+    const classes = node.staticClasses.slice(0);
+
+    // @todo: handle dynamic classes
+
+    return new JsCode({
+        content: [
+            `div.className = '${escapeJavascriptString(classes.join(' '))}';`,
+        ]
+    });
+}
+
+/**
+ * Attach styles to a node.
+ * 
+ * @param  {Object} node
+ * @return {JsCode}
+ */
+function attachStyles(node) {
+    // start with all of our static styles that we know will be attached
+    const styles = Object.keys(node.staticStyles).reduce((content, styleProperty) => {
+        const property = escapeJavascriptString(styleProperty);
+        const value = escapeJavascriptString(node.staticStyles[styleProperty]);
+
+        content.push(`div.style.setProperty('${property}', '${value}');`);
+
+        return content;
+    }, []);
+
+    // @todo: handle dynamic styles
+
+    return new JsCode({
+        content: styles,
+    });
+}
+
+/**
  * Create a dom element.
  */
 function createElement(node, varName) {
@@ -126,49 +169,6 @@ function getHydrateFn(node) {
 }
 
 /**
- * Attach classes to a node.
- * 
- * @param  {Object} node
- * @return {JsCode}
- */
-function attachClasses(node) {
-    // start with all of our static classes that we know will be attached
-    const classes = node.staticClasses.slice(0);
-
-    // @todo: handle dynamic classes
-
-    return new JsCode({
-        content: [
-            `div.className = '${escapeJavascriptString(classes.join(' '))}';`,
-        ]
-    });
-}
-
-/**
- * Attach styles to a node.
- * 
- * @param  {Object} node
- * @return {JsCode}
- */
-function attachStyles(node) {
-    // start with all of our static styles that we know will be attached
-    const styles = Object.keys(node.staticStyles).reduce((content, styleProperty) => {
-        const property = escapeJavascriptString(styleProperty);
-        const value = escapeJavascriptString(node.staticStyles[styleProperty]);
-
-        content.push(`div.style.setProperty('${property}', '${value}');`);
-
-        return content;
-    }, []);
-
-    // @todo: handle dynamic styles
-
-    return new JsCode({
-        content: styles,
-    });
-}
-
-/**
  * Function to insert a fragment into the dom.
  * 
  * @param  {Object} node
@@ -215,7 +215,11 @@ function setInnerHTML(node, varName) {
  */
 function setTextContent(node, varName: string) {
     if (node.children.length === 1 && node.children[0].type === 'TEXT') {
-        const { textContent } = node.children[0];
+        const textNode = node.children[0];
+
+        const textContent = textNode.textInterpolations.reduce((text, interpolation) => {
+            return text.replace(interpolation.text, new Function(`return (${interpolation.expression})`)());
+        }, textNode.textContent);
 
         return new JsCode({
             content: [

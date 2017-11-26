@@ -85,4 +85,16 @@ describe('compilation', () => {
 
         expect(vm.$el.outerHTML).to.equal('<div>Hello world</div>');
     });
+
+    it('NodeWithTextExpression', () => {
+        const Component = createComponent('NodeWithTextExpression', {
+            filename: 'NodeWithTextExpression.bia',
+            name: 'NodeWithTextExpression',
+        });
+
+        const vm = new Component({ el });
+        
+        // <div>{{ 1 + 2 }}</div>
+        expect(vm.$el.outerHTML).to.equal('<div>3</div>');
+    });
 });
