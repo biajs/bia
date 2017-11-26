@@ -1,4 +1,4 @@
-import { create } from '../../../src/index';
+import { create, compile } from '../../../src/index';
 import { expect } from 'chai';
 const fs = require('fs');
 const path = require('path');
@@ -16,6 +16,13 @@ describe('compilation', () => {
         const source = fs.readFileSync(path.resolve(__dirname, 'fixtures', name + '.bia'), 'utf8');
 
         return create(source, options);
+    }
+
+    // helper function to make debugging a bit easier
+    let compileComponent = (name, options) => {
+        const source = fs.readFileSync(path.resolve(__dirname, 'fixtures', name + '.bia'), 'utf8');
+
+        return compile(source, options);
     }
 
     it('EmptyNode', () => {
