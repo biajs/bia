@@ -140,7 +140,6 @@ function defineFragmentVariables(template) {
 function fragmentFunctionsObject(node: ParsedNode): JsObject {
     // this will eventually hold create, destroy, mount, and unmount
     return new JsObject({
-        id: 'OBJECTTTTTTT',
         properties: {
             c: getCreateFn(node),
             h: getHydrateFn(node),
