@@ -11,15 +11,13 @@ function noop() {}
 
 function createFragment14(vm, state) {
     var div;
-    
+
     return {
         c: function c() {
             div = createElement('div');
             vm.$el = div;
             div.textContent = '4';
-            
-            
-            
+
             return div;
         },
         h: noop,
@@ -31,7 +29,7 @@ function createFragment14(vm, state) {
 
 function NodeWithTextExpression(options) {
     this.$fragment = createFragment14(this);
-    
+
     if (options.el) {
         this.$fragment.c();
         this.$fragment.m(options.el);

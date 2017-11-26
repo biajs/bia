@@ -1,6 +1,7 @@
 import { BaseCode, BaseCodeOptions, DescendentCode } from './BaseCode';
 import { getDuplicateMembers } from '../../utils/array';
 
+
 export interface JsCodeOptions extends BaseCodeOptions {
     content?: Array<any>;
     root?: boolean;

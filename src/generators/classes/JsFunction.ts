@@ -1,4 +1,5 @@
 import { JsCode, JsCodeOptions } from './JsCode';
+import { collapseNewlines } from '../../utils/string';
 import { indent } from '../../utils/string';
 
 interface JsFunctionOptions extends JsCodeOptions {

@@ -15,20 +15,19 @@ function noop() {}
 
 function createFragment11(vm, state) {
     var div;
-    
+
     return {
         c: function c() {
             div = createElement('div');
             vm.$el = div;
-            
-            
+
             this.h();
-            
+
             return div;
         },
         h: function () {
             setClass(div, 'foo bar')
-            
+
         },
         m: function m(target) {
             replaceNode(target, div);
@@ -38,7 +37,7 @@ function createFragment11(vm, state) {
 
 function NodeWithStaticClasses(options) {
     this.$fragment = createFragment11(this);
-    
+
     if (options.el) {
         this.$fragment.c();
         this.$fragment.m(options.el);

@@ -19,15 +19,14 @@ function noop() {}
 
 function createFragment12(vm, state) {
     var div;
-    
+
     return {
         c: function c() {
             div = createElement('div');
             vm.$el = div;
-            
-            
+
             this.h();
-            
+
             return div;
         },
         h: function () {
@@ -43,7 +42,7 @@ function createFragment12(vm, state) {
 
 function NodeWithStaticStyles(options) {
     this.$fragment = createFragment12(this);
-    
+
     if (options.el) {
         this.$fragment.c();
         this.$fragment.m(options.el);

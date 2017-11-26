@@ -4,7 +4,13 @@ const glob = require('glob');
 const path = require('path');
 import { compile } from '../src';
 
-console.log ('Compiling test fixtures...');
+// provide some feedback that we're getting started
+console.log (chalk.cyan('Compiling test fixtures...'));
+console.log ();
+
+// track our successful / failed compilations
+let success = 0;
+let failed = 0;
 
 // compile all fixtures in the test directory
 glob.sync(path.resolve(__dirname, '../test/**/*.bia')).forEach(file => {
@@ -23,9 +29,14 @@ glob.sync(path.resolve(__dirname, '../test/**/*.bia')).forEach(file => {
 
         fs.writeFileSync(dirname + '/' + name + '.compiled.js', code, 'utf8');
         console.log (chalk.green('Success: '), dirname + '/' + name + '.compiled.js');
+        success++;
     } catch(err) {
         console.log (chalk.red('Error:   '), file);
-        console.log ('          ' + chalk.red(err));
+        console.log ('          ' + chalk.gray(err));
+        failed++;
     }
     console.log ();
 });
+
+// give the success / failed metrics
+console.log (chalk.gray(`Successfully compiled ${chalk.green(success)} fixtures, ${chalk.red(failed)} threw errors.`));

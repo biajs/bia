@@ -1,7 +1,8 @@
-import { JsCode } from '../classes/index';
 import defineExport from './define_export';
 import defineGlobalFunctions from './global_functions';
 import defineRootConstructor from './root_constructor';
+import { JsCode } from '../classes/index';
+import { collapseNewlines } from '../../utils/string';
 
 // @todo: read this value from package.json
 const version = '0.0.0';
@@ -18,5 +19,5 @@ export default function(parsedSource, options) {
         root: true,
     });
 
-    return `// bia v${version}\n${code}`;
+    return `// bia v${version}\n${collapseNewlines(String(code))}`;
 }

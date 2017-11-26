@@ -11,15 +11,14 @@ function noop() {}
 
 function createFragment2(vm, state) {
     var div;
-    
+
     return {
         c: function c() {
             div = createElement('div');
             vm.$el = div;
-            
+
             div.innerHTML = '\r\n        <span>Aloha</span>\r\n    ';
-            
-            
+
             return div;
         },
         h: noop,
@@ -31,7 +30,7 @@ function createFragment2(vm, state) {
 
 function NodeWithChild(options) {
     this.$fragment = createFragment2(this);
-    
+
     if (options.el) {
         this.$fragment.c();
         this.$fragment.m(options.el);

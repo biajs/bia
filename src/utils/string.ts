@@ -1,5 +1,9 @@
 import { indentationString } from './constants';
 
+export function collapseNewlines(source: string): string {
+    return source.replace(/\n\s*\n+/g, "\n\n");
+}
+
 /**
  * Escape a string for use as javascript source.
  * 

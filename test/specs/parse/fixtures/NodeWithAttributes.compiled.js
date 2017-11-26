@@ -15,20 +15,19 @@ function noop() {}
 
 function createFragment9(vm, state) {
     var div;
-    
+
     return {
         c: function c() {
             div = createElement('div');
             vm.$el = div;
-            
-            
+
             this.h();
-            
+
             return div;
         },
         h: function () {
             setClass(div, '')
-            
+
         },
         m: function m(target) {
             replaceNode(target, div);
@@ -38,7 +37,7 @@ function createFragment9(vm, state) {
 
 function NodeWithAttributes(options) {
     this.$fragment = createFragment9(this);
-    
+
     if (options.el) {
         this.$fragment.c();
         this.$fragment.m(options.el);
