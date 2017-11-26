@@ -1,5 +1,4 @@
 import { parse } from '../../../src/parse/parse';
-import { validateCompileOptions } from '../../../src/parse/validate';
 const { expect } = require('chai');
 const path = require('path');
 const fs = require('fs');
