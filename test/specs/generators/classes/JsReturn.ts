@@ -1,4 +1,4 @@
-import { JsCode, JsReturn } from '../../../../src/generators/classes';
+import { JsCode, JsObject, JsReturn } from '../../../../src/generators/classes';
 import { expect } from 'chai';
 
 describe('JsReturn', () => {
@@ -10,14 +10,22 @@ describe('JsReturn', () => {
     });
 
     it('tracks the return value as descendent code', () => {
-        const value = new JsCode({ content: [`'foo'`] });
-        const code = new JsReturn({ value });
+        const nestedObj = new JsObject({ 
+            id: 'nestedDescendent',
+        });
 
-        expect(code.getDescendents()).to.deep.equal([
-            {
-                code: value,
-                parent: code,
-            },
+        const obj = new JsObject({ 
+            id: 'directDescendent', 
+            properties: { nestedObj },
+        });
+
+        const code = new JsReturn({ 
+            value: obj,
+        });
+
+        expect(code.getDescendents().map(d => d.code.id)).to.deep.equal([
+            'nestedDescendent',
+            'directDescendent',
         ]);
     });
 });

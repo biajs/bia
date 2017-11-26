@@ -28,7 +28,10 @@ export class JsReturn extends BaseCode {
      * @return {Array<DescendentCode>}
      */
     public getDescendents(): Array<DescendentCode> {
-        return [{ code: this.value, parent: this }];
+        return this.value.getDescendents().concat({ 
+            code: this.value, 
+            parent: this,
+        });
     }
 
     /**
