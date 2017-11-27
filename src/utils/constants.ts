@@ -1,3 +1,6 @@
+// string that will identify attributes as directives
+export const directivePrefix = 'b-';
+
 // string to use for indentation
 export const indentationString = '    ';
 

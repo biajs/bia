@@ -3,6 +3,15 @@ export interface CompileOptions {
     name: 'string';
 };
 
+// directive object parsed from dom element
+// b-whatever.foo.bar:baz="yar"
+export interface NodeDirective {
+    arg: string | null;         // 'baz'
+    expression: string;         // 'yar'
+    modifiers: Array<string>;   // ['foo', 'bar']
+    name: string;               // 'whatever'
+}
+
 export enum NodeType {
     ELEMENT = 'ELEMENT',
     TEXT = 'TEXT',
@@ -17,6 +26,7 @@ export interface ParsedNode {
     attributes: any;
     children: Array<any>;
     dataAttributes: Object;
+    directives: Array<NodeDirective>;
     innerHTML: string;
     staticClasses: Array<string>;
     staticStyles: Object;

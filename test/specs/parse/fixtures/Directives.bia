@@ -1,0 +1,17 @@
+<template>
+    <div>
+        <span>0</span>
+        <span b-name>1</span>
+        <span b-name.one>2</span>
+        <span b-name.one.two>3</span>
+        <span b-name:arg>4</span>
+        <span b-name.one:arg>5</span>
+        <span b-name.one.two:arg>6</span>
+        <span b-name="expression">7</span>
+        <span b-name.one="expression">8</span>
+        <span b-name.one.two="expression">9</span>
+        <span b-name:arg="expression">10</span>
+        <span b-name.one:arg="expression">11</span>
+        <span b-name.one.two:arg="expression">12</span>
+    </div>
+</template>

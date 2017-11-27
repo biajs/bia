@@ -1,6 +1,13 @@
 const { JSDOM } = require('jsdom');
-import { nodeTypes } from '../utils/constants';
-import { NodeType, ParsedNode, CompileOptions } from '../interfaces';
+
+import { 
+    CompileOptions,
+    NodeDirective,
+    NodeType, 
+    ParsedNode, 
+} from '../interfaces';
+
+import { directivePrefix, nodeTypes } from '../utils/constants';
 import { validateTemplate } from './validate';
 
 interface ElementAttribute {
@@ -31,6 +38,7 @@ function createDomTree(el: HTMLElement): ParsedNode {
         attributes: getAttributes(el),
         children: Array.from(el.childNodes).map(createDomTree),
         dataAttributes: getDataAttributes(el),
+        directives: getDirectives(el, nodeType),
         innerHTML: getInnerHTML(el),
         staticClasses: getStaticClasses(el),
         staticStyles: getStaticStyles(el),
@@ -54,6 +62,36 @@ function getAttributes(el: HTMLElement): Object {
 // <div data-foo="bar" data-one-two="three" /> -> { foo: 'bar', oneTwo: 'three' }
 function getDataAttributes(el: HTMLElement): Object {
     return {...el.dataset};
+}
+
+// parse any directives on the dom element
+// <div b-foo /> -> [{ /* foo directive */ }]
+function getDirectives(el: HTMLElement, nodeType: NodeType): Array<NodeDirective> {
+    // do nothing for non-element nodes
+    if (nodeType !== 'ELEMENT') { 
+        return [];
+    }
+
+    // otherwise look for any attributes starting with our prefix and parse them
+    return Array.from(el.attributes || [])
+        .filter((attr: ElementAttribute) => attr.name.startsWith(directivePrefix))
+        .reduce((directives, attr: ElementAttribute) => {
+            // parse name
+            const nameMatch = new RegExp(`^${directivePrefix}([a-zA-Z\-]+)`, 'g').exec(attr.name);
+            const name = nameMatch[1];
+
+            // parse modifiers
+            const semiPos = attr.name.indexOf(':');
+            const modifiers = attr.name.slice(nameMatch[0].length, semiPos === -1 ? undefined : semiPos)
+                .split('.')
+                .filter(modifier => modifier.length);
+
+            // parse arg
+            const argMatch = new RegExp(`^${directivePrefix}[a-zA-Z-]+(?:\.[a-zA-Z\.-]+)?\:([a-zA-Z]+)`).exec(attr.name);
+            const arg = argMatch ? argMatch[1] : null;
+
+            return directives.concat({ name, modifiers, arg, expression: attr.value });
+        }, []);
 }
 
 // get an element's inner html
