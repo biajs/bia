@@ -9,7 +9,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function createFragment4(vm, state) {
+function fragment4(vm, state) {
     var div;
 
     return {
@@ -32,7 +32,7 @@ function createFragment4(vm, state) {
 }
 
 function NodeWithDataAttributes(options) {
-    this.$fragment = createFragment4(this);
+    this.$fragment = fragment4(this);
 
     if (options.el) {
         this.$fragment.c();

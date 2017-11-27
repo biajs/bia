@@ -9,7 +9,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function createFragment10(vm, state) {
+function fragment10(vm, state) {
     var div;
 
     return {
@@ -29,7 +29,7 @@ function createFragment10(vm, state) {
 }
 
 function Directives(options) {
-    this.$fragment = createFragment10(this);
+    this.$fragment = fragment10(this);
 
     if (options.el) {
         this.$fragment.c();

@@ -17,7 +17,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function createFragment2(vm, state) {
+function fragment2(vm, state) {
     var div;
 
     return {
@@ -41,7 +41,7 @@ function createFragment2(vm, state) {
 }
 
 function NodeWithAttributes(options) {
-    this.$fragment = createFragment2(this);
+    this.$fragment = fragment2(this);
 
     if (options.el) {
         this.$fragment.c();

@@ -17,7 +17,7 @@ import {
     setStyle,
 } from './global_functions';
 
-import { escapeJavascriptString } from '../../utils/string';
+import { escapeJsString } from '../../utils/string';
 
 /**
  * Build up a functions to control a dom fragment.
@@ -26,7 +26,7 @@ import { escapeJavascriptString } from '../../utils/string';
  * @param  {ParsedNode}     node
  * @return {JsFunction}
  */
-export default function(fnName: string, node: ParsedNode): JsFunction {
+export function createFragment(fnName: string, node: ParsedNode): JsFunction {
     return new JsFunction({
         signature: ['vm', 'state'],
         name: fnName,
@@ -36,7 +36,9 @@ export default function(fnName: string, node: ParsedNode): JsFunction {
             null,
 
             // return an object with methods to control our dom fragment
-            new JsReturn({ value: fragmentFunctionsObject(node) }),
+            new JsReturn({ 
+                value: fragmentFunctionsObject(node)
+            }),
         ],
     });
 }
@@ -71,7 +73,7 @@ function attachClasses(node: ParsedNode) {
     if (node.staticClasses.length) {
         const classes = node.staticClasses.slice(0);
 
-        content.push(`setClass(div, '${escapeJavascriptString(classes.join(' '))}')`);
+        content.push(`setClass(div, '${escapeJsString(classes.join(' '))}')`);
         globalFunctions.push(setClass());
     }
 
@@ -94,7 +96,7 @@ function attachDataAttributes(node: ParsedNode) {
 
     if (attrNames.length > 0) {
         const content = attrNames.map(name => {
-            return `div.dataset.${name} = '${escapeJavascriptString(node.dataAttributes[name])}'`
+            return `div.dataset.${name} = '${escapeJsString(node.dataAttributes[name])}'`
         });
 
         return new JsCode({ content });
@@ -110,8 +112,8 @@ function attachDataAttributes(node: ParsedNode) {
 function attachStyles(node: ParsedNode) {
     // start with all of our static styles that we know will be attached
     const styles = Object.keys(node.staticStyles).reduce((content, styleProperty) => {
-        const property = escapeJavascriptString(styleProperty);
-        const value = escapeJavascriptString(node.staticStyles[styleProperty]);
+        const property = escapeJsString(styleProperty);
+        const value = escapeJsString(node.staticStyles[styleProperty]);
 
         content.push(`setStyle(div, '${property}', '${value}');`);
 
@@ -287,7 +289,7 @@ function setInnerHTML(node: ParsedNode, varName: string): JsCode|void {
 
         return new JsCode({
             content: [
-                `${varName}.innerHTML = '${escapeJavascriptString(innerHTML)}';`,
+                `${varName}.innerHTML = '${escapeJsString(innerHTML)}';`,
             ],
         });
     }
@@ -308,7 +310,7 @@ function setTextContent(node: ParsedNode, varName: string): JsCode|void {
 
         return new JsCode({
             content: [
-                `${varName}.textContent = '${escapeJavascriptString(textContent)}';`,
+                `${varName}.textContent = '${escapeJsString(textContent)}';`,
             ],
         });
     }

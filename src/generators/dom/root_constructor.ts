@@ -4,11 +4,11 @@ import {
     JsIf,
 } from '../classes/index';
 
-import createFragment from './create_fragment';
+import { createFragment } from './create_fragment';
 import uniqueId from '../../utils/unique_id';
 
 export default function(parsedSource, options) {
-    const createFragmentFn = uniqueId('createFragment');
+    const createFragmentFn = uniqueId('fragment');
 
     return new JsCode({
         content: [

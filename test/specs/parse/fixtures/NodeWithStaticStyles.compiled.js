@@ -13,7 +13,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function createFragment17(vm, state) {
+function fragment17(vm, state) {
     var div;
 
     return {
@@ -36,7 +36,7 @@ function createFragment17(vm, state) {
 }
 
 function NodeWithStaticStyles(options) {
-    this.$fragment = createFragment17(this);
+    this.$fragment = fragment17(this);
 
     if (options.el) {
         this.$fragment.c();
