@@ -17,7 +17,9 @@ import {
     setStyle,
 } from './global_functions';
 
-import { escapeJsString } from '../../utils/string';
+import { 
+    escapeJsString,
+} from '../../utils/string';
 
 /**
  * Build up a functions to control a dom fragment.
@@ -157,7 +159,9 @@ function createElement(node: ParsedNode, varName: string) {
  */
 function defineFragmentVariables(node: ParsedNode) {
     return new JsVariable({
-        define: [node.tagName.toLowerCase()],
+        define: [
+            node.tagName.toLowerCase(),
+        ],
     });
 }
 

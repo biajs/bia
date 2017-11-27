@@ -198,4 +198,16 @@ describe('parsing', () => {
         expect(node.children.length).to.equal(1);
         expect(node.children[0].tagName).to.equal('SPAN');
     });
+
+    it('DynamicChildren', () => {
+        const node = parseTemplate('DynamicChildren', {});
+
+        expect(node.hasDynamicChildren).to.be.true;
+    });
+
+    it('StaticChildren', () => {
+        const node = parseTemplate('StaticChildren', {});
+        
+        expect(node.hasDynamicChildren).to.be.false;
+    });
 });

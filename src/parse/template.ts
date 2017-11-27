@@ -41,6 +41,7 @@ function createDomTree(el: HTMLElement): ParsedNode {
             .filter(discardIndentation),
         dataAttributes: getDataAttributes(el),
         directives: getDirectives(el, nodeType),
+        hasDynamicChildren: checkForDynamicChildren(el, nodeType),
         innerHTML: getInnerHTML(el),
         staticClasses: getStaticClasses(el),
         staticStyles: getStaticStyles(el),
@@ -49,6 +50,22 @@ function createDomTree(el: HTMLElement): ParsedNode {
         textInterpolations: getInterpolations(el, nodeType),
         type: nodeType,
     };
+}
+
+// determine if a node has purely static content, or if
+// it is the parent element to any dynamic elements.
+function checkForDynamicChildren(node: HTMLElement, nodeType: NodeType): boolean {
+    // console.log(node);
+
+    if (nodeType === 'ELEMENT') {
+        for (let i = 0, end = node.children.length; i < end; i++) {
+            if (isDynamicElement(node.children[i])) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 // discard text nodes that are solely whitespace
@@ -165,4 +182,16 @@ function getTagName(el: HTMLElement): string | null {
 // get the text content of a node, or null if it's not a text node
 function getTextContent(el: HTMLElement, nodeType): string | null {
     return nodeType === 'TEXT' ? el.textContent : null;
+}
+
+// determine if an element has a directive
+function hasDirective(el: Element): boolean {
+    return !!Array.from(el.attributes || [])
+        .find((attr: ElementAttribute) => attr.name.startsWith(directivePrefix));
+}
+
+// check if an element is dynamic
+function isDynamicElement(el: Element): boolean {
+    // this will eventually have to check for more forms of dynamic elements
+    return hasDirective(el);
 }

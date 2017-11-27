@@ -27,6 +27,7 @@ export interface ParsedNode {
     children: Array<any>;
     dataAttributes: Object;
     directives: Array<NodeDirective>;
+    hasDynamicChildren: boolean;
     innerHTML: string;
     staticClasses: Array<string>;
     staticStyles: Object;
