@@ -337,9 +337,14 @@ function setStaticContent(node: ParsedNode, varName: string): JsCode {
 
     // or if there are child elements, set inner html
     else {
-        const innerHTML = interpolateText(node.innerHTML, node.textInterpolations);
-        
-        content.push(`${varName}.innerHTML = '${escapeJsString(innerHTML)}';`);
+        const hasChildElements = node.children.length > 0
+            && node.children.find(child => child.type === 'ELEMENT');
+
+        if (hasChildElements) {
+            const innerHTML = interpolateText(node.innerHTML, node.textInterpolations);
+            
+            content.push(`${varName}.innerHTML = '${escapeJsString(innerHTML)}';`);
+        }
     }
 
     return new JsCode({
