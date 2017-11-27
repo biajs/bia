@@ -1,8 +1,4 @@
 // bia v0.0.0
-function setClass(el, className) {
-    el.className = className;
-}
-
 function createElement(tag) {
     return document.createElement(tag);
 }
@@ -13,7 +9,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function createFragment16(vm, state) {
+function createFragment11(vm, state) {
     var div;
 
     return {
@@ -21,21 +17,19 @@ function createFragment16(vm, state) {
             div = createElement('div');
             vm.$el = div;
 
-            this.h();
+            div.innerHTML = '\r\n        <span>hello</span>\r\n    ';
 
             return div;
         },
-        h: function h() {
-            setClass(div, 'foo bar')
-        },
+        h: noop,
         m: function m(target) {
             replaceNode(target, div);
         }
     };
 }
 
-function NodeWithStaticClasses(options) {
-    this.$fragment = createFragment16(this);
+function DiscardIndentation(options) {
+    this.$fragment = createFragment11(this);
 
     if (options.el) {
         this.$fragment.c();
@@ -43,4 +37,4 @@ function NodeWithStaticClasses(options) {
     }
 }
 
-export default NodeWithStaticClasses;
+export default DiscardIndentation;
