@@ -15,11 +15,15 @@ describe('compilation', () => {
 
     // helper function to compile source code to a component
     let createComponent = (name, options) => {
-        const source = fs.readFileSync(path.resolve(__dirname, 'fixtures', name + '.bia'), 'utf8');
+        options.format = 'fn';
 
-        return {
-            code: compile(source, options).code,
-            Component: create(source, options),
+        const source = fs.readFileSync(path.resolve(__dirname, 'fixtures', name + '.bia'), 'utf8');
+        
+        const { code } = compile(source, options);
+        
+        return { 
+            code, 
+            Component: new Function(code)(),
         };
     }
 
@@ -128,12 +132,12 @@ describe('compilation', () => {
         expect(vm.$el.outerHTML).to.equal('<div data-foo="bar" data-one-two="three"></div>');
     });
 
-    it.skip('NodeWithDynamicChildren', () => {
-        const { Component } = createComponent('NodeWithDynamicChildren', {
+    it.only('NodeWithDynamicChildren', () => {
+        const { code } = createComponent('NodeWithDynamicChildren', {
             filename: 'NodeWithDynamicChildren.bia',
             name: 'NodeWithDynamicChildren',
         });
 
-        console.log (Component.code);
+        console.log (code);
     });
 });
