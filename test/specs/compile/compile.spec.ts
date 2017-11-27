@@ -17,18 +17,14 @@ describe('compilation', () => {
     let createComponent = (name, options) => {
         const source = fs.readFileSync(path.resolve(__dirname, 'fixtures', name + '.bia'), 'utf8');
 
-        return create(source, options);
-    }
-
-    // helper function to make debugging a bit easier
-    let compileComponent = (name, options) => {
-        const source = fs.readFileSync(path.resolve(__dirname, 'fixtures', name + '.bia'), 'utf8');
-
-        return compile(source, options);
+        return {
+            code: compile(source, options).code,
+            Component: create(source, options),
+        };
     }
 
     it('EmptyNode', () => {
-        const Component = createComponent('EmptyNode', {
+        const { Component } = createComponent('EmptyNode', {
             filename: 'EmptyNode.bia',
             name: 'EmptyNode',
         });
@@ -39,7 +35,7 @@ describe('compilation', () => {
     });
 
     it('NodeWithAttributes', () => {
-        const Component = createComponent('NodeWithAttributes', {
+        const { Component } = createComponent('NodeWithAttributes', {
             filename: 'NodeWithAttributes.bia',
             name: 'NodeWithAttributes',
         });
@@ -50,7 +46,7 @@ describe('compilation', () => {
     });
 
     it('NodeWithChild', () => {
-        const Component = createComponent('NodeWithChild', {
+        const { Component } = createComponent('NodeWithChild', {
             filename: 'NodeWithChild.bia',
             name: 'NodeWithChild',
         });
@@ -63,7 +59,7 @@ describe('compilation', () => {
     });
 
     it('NodeWithMultipleLinesOfText', () => {
-        const Component = createComponent('NodeWithMultipleLinesOfText', {
+        const { Component } = createComponent('NodeWithMultipleLinesOfText', {
             filename: 'NodeWithMultipleLinesOfText.bia',
             name: 'NodeWithMultipleLinesOfText',
         });
@@ -74,7 +70,7 @@ describe('compilation', () => {
     });
 
     it('NodeWithQuotedText', () => {
-        const Component = createComponent('NodeWithQuotedText', {
+        const { Component } = createComponent('NodeWithQuotedText', {
             filename: 'NodeWithQuotedText.bia',
             name: 'NodeWithQuotedText',
         });
@@ -85,7 +81,7 @@ describe('compilation', () => {
     });
 
     it('NodeWithText', () => {
-        const Component = createComponent('NodeWithText', {
+        const { Component } = createComponent('NodeWithText', {
             filename: 'NodeWithText.bia',
             name: 'NodeWithText',
         });
@@ -96,7 +92,7 @@ describe('compilation', () => {
     });
 
     it('NodeWithTextExpression', () => {
-        const Component = createComponent('NodeWithTextExpression', {
+        const { Component } = createComponent('NodeWithTextExpression', {
             filename: 'NodeWithTextExpression.bia',
             name: 'NodeWithTextExpression',
         });
@@ -108,7 +104,7 @@ describe('compilation', () => {
     });
 
     it('NodeWithTextExpressionInChild', () => {
-        const Component = createComponent('NodeWithTextExpressionInChild', {
+        const { Component } = createComponent('NodeWithTextExpressionInChild', {
             filename: 'NodeWithTextExpressionInChild.bia',
             name: 'NodeWithTextExpressionInChild',
         });
@@ -122,7 +118,7 @@ describe('compilation', () => {
     });
 
     it('NodeWithDataAttributes', () => {
-        const Component = createComponent('NodeWithDataAttributes', {
+        const { Component } = createComponent('NodeWithDataAttributes', {
             filename: 'NodeWithDataAttributes.bia',
             name: 'NodeWithDataAttributes',
         });
@@ -133,7 +129,7 @@ describe('compilation', () => {
     });
 
     it.skip('NodeWithDynamicChildren', () => {
-        const Component = compileComponent('NodeWithDynamicChildren', {
+        const { Component } = createComponent('NodeWithDynamicChildren', {
             filename: 'NodeWithDynamicChildren.bia',
             name: 'NodeWithDynamicChildren',
         });

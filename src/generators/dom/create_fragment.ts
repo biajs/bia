@@ -240,17 +240,18 @@ function getCreateFn(node: ParsedNode): JsFunction {
         createElement(node, varName),
     ];
 
-    // if the node contains purely static content we can
-    // save ourselves some hassle by just setting it.
+    // if the node contains dynamic children, we'll create
+    // dom elements for each one before hydrating them.
     if (node.hasDynamicChildren) {
-        content.push(setInnerHTML(node, varName));
-        content.push(setTextContent(node, varName));
+        content.push(createChildElements(node));
     }
 
     // otherwise if our node contains purely static content,
-    // we can save ourselves some hassly by just setting it
+    // we can save ourselves some hassl by just setting it.
     else {
-        content.push(createChildElements(node));
+        // @todo: refactor these to a single method
+        content.push(setInnerHTML(node, varName));
+        content.push(setTextContent(node, varName));
     }
 
     // hydrate our fragment if needed
