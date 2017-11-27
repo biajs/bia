@@ -22,19 +22,21 @@ import { escapeJavascriptString } from '../../utils/string';
 /**
  * Build up a functions to control a dom fragment.
  * 
- * @param {Object} template
+ * @param  {string}         fnName
+ * @param  {ParsedNode}     node
+ * @return {JsFunction}
  */
-export default function(name: string, template) {
+export default function(fnName: string, node: ParsedNode): JsFunction {
     return new JsFunction({
         signature: ['vm', 'state'],
-        name: name,
+        name: fnName,
         content: [
             // create containers for each of our dom elements
-            defineFragmentVariables(template),
+            defineFragmentVariables(node),
             null,
 
             // return an object with methods to control our dom fragment
-            new JsReturn({ value: fragmentFunctionsObject(template) }),
+            new JsReturn({ value: fragmentFunctionsObject(node) }),
         ],
     });
 }
@@ -148,12 +150,12 @@ function createElement(node: ParsedNode, varName: string) {
 /**
  * Define the variables neccessary to build a dom fragment.
  * 
- * @param  {Object} template
- * @return {Object}
+ * @param  {ParsedNode}     node
+ * @return {JsVariable}
  */
-function defineFragmentVariables(template) {
+function defineFragmentVariables(node: ParsedNode) {
     return new JsVariable({
-        define: [template.tagName.toLowerCase()],
+        define: [node.tagName.toLowerCase()],
     });
 }
 
