@@ -15,9 +15,8 @@ function fragment0(vm, state) {
     return {
         c: function c() {
             div = createElement('div');
-            vm.$el = div;
 
-            return div;
+            vm.$el = div;
         },
         h: noop,
         m: function m(target) {

@@ -23,11 +23,9 @@ function fragment2(vm, state) {
     return {
         c: function c() {
             div = createElement('div');
-            vm.$el = div;
 
             this.h();
-
-            return div;
+            vm.$el = div;
         },
         h: function h() {
             setClass(div, 'foo')

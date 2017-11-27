@@ -14,12 +14,9 @@ function fragment1(vm, state) {
 
     return {
         c: function c() {
-            div = createElement('div');
+            div = createElement('main');
+            div_1 = createElement('div');
             vm.$el = div;
-
-            div.innerHTML = '\r\n        <div b-if=\"foo\">bar</div>\r\n    ';
-
-            return div;
         },
         h: noop,
         m: function m(target) {

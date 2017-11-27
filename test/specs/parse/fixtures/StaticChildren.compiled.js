@@ -9,13 +9,13 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment12(vm, state) {
+function fragment22(vm, state) {
     var div;
 
     return {
         c: function c() {
             div = createElement('div');
-            div.innerHTML = '\r\n        <span>hello</span>\r\n    ';
+            div.innerHTML = '\r\n        <div>\r\n            <div>foo</div>\r\n        </div>\r\n    ';
 
             vm.$el = div;
         },
@@ -26,8 +26,8 @@ function fragment12(vm, state) {
     };
 }
 
-function DiscardIndentation(options) {
-    this.$fragment = fragment12(this);
+function StaticChildren(options) {
+    this.$fragment = fragment22(this);
 
     if (options.el) {
         this.$fragment.c();
@@ -35,4 +35,4 @@ function DiscardIndentation(options) {
     }
 }
 
-export default DiscardIndentation;
+export default StaticChildren;

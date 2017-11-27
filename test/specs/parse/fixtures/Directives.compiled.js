@@ -9,17 +9,27 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment10(vm, state) {
+function fragment11(vm, state) {
     var div;
 
     return {
         c: function c() {
             div = createElement('div');
+            span_1 = createElement('span');
+            span_2 = createElement('span');
+            span_3 = createElement('span');
+            span_4 = createElement('span');
+            span_5 = createElement('span');
+            span_6 = createElement('span');
+            span_7 = createElement('span');
+            span_8 = createElement('span');
+            span_9 = createElement('span');
+            span_10 = createElement('span');
+            span_11 = createElement('span');
+            span_12 = createElement('span');
+            span_13 = createElement('span');
+            span_14 = createElement('span');
             vm.$el = div;
-
-            div.innerHTML = '\r\n        <span>0</span>\r\n        <span b-name=\"\">1</span>\r\n        <span b-name.one=\"\">2</span>\r\n        <span b-name.one.two=\"\">3</span>\r\n        <span b-name:arg=\"\">4</span>\r\n        <span b-name.one:arg=\"\">5</span>\r\n        <span b-name.one.two:arg=\"\">6</span>\r\n        <span b-name=\"expression\">7</span>\r\n        <span b-name.one=\"expression\">8</span>\r\n        <span b-name.one.two=\"expression\">9</span>\r\n        <span b-name:arg=\"expression\">10</span>\r\n        <span b-name.one:arg=\"expression\">11</span>\r\n        <span b-name.one.two:arg=\"expression\">12</span>\r\n        <span b-foo=\"\" b-bar=\"\">13</span>\r\n    ';
-
-            return div;
         },
         h: noop,
         m: function m(target) {
@@ -29,7 +39,7 @@ function fragment10(vm, state) {
 }
 
 function Directives(options) {
-    this.$fragment = fragment10(this);
+    this.$fragment = fragment11(this);
 
     if (options.el) {
         this.$fragment.c();

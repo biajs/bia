@@ -13,17 +13,15 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment17(vm, state) {
+function fragment19(vm, state) {
     var div;
 
     return {
         c: function c() {
             div = createElement('div');
-            vm.$el = div;
 
             this.h();
-
-            return div;
+            vm.$el = div;
         },
         h: function h() {
             setStyle(div, 'color', 'red');
@@ -36,7 +34,7 @@ function fragment17(vm, state) {
 }
 
 function NodeWithStaticStyles(options) {
-    this.$fragment = fragment17(this);
+    this.$fragment = fragment19(this);
 
     if (options.el) {
         this.$fragment.c();
