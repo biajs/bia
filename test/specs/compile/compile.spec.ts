@@ -131,4 +131,13 @@ describe('compilation', () => {
     
         expect(vm.$el.outerHTML).to.equal('<div data-foo="bar" data-one-two="three"></div>');
     });
+
+    it.skip('NodeWithDynamicChildren', () => {
+        const Component = compileComponent('NodeWithDynamicChildren', {
+            filename: 'NodeWithDynamicChildren.bia',
+            name: 'NodeWithDynamicChildren',
+        });
+
+        console.log (Component.code);
+    });
 });

@@ -1,0 +1,6 @@
+<template>
+    <div>
+        <div>static child</div>
+        <div v-if="foo">dynamic child</div>
+    </div>
+</template>

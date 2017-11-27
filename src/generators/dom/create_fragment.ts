@@ -49,16 +49,14 @@ export function createFragment(fnName: string, node: ParsedNode): JsFunction {
  * Hydrate the node if neccessary.
  * 
  * @param  {ParsedNode}     node
- * @return {void|JsCode} 
+ * @return {JsCode} 
  */
-function addHydrationCall(node: ParsedNode) {
-    if (nodeRequiresHydration(node)) {
-        return new JsCode({
-            content: [
-                `this.h();`,
-            ],
-        });
-    }
+function addHydrationCall(node: ParsedNode): JsCode {
+    return new JsCode({
+        content: [
+            `this.h();`,
+        ],
+    });
 }
 
 /**
@@ -136,6 +134,30 @@ function attachStyles(node: ParsedNode) {
 }
 
 /**
+ * Create a node's child elements
+ * 
+ * @param  {ParsedNode}     node
+ * @return {JsCode}
+ */
+function createChildElements(node: ParsedNode): JsCode {
+    let childId = 0;
+    let textId = 0;
+    const content = [];
+
+    for (let child of node.children) {
+        const varName = typeof child.tagName === 'string'
+            ? escapeJsString(child.tagName.toLowerCase())
+            : 'text';
+
+        content.push(`${varName}_${++childId} = createElement('${varName}');`);
+    }
+
+    return new JsCode({
+        content,
+    });
+}
+
+/**
  * Create a dom element.
  * 
  * @param  {ParsedNode}     node
@@ -145,8 +167,7 @@ function attachStyles(node: ParsedNode) {
 function createElement(node: ParsedNode, varName: string) {
     return new JsCode({
         content: [
-            `div = createElement('div');`,
-            `vm.$el = div;`
+            `${varName} = createElement('${escapeJsString(node.tagName.toLowerCase())}');`,
         ],
     });
 }
@@ -209,20 +230,40 @@ function interpolateText(rawText: string, interpolations: Array<TextInterpolatio
 /**
  * Function to create a new dom fragment.
  * 
- * @param  {Object} node
- * @return {Object}
+ * @param  {ParsedNode}     node
+ * @return {JsFunction}
  */
-function getCreateFn(node) {
+function getCreateFn(node: ParsedNode): JsFunction {
+    const varName = 'div';
+
+    const content = [
+        createElement(node, varName),
+    ];
+
+    // if the node contains purely static content we can
+    // save ourselves some hassle by just setting it.
+    if (node.hasDynamicChildren) {
+        content.push(setInnerHTML(node, varName));
+        content.push(setTextContent(node, varName));
+    }
+
+    // otherwise if our node contains purely static content,
+    // we can save ourselves some hassly by just setting it
+    else {
+        content.push(createChildElements(node));
+    }
+
+    // hydrate our fragment if needed
+    if (nodeRequiresHydration(node)) {
+        content.push(addHydrationCall(node));
+    }
+
+    // set our root element to vm.$el
+    content.push(storeVmElement(varName));
+
     return new JsFunction({
         name: 'c',
-        content: [
-            createElement(node, 'div'),
-            setTextContent(node, 'div'),
-            setInnerHTML(node, 'div'),
-            addHydrationCall(node),
-            null,
-            `return div;`,
-        ],
+        content,
     });
 }
 
@@ -282,21 +323,23 @@ function nodeRequiresHydration(node: ParsedNode): boolean {
  * 
  * @param  {ParsedNode}     node
  * @param  {string}         varName
- * @return {JsCode|void}
+ * @return {JsCode}
  */
-function setInnerHTML(node: ParsedNode, varName: string): JsCode|void {
+function setInnerHTML(node: ParsedNode, varName: string): JsCode {
+    const content = [];
+
     const hasChildElements = node.children.length > 0
         && node.children.find(child => child.type === 'ELEMENT');
 
     if (hasChildElements) {
         const innerHTML = interpolateText(node.innerHTML, node.textInterpolations);
 
-        return new JsCode({
-            content: [
-                `${varName}.innerHTML = '${escapeJsString(innerHTML)}';`,
-            ],
-        });
+        content.push(`${varName}.innerHTML = '${escapeJsString(innerHTML)}';`);
     }
+
+    return new JsCode({
+        content,
+    });
 }
 
 /**
@@ -304,18 +347,32 @@ function setInnerHTML(node: ParsedNode, varName: string): JsCode|void {
  * 
  * @param  {ParsedNode}     node
  * @param  {string}         varName
- * @return {JsCode|void}
+ * @return {JsCode}
  */
-function setTextContent(node: ParsedNode, varName: string): JsCode|void {
+function setTextContent(node: ParsedNode, varName: string): JsCode {
+    const content = [];
+
     if (node.children.length === 1 && node.children[0].type === 'TEXT') {
         const textNode = node.children[0];
-
         const textContent = interpolateText(textNode.textContent, textNode.textInterpolations);
-
-        return new JsCode({
-            content: [
-                `${varName}.textContent = '${escapeJsString(textContent)}';`,
-            ],
-        });
+        
+        content.push(`${varName}.textContent = '${escapeJsString(textContent)}';`);
     }
+
+    return new JsCode({
+        content,
+    });
+}
+
+/**
+ * 
+ * @param  {string}     varName
+ * @return {JsCode}
+ */
+function storeVmElement(varName: string): JsCode {
+    return new JsCode({
+        content: [
+            `vm.$el = ${varName};`,
+        ],
+    });
 }
