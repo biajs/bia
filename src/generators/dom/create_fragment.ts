@@ -239,7 +239,7 @@ function getCreateFn(node: ParsedNode): JsFunction {
     const content = [
         createElement(node, varName),
     ];
-
+    
     // if the node contains dynamic children, we'll create
     // dom elements for each one before hydrating them.
     if (node.hasDynamicChildren) {
