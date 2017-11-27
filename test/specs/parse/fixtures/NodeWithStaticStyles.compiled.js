@@ -19,7 +19,7 @@ function fragment19(vm, state) {
     return {
         c: function c() {
             div = createElement('div');
-
+            div.innerHTML = '';
             this.h();
             vm.$el = div;
         },

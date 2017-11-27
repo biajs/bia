@@ -239,7 +239,7 @@ function getCreateFn(node: ParsedNode): JsFunction {
     const content = [
         createElement(node, varName),
     ];
-    
+
     // if the node contains dynamic children, we'll create
     // dom elements for each one before hydrating them.
     if (node.hasDynamicChildren) {
@@ -249,9 +249,7 @@ function getCreateFn(node: ParsedNode): JsFunction {
     // otherwise if our node contains purely static content,
     // we can save ourselves some hassl by just setting it.
     else {
-        // @todo: refactor these to a single method
-        content.push(setInnerHTML(node, varName));
-        content.push(setTextContent(node, varName));
+        content.push(setStaticContent(node, varName));
     }
 
     // hydrate our fragment if needed
@@ -320,21 +318,27 @@ function nodeRequiresHydration(node: ParsedNode): boolean {
 }
 
 /**
- * If a component has child elements, set it's inner html.
+ * Set the text or inner html of a purely static node.
  * 
  * @param  {ParsedNode}     node
  * @param  {string}         varName
  * @return {JsCode}
  */
-function setInnerHTML(node: ParsedNode, varName: string): JsCode {
+function setStaticContent(node: ParsedNode, varName: string): JsCode {
     const content = [];
 
-    const hasChildElements = node.children.length > 0
-        && node.children.find(child => child.type === 'ELEMENT');
+    // set content for static text nodes
+    if (node.children.length === 1 && node.children[0].type === 'TEXT') {
+        const textNode = node.children[0];
+        const textContent = interpolateText(textNode.textContent, textNode.textInterpolations);
 
-    if (hasChildElements) {
+        content.push(`${varName}.textContent = '${escapeJsString(textContent)}';`);
+    }
+
+    // or if there are child elements, set inner html
+    else {
         const innerHTML = interpolateText(node.innerHTML, node.textInterpolations);
-
+        
         content.push(`${varName}.innerHTML = '${escapeJsString(innerHTML)}';`);
     }
 
@@ -342,29 +346,6 @@ function setInnerHTML(node: ParsedNode, varName: string): JsCode {
         content,
     });
 }
-
-/**
- * Set the text content directly if a node only has child text.
- * 
- * @param  {ParsedNode}     node
- * @param  {string}         varName
- * @return {JsCode}
- */
-function setTextContent(node: ParsedNode, varName: string): JsCode {
-    const content = [];
-
-    if (node.children.length === 1 && node.children[0].type === 'TEXT') {
-        const textNode = node.children[0];
-        const textContent = interpolateText(textNode.textContent, textNode.textInterpolations);
-        
-        content.push(`${varName}.textContent = '${escapeJsString(textContent)}';`);
-    }
-
-    return new JsCode({
-        content,
-    });
-}
-
 /**
  * 
  * @param  {string}     varName

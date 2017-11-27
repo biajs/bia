@@ -16,7 +16,6 @@ function fragment12(vm, state) {
         c: function c() {
             div = createElement('div');
             div.innerHTML = '\r\n        <span>hello</span>\r\n    ';
-
             vm.$el = div;
         },
         h: noop,

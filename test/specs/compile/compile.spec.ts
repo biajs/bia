@@ -132,7 +132,7 @@ describe('compilation', () => {
         expect(vm.$el.outerHTML).to.equal('<div data-foo="bar" data-one-two="three"></div>');
     });
 
-    it.only('NodeWithDynamicChildren', () => {
+    it.skip('NodeWithDynamicChildren', () => {
         const { code } = createComponent('NodeWithDynamicChildren', {
             filename: 'NodeWithDynamicChildren.bia',
             name: 'NodeWithDynamicChildren',

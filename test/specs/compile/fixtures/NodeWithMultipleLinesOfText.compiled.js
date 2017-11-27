@@ -15,7 +15,6 @@ function fragment6(vm, state) {
     return {
         c: function c() {
             div = createElement('div');
-
             div.textContent = '\r\n        Hello world\r\n        foo bar baz\r\n    ';
             vm.$el = div;
         },
