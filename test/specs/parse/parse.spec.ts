@@ -191,4 +191,11 @@ describe('parsing', () => {
         expect(span[11].directives[0].expression).to.equal('expression');
         expect(span[12].directives[0].expression).to.equal('expression');
     });
+
+    it('DiscardIndentation', () => {
+        const node = parseTemplate('DiscardIndentation', {});
+
+        expect(node.children.length).to.equal(1);
+        expect(node.children[0].tagName).to.equal('SPAN');
+    });
 });

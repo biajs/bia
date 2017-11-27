@@ -36,7 +36,9 @@ function createDomTree(el: HTMLElement): ParsedNode {
 
     return {
         attributes: getAttributes(el),
-        children: Array.from(el.childNodes).map(createDomTree),
+        children: Array.from(el.childNodes)
+            .map(createDomTree)
+            .filter(discardIndentation),
         dataAttributes: getDataAttributes(el),
         directives: getDirectives(el, nodeType),
         innerHTML: getInnerHTML(el),
@@ -47,6 +49,11 @@ function createDomTree(el: HTMLElement): ParsedNode {
         textInterpolations: getInterpolations(el, nodeType),
         type: nodeType,
     };
+}
+
+// discard text nodes that are solely whitespace
+function discardIndentation(node: ParsedNode) {
+    return node.type !== 'TEXT' || node.textContent.trim().length > 0;
 }
 
 // get the attributes of a node as an object

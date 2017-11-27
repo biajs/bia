@@ -1,0 +1,5 @@
+<template>
+    <main>
+        <div b-if="foo">bar</div>
+    </main>
+</template>
