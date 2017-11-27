@@ -13,5 +13,6 @@
         <span b-name:arg="expression">10</span>
         <span b-name.one:arg="expression">11</span>
         <span b-name.one.two:arg="expression">12</span>
+        <span b-foo b-bar>13</span>
     </div>
 </template>

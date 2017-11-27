@@ -76,6 +76,7 @@ function getDirectives(el: HTMLElement, nodeType: NodeType): Array<NodeDirective
     return Array.from(el.attributes || [])
         .filter((attr: ElementAttribute) => attr.name.startsWith(directivePrefix))
         .reduce((directives, attr: ElementAttribute) => {
+            
             // parse name
             const nameMatch = new RegExp(`^${directivePrefix}([a-zA-Z\-]+)`, 'g').exec(attr.name);
             const name = nameMatch[1];

@@ -119,7 +119,7 @@ describe('parsing', () => {
         const node = parseTemplate('Directives', {});
         const span = node.children.filter(n => n.tagName === 'SPAN');
 
-        // there should be directives on all but the first child
+        // there should be a directive on all but the first, and two on the last
         expect(span[0].directives.length).to.equal(0);
         expect(span[1].directives.length).to.equal(1);
         expect(span[2].directives.length).to.equal(1);
@@ -133,6 +133,7 @@ describe('parsing', () => {
         expect(span[10].directives.length).to.equal(1);
         expect(span[11].directives.length).to.equal(1);
         expect(span[12].directives.length).to.equal(1);
+        expect(span[13].directives.length).to.equal(2);
 
         // check name parsing
         expect(span[1].directives[0].name).to.equal('name');
