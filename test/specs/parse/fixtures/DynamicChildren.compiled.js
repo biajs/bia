@@ -20,7 +20,9 @@ function fragment13(vm, state) {
         c: function create() {
             root = createElement('div');
             div_0 = createElement('div');
+            div_0.textContent = 'static';
             div_1 = createElement('div');
+            div_1.textContent = 'dynamic';
             this.h();
             vm.$el = root;
         },

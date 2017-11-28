@@ -16,19 +16,33 @@ function fragment11(vm, state) {
         c: function create() {
             root = createElement('div');
             span_0 = createElement('span');
+            span_0.textContent = '0';
             span_1 = createElement('span');
+            span_1.textContent = '1';
             span_2 = createElement('span');
+            span_2.textContent = '2';
             span_3 = createElement('span');
+            span_3.textContent = '3';
             span_4 = createElement('span');
+            span_4.textContent = '4';
             span_5 = createElement('span');
+            span_5.textContent = '5';
             span_6 = createElement('span');
+            span_6.textContent = '6';
             span_7 = createElement('span');
+            span_7.textContent = '7';
             span_8 = createElement('span');
+            span_8.textContent = '8';
             span_9 = createElement('span');
+            span_9.textContent = '9';
             span_10 = createElement('span');
+            span_10.textContent = '10';
             span_11 = createElement('span');
+            span_11.textContent = '11';
             span_12 = createElement('span');
+            span_12.textContent = '12';
             span_13 = createElement('span');
+            span_13.textContent = '13';
             this.h();
             vm.$el = root;
         },

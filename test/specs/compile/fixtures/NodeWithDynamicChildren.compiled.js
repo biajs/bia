@@ -14,27 +14,29 @@ function replaceNode(target, node) {
 function noop() {}
 
 function fragment5(vm, state) {
-    var root, div_0, span_0;
+    var root, span_0, span_1;
 
     return {
         c: function create() {
             root = createElement('div');
-            div_0 = createElement('div');
             span_0 = createElement('span');
+            span_0.textContent = 'static child';
+            span_1 = createElement('span');
+            span_1.textContent = 'dynamic child';
             this.h();
             vm.$el = root;
         },
         h: function hydrate() {
             setClass(root, 'foo')
 
-            setClass(div_0, 'bar')
+            setClass(span_0, 'bar')
 
-            setClass(span_0, 'baz')
+            setClass(span_1, 'baz')
         },
         m: function mount(target) {
             replaceNode(target, root);
-            root.appendChild(div_0);
             root.appendChild(span_0);
+            root.appendChild(span_1);
         }
     };
 }

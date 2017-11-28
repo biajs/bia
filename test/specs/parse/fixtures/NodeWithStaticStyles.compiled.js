@@ -19,7 +19,6 @@ function fragment20(vm, state) {
     return {
         c: function create() {
             root = createElement('div');
-
             this.h();
             vm.$el = root;
         },

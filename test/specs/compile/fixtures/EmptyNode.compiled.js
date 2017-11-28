@@ -15,7 +15,6 @@ function fragment0(vm, state) {
     return {
         c: function create() {
             root = createElement('div');
-
             vm.$el = root;
         },
         h: noop,
