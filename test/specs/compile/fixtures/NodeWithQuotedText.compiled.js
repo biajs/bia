@@ -9,8 +9,8 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment8(vm, state) {
-    var root;
+function fragment9(vm, state) {
+    var root, text_0;
 
     return {
         c: function create() {
@@ -26,7 +26,7 @@ function fragment8(vm, state) {
 }
 
 function NodeWithQuotedText(options) {
-    this.$fragment = fragment8(this);
+    this.$fragment = fragment9(this);
 
     if (options.el) {
         this.$fragment.c();

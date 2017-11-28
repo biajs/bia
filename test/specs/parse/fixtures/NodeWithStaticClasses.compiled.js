@@ -1,10 +1,10 @@
 // bia v0.0.0
-function setClass(el, className) {
-    el.className = className;
-}
-
 function createElement(tag) {
     return document.createElement(tag);
+}
+
+function setClass(el, className) {
+    el.className = className;
 }
 
 function replaceNode(target, node) {
@@ -13,7 +13,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment20(vm, state) {
+function fragment21(vm, state) {
     var root;
 
     return {
@@ -32,7 +32,7 @@ function fragment20(vm, state) {
 }
 
 function NodeWithStaticClasses(options) {
-    this.$fragment = fragment20(this);
+    this.$fragment = fragment21(this);
 
     if (options.el) {
         this.$fragment.c();

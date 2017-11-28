@@ -1,10 +1,10 @@
 // bia v0.0.0
-function setClass(el, className) {
-    el.className = className;
-}
-
 function createElement(tag) {
     return document.createElement(tag);
+}
+
+function setClass(el, className) {
+    el.className = className;
 }
 
 function replaceNode(target, node) {
@@ -13,8 +13,8 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment14(vm, state) {
-    var root, div_0, div_1;
+function fragment15(vm, state) {
+    var root, div_0, text_0, div_1, text_1;
 
     return {
         c: function create() {
@@ -39,7 +39,7 @@ function fragment14(vm, state) {
 }
 
 function DynamicChildren(options) {
-    this.$fragment = fragment14(this);
+    this.$fragment = fragment15(this);
 
     if (options.el) {
         this.$fragment.c();

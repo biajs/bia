@@ -10,7 +10,7 @@ function replaceNode(target, node) {
 function noop() {}
 
 function fragment1(vm, state) {
-    var root, div_0;
+    var root, div_0, text_0;
 
     return {
         c: function create() {

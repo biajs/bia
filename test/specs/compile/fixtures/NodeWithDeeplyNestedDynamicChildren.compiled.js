@@ -1,10 +1,10 @@
 // bia v0.0.0
-function setClass(el, className) {
-    el.className = className;
-}
-
 function createElement(tag) {
     return document.createElement(tag);
+}
+
+function setClass(el, className) {
+    el.className = className;
 }
 
 function replaceNode(target, node) {
@@ -14,7 +14,7 @@ function replaceNode(target, node) {
 function noop() {}
 
 function fragment5(vm, state) {
-    var root, span_0, div_0, span_1, div_1, span_2, div_2, p_0;
+    var root, span_0, text_0, div_0, span_1, text_1, div_1, span_2, text_2, div_2, p_0, text_3;
 
     return {
         c: function create() {

@@ -1,10 +1,10 @@
 // bia v0.0.0
-function setStyle(el, name, value) {
-    el.style.setProperty(name, value);
-}
-
 function createElement(tag) {
     return document.createElement(tag);
+}
+
+function setStyle(el, name, value) {
+    el.style.setProperty(name, value);
 }
 
 function replaceNode(target, node) {
@@ -13,7 +13,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment21(vm, state) {
+function fragment22(vm, state) {
     var root;
 
     return {
@@ -33,7 +33,7 @@ function fragment21(vm, state) {
 }
 
 function NodeWithStaticStyles(options) {
-    this.$fragment = fragment21(this);
+    this.$fragment = fragment22(this);
 
     if (options.el) {
         this.$fragment.c();

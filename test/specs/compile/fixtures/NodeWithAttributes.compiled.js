@@ -1,14 +1,14 @@
 // bia v0.0.0
+function createElement(tag) {
+    return document.createElement(tag);
+}
+
 function setClass(el, className) {
     el.className = className;
 }
 
 function setStyle(el, name, value) {
     el.style.setProperty(name, value);
-}
-
-function createElement(tag) {
-    return document.createElement(tag);
 }
 
 function replaceNode(target, node) {

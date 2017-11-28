@@ -9,7 +9,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment17(vm, state) {
+function fragment18(vm, state) {
     var root, span_0;
 
     return {
@@ -26,7 +26,7 @@ function fragment17(vm, state) {
 }
 
 function NodeWithChild(options) {
-    this.$fragment = fragment17(this);
+    this.$fragment = fragment18(this);
 
     if (options.el) {
         this.$fragment.c();

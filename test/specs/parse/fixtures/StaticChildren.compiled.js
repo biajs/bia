@@ -9,8 +9,8 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment24(vm, state) {
-    var root, div_0, div_1;
+function fragment25(vm, state) {
+    var root, div_0, div_1, text_0;
 
     return {
         c: function create() {
@@ -26,7 +26,7 @@ function fragment24(vm, state) {
 }
 
 function StaticChildren(options) {
-    this.$fragment = fragment24(this);
+    this.$fragment = fragment25(this);
 
     if (options.el) {
         this.$fragment.c();
