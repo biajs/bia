@@ -210,42 +210,6 @@ function createDomElements(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode {
 }
 
 /**
- * Set an element variable.
- * 
- * @param  {ParsedNode}     node
- * @param  {varName}        string
- * @return {JsCode}
- */
-function setElementVar(node: ParsedNode, varName: string) {
-    return new JsCode({
-        globalFunctions: [
-            createElement(),
-        ],
-        content: [
-            `${varName} = createElement('${escapeJsString(node.tagName.toLowerCase())}');`,
-        ],
-    });
-}
-
-/**
- * Set an text node variable.
- * 
- * @param  {ParsedNode}     node
- * @param  {varName}        string
- * @return {JsCode}
- */
-function setTextVar(node: ParsedNode, varName: string) {
-    return new JsCode({
-        globalFunctions: [
-            createText(),
-        ],
-        content: [
-            `${varName} = createText('${escapeJsString(node.textContent)}');`,
-        ],
-    });
-}
-
-/**
  * Define the variables neccessary to build a dom fragment.
  * 
  * @param  {Array<NodeVar>}     nodeVars
@@ -457,6 +421,24 @@ function nodeRequiresHydration(node: ParsedNode): boolean {
 }
 
 /**
+ * Set an element variable.
+ * 
+ * @param  {ParsedNode}     node
+ * @param  {varName}        string
+ * @return {JsCode}
+ */
+function setElementVar(node: ParsedNode, varName: string) {
+    return new JsCode({
+        globalFunctions: [
+            createElement(),
+        ],
+        content: [
+            `${varName} = createElement('${escapeJsString(node.tagName.toLowerCase())}');`,
+        ],
+    });
+}
+
+/**
  * Set the text or inner html of a purely static node.
  * 
  * @param  {ParsedNode}     node
@@ -490,6 +472,25 @@ function setStaticContent(node: ParsedNode, varName: string): JsCode {
         content,
     });
 }
+
+/**
+ * Set an text node variable.
+ * 
+ * @param  {ParsedNode}     node
+ * @param  {varName}        string
+ * @return {JsCode}
+ */
+function setTextVar(node: ParsedNode, varName: string) {
+    return new JsCode({
+        globalFunctions: [
+            createText(),
+        ],
+        content: [
+            `${varName} = createText('${escapeJsString(node.textContent)}');`,
+        ],
+    });
+}
+
 /**
  * 
  * @param  {string}     varName
