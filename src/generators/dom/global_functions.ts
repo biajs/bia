@@ -14,8 +14,6 @@ import {
 export default function() {
     return new JsCode({
         content: [
-            createElement(),
-            null,
             replaceNode(),
             null,
             noop(),
@@ -26,16 +24,31 @@ export default function() {
 /**
  * Create element.
  * 
- * @param  {string}     tagName
  * @return {Object}
  */
-function createElement() {
+export function createElement() {
     return new JsFunction({
         id: 'createElement',
         name: 'createElement',
         signature: ['tag'],
         content: [
             `return document.createElement(tag);`,
+        ],
+    });
+}
+
+/**
+ * Create text node.
+ * 
+ * @return {Object}
+ */
+export function createText() {
+    return new JsFunction({
+        id: 'createText',
+        name: 'createText',
+        signature: ['text'],
+        content: [
+            `return document.createTextNode(text);`,
         ],
     });
 }

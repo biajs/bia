@@ -14,6 +14,8 @@ import {
 } from '../classes/index';
 
 import {
+    createElement,
+    createText,
     setClass,
     setStyle,
 } from './global_functions';
@@ -176,24 +178,31 @@ function attachStyles(node: ParsedNode, varName: string) {
  * @return {JsCode} 
  */
 function createDomElements(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode {
-    const tagName = node.tagName.toLowerCase();
+    const content = [];
     const varName = getVarName(node, nodeVars);
 
-    const content: Array<string|JsCode> = [
-        `${varName} = createElement('${tagName}');`
-    ];
-
-    // if the node contains dynamic children, we'll create
-    // dom elements for each one before hydrating them.
-    if (node.hasDynamicChildren) {
-        const childElements = node.children.map(child => createDomElements(child, nodeVars));
-
-        content.push(...childElements);
+    // elements
+    if (node.type === 'ELEMENT') {
+        const tagName = node.tagName.toLowerCase();
+        content.push(setElementVar(node, varName));
+    
+        // if the node contains dynamic children, we'll create
+        // dom elements for each one before hydrating them.
+        if (node.hasDynamicChildren) {
+            const childElements = node.children.map(child => createDomElements(child, nodeVars));
+    
+            content.push(...childElements);
+        }
+    
+        // otherwise if our node contains purely static content,
+        // we can save ourselves some hassl by just setting it.
+        else content.push(setStaticContent(node, varName));
     }
 
-    // otherwise if our node contains purely static content,
-    // we can save ourselves some hassl by just setting it.
-    else content.push(setStaticContent(node, varName));
+    // text
+    else if (node.type === 'TEXT') {
+        content.push(setTextVar(node, varName));
+    }
 
     return new JsCode({
         content,
@@ -201,16 +210,37 @@ function createDomElements(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode {
 }
 
 /**
- * Create a dom element.
+ * Set an element variable.
  * 
  * @param  {ParsedNode}     node
  * @param  {varName}        string
  * @return {JsCode}
  */
-function createElement(node: ParsedNode, varName: string) {
+function setElementVar(node: ParsedNode, varName: string) {
     return new JsCode({
+        globalFunctions: [
+            createElement(),
+        ],
         content: [
             `${varName} = createElement('${escapeJsString(node.tagName.toLowerCase())}');`,
+        ],
+    });
+}
+
+/**
+ * Set an text node variable.
+ * 
+ * @param  {ParsedNode}     node
+ * @param  {varName}        string
+ * @return {JsCode}
+ */
+function setTextVar(node: ParsedNode, varName: string) {
+    return new JsCode({
+        globalFunctions: [
+            createText(),
+        ],
+        content: [
+            `${varName} = createText('${escapeJsString(node.textContent)}');`,
         ],
     });
 }
@@ -372,6 +402,7 @@ function getMountFn(node: ParsedNode, nodeVars: Array<NodeVar>): JsFunction {
 function getNodeVars(node: ParsedNode, varCounter: Object, isFragmentRoot: boolean = false): Array<NodeVar> {
     const nodeVars = [];
 
+    // elements
     if (node.type === 'ELEMENT') {
         const tagName = node.tagName.toLowerCase();
 
@@ -387,6 +418,16 @@ function getNodeVars(node: ParsedNode, varCounter: Object, isFragmentRoot: boole
         node.children.forEach(child => {
             nodeVars.push(...getNodeVars(child, varCounter));
         });
+    }
+
+    // text nodes
+    if (node.type === 'TEXT') {
+        if (typeof varCounter['text'] === 'undefined') {
+            varCounter['text'] = 0;
+        }
+
+        const name = `text_${varCounter['text']++}`;
+        nodeVars.push({ name, node });
     }
 
     return nodeVars;
