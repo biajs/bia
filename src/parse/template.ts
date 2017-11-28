@@ -54,12 +54,12 @@ function createDomTree(el: HTMLElement): ParsedNode {
 
 // determine if a node has purely static content, or if
 // it is the parent element to any dynamic elements.
-function checkForDynamicChildren(node: HTMLElement, nodeType: NodeType): boolean {
-    // console.log(node);
-
+function checkForDynamicChildren(node: Element, nodeType: NodeType): boolean {
     if (nodeType === 'ELEMENT') {
         for (let i = 0, end = node.children.length; i < end; i++) {
-            if (isDynamicElement(node.children[i])) {
+            const child = node.children[i];
+
+            if (isDynamicElement(child) || checkForDynamicChildren(child, nodeTypes[child.nodeType])) {
                 return true;
             }
         }

@@ -30,7 +30,8 @@ import {
  * @return {JsFunction}
  */
 export function createFragment(fnName: string, node: ParsedNode): JsFunction {
-    const nodeVars = getNodeVars(node);
+    const varCounter = {};
+    const nodeVars = getNodeVars(node, varCounter, true);
 
     return new JsFunction({
         signature: ['vm', 'state'],
@@ -59,6 +60,34 @@ function addHydrationCall(node: ParsedNode): JsCode {
         content: [
             `this.h();`,
         ],
+    });
+}
+
+/**
+ * Recursively append child elements to their parent.
+ * 
+ * @param  {ParsedNode}     node 
+ * @param  {Array<NodeVar>} nodeVars
+ * @return {JsCode} 
+ */
+function appendChildElements(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode {
+    const content = [];
+    const varName = getVarName(node, nodeVars);
+
+    if (node.hasDynamicChildren) {
+        node.children.forEach(child => {
+            const childVarName = getVarName(child, nodeVars);
+
+            if (node.type === 'ELEMENT') {
+                content.push(`${varName}.appendChild(${childVarName});`);
+            }
+
+            content.push(appendChildElements(child, nodeVars));
+        });
+    }
+
+    return new JsCode({
+        content,
     });
 }
 
@@ -157,14 +186,14 @@ function createDomElements(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode {
     // if the node contains dynamic children, we'll create
     // dom elements for each one before hydrating them.
     if (node.hasDynamicChildren) {
-        content.push(...node.children.map(child => createDomElements(child, nodeVars)));
+        const childElements = node.children.map(child => createDomElements(child, nodeVars));
+
+        content.push(...childElements);
     }
 
     // otherwise if our node contains purely static content,
     // we can save ourselves some hassl by just setting it.
-    else {
-        content.push(setStaticContent(node, varName));
-    }
+    else content.push(setStaticContent(node, varName));
 
     return new JsCode({
         content,
@@ -268,6 +297,24 @@ function getCreateFn(node: ParsedNode, nodeVars: Array<NodeVar>): JsFunction {
     });
 }
 
+function hydrateDomElements(node, nodeVars) {
+    const content = [];
+    const varName = getVarName(node, nodeVars);
+
+    if (node.type === 'ELEMENT') {
+        content.push(
+            attachClasses(node, varName),
+            attachDataAttributes(node, varName),
+            attachStyles(node, varName),
+            ...node.children.map(child => hydrateDomElements(child, nodeVars)),
+        );
+    }
+
+    return new JsCode({
+        content,
+    });
+}
+
 /**
  * Function to hydrate a node's dom elements.
  * 
@@ -278,34 +325,16 @@ function getCreateFn(node: ParsedNode, nodeVars: Array<NodeVar>): JsFunction {
 function getHydrateFn(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode {
     // if the node doesn't need hydration, use noop
     if (!nodeRequiresHydration(node)) {
-        return new JsCode({ content: ['noop'] });
+        return new JsCode({ 
+            content: ['noop'],
+        });
     }
-
-    // hydrate our root node
-    const rootVarName = getVarName(node, nodeVars);
-
-    const content = [
-        attachClasses(node, rootVarName),
-        attachDataAttributes(node, rootVarName),
-        attachStyles(node, rootVarName),
-    ];
-
-    // hydrate child nodes
-    node.children.forEach(child => {
-        const childVarName = getVarName(child, nodeVars);
-
-        if (child.type === 'ELEMENT') {
-            content.push(
-                attachClasses(child, childVarName),
-                attachDataAttributes(child, childVarName),
-                attachStyles(child, childVarName),
-            )
-        }
-    });
 
     return new JsFunction({
         name: 'hydrate',
-        content,
+        content: [
+            hydrateDomElements(node, nodeVars),
+        ],
     });
 }
 
@@ -319,20 +348,11 @@ function getHydrateFn(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode {
 function getMountFn(node: ParsedNode, nodeVars: Array<NodeVar>): JsFunction {
     const rootVarName = getVarName(node, nodeVars);
 
-    const content = [
+    const content: Array<JsCode|string> = [
         `replaceNode(target, ${rootVarName});`,
     ];
 
-    // append any of our root node's children
-    if (node.hasDynamicChildren) {
-        node.children.forEach(child => {
-            const childVarName = getVarName(child, nodeVars);
-
-            if (node.type === 'ELEMENT') {
-                content.push(`${rootVarName}.appendChild(${childVarName});`);
-            }
-        });
-    }
+    content.push(appendChildElements(node, nodeVars));
 
     return new JsFunction({
         name: 'mount',
@@ -345,27 +365,28 @@ function getMountFn(node: ParsedNode, nodeVars: Array<NodeVar>): JsFunction {
  * Give each node in the tree a unique var name.
  * 
  * @param  {ParsedNode}     node
+ * @param  {Object}         varCounter
+ * @param  {boolean}        isFragmentRoot
  * @return {Array<NodeVar} 
  */
-function getNodeVars(node: ParsedNode): Array<NodeVar> {
-    const nodeVars = [
-        { node, name: 'root' },
-    ];
+function getNodeVars(node: ParsedNode, varCounter: Object, isFragmentRoot: boolean = false): Array<NodeVar> {
+    const nodeVars = [];
 
-    if (node.hasDynamicChildren) {
-        const names = {};
-        
+    if (node.type === 'ELEMENT') {
+        const tagName = node.tagName.toLowerCase();
+
+        if (typeof varCounter[tagName] === 'undefined') {
+            varCounter[tagName] = 0;
+        }
+
+        // add our node to the array of named node vars
+        const name = isFragmentRoot ? 'root' : `${tagName}_${varCounter[tagName]++}`;
+        nodeVars.push({ name, node });
+
+        // recursively walk through child nodes and assign them names
         node.children.forEach(child => {
-            if (child.type === 'ELEMENT') {
-                const tagName = child.tagName.toLowerCase();
-
-                if (typeof names[tagName] === 'undefined') {
-                    names[tagName] = 0;
-                }
-
-                nodeVars.push({ name: `${tagName}_${names[tagName]++}`, node: child });
-            }
-        }, []);
+            nodeVars.push(...getNodeVars(child, varCounter));
+        });
     }
 
     return nodeVars;
