@@ -22,9 +22,16 @@ export enum NodeType {
     DOCUMENT_FRAGMENT = 'DOCUMENT_FRAGMENT',
 };
 
+// node/variable name pairings
+export interface NodeVar {
+    name: string;
+    node: ParsedNode;
+};
+
+// a parsed fragment of the dom
 export interface ParsedNode {
     attributes: any;
-    children: Array<any>;
+    children: Array<ParsedNode>;
     dataAttributes: Object;
     directives: Array<NodeDirective>;
     hasDynamicChildren: boolean;

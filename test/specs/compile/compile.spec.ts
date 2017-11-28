@@ -132,12 +132,19 @@ describe('compilation', () => {
         expect(vm.$el.outerHTML).to.equal('<div data-foo="bar" data-one-two="three"></div>');
     });
 
-    it.skip('NodeWithDynamicChildren', () => {
-        const { code } = createComponent('NodeWithDynamicChildren', {
+    it.skip('compiles nodes with dynamic children', () => {
+        const { Component, code } = createComponent('NodeWithDynamicChildren', {
             filename: 'NodeWithDynamicChildren.bia',
             name: 'NodeWithDynamicChildren',
         });
 
         console.log (code);
+        console.log();
+        console.log('========================');
+        console.log();
+        const vm = new Component({ el });
+
+        console.log (vm.$el.outerHTML);
+        console.log();
     });
 });

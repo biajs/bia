@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <div>static child</div>
-        <div b-if="foo">dynamic child</div>
+    <div class="foo">
+        <div class="bar">static child</div>
+        <span b-if="true" class="baz">dynamic child</span>
     </div>
 </template>

@@ -1,4 +1,5 @@
 import { 
+    NodeVar,
     ParsedNode,
     TextInterpolation,
 } from '../../interfaces';
@@ -29,17 +30,19 @@ import {
  * @return {JsFunction}
  */
 export function createFragment(fnName: string, node: ParsedNode): JsFunction {
+    const nodeVars = getNodeVars(node);
+
     return new JsFunction({
         signature: ['vm', 'state'],
         name: fnName,
         content: [
             // create containers for each of our dom elements
-            defineFragmentVariables(node),
+            defineFragmentVariables(nodeVars),
             null,
 
             // return an object with methods to control our dom fragment
             new JsReturn({ 
-                value: fragmentFunctionsObject(node)
+                value: fragmentFunctionsObject(node, nodeVars)
             }),
         ],
     });
@@ -63,9 +66,10 @@ function addHydrationCall(node: ParsedNode): JsCode {
  * Attach classes to a node.
  * 
  * @param  {ParsedNode}     node
+ * @param  {string}         varName
  * @return {JsCode}
  */
-function attachClasses(node: ParsedNode) {
+function attachClasses(node: ParsedNode, varName: string) {
     const content = [];
     const globalFunctions = [];
 
@@ -73,7 +77,7 @@ function attachClasses(node: ParsedNode) {
     if (node.staticClasses.length) {
         const classes = node.staticClasses.slice(0);
 
-        content.push(`setClass(div, '${escapeJsString(classes.join(' '))}')`);
+        content.push(`setClass(${varName}, '${escapeJsString(classes.join(' '))}')`);
         globalFunctions.push(setClass());
     }
 
@@ -89,14 +93,15 @@ function attachClasses(node: ParsedNode) {
  * Attach data attributes to a node.
  * 
  * @param  {ParsedNode}     node
+ * @param  {string}         varName
  * @return {JsCode}
  */
-function attachDataAttributes(node: ParsedNode) {
+function attachDataAttributes(node: ParsedNode, varName: string) {
     const attrNames = Object.keys(node.dataAttributes);
 
     if (attrNames.length > 0) {
         const content = attrNames.map(name => {
-            return `div.dataset.${name} = '${escapeJsString(node.dataAttributes[name])}'`
+            return `${varName}.dataset.${name} = '${escapeJsString(node.dataAttributes[name])}'`
         });
 
         return new JsCode({ content });
@@ -107,15 +112,16 @@ function attachDataAttributes(node: ParsedNode) {
  * Attach styles to a node.
  * 
  * @param  {ParsedNode}     node
+ * @param  {string}         varName
  * @return {JsCode}
  */
-function attachStyles(node: ParsedNode) {
+function attachStyles(node: ParsedNode, varName: string) {
     // start with all of our static styles that we know will be attached
     const styles = Object.keys(node.staticStyles).reduce((content, styleProperty) => {
         const property = escapeJsString(styleProperty);
         const value = escapeJsString(node.staticStyles[styleProperty]);
 
-        content.push(`setStyle(div, '${property}', '${value}');`);
+        content.push(`setStyle(${varName}, '${property}', '${value}');`);
 
         return content;
     }, []);
@@ -137,19 +143,16 @@ function attachStyles(node: ParsedNode) {
  * Create a node's child elements
  * 
  * @param  {ParsedNode}     node
+ * @param  {Array<NodeVar>} nodeVars
  * @return {JsCode}
  */
-function createChildElements(node: ParsedNode): JsCode {
-    let childId = 0;
-    let textId = 0;
+function createChildElements(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode {
     const content = [];
 
     for (let child of node.children) {
-        const varName = typeof child.tagName === 'string'
-            ? escapeJsString(child.tagName.toLowerCase())
-            : 'text';
+        const varName = getVarName(child, nodeVars);
 
-        content.push(`${varName}_${++childId} = createElement('${varName}');`);
+        content.push(`${varName} = createElement('${child.tagName.toLowerCase()}');`);
     }
 
     return new JsCode({
@@ -175,14 +178,12 @@ function createElement(node: ParsedNode, varName: string) {
 /**
  * Define the variables neccessary to build a dom fragment.
  * 
- * @param  {ParsedNode}     node
+ * @param  {Array<NodeVar>}     nodeVars
  * @return {JsVariable}
  */
-function defineFragmentVariables(node: ParsedNode) {
+function defineFragmentVariables(nodeVars: Array<NodeVar>) {
     return new JsVariable({
-        define: [
-            node.tagName.toLowerCase(),
-        ],
+        define: nodeVars.map(v => v.name),
     });
 }
 
@@ -190,15 +191,16 @@ function defineFragmentVariables(node: ParsedNode) {
  * Define the functions neccessary to build a dom fragment.
  * 
  * @param  {ParsedNode}     node
+ * @param  {Array>NodeVar>} nodeVars
  * @return {JsObject}
  */
-function fragmentFunctionsObject(node: ParsedNode): JsObject {
+function fragmentFunctionsObject(node: ParsedNode, nodeVars: Array<NodeVar>): JsObject {
     // this will eventually hold create, destroy, mount, and unmount
     return new JsObject({
         properties: {
-            c: getCreateFn(node),
-            h: getHydrateFn(node),
-            m: getMountFn(node),
+            c: getCreateFn(node, nodeVars),
+            h: getHydrateFn(node, nodeVars),
+            m: getMountFn(node, nodeVars),
         },
     });
 }
@@ -231,10 +233,11 @@ function interpolateText(rawText: string, interpolations: Array<TextInterpolatio
  * Function to create a new dom fragment.
  * 
  * @param  {ParsedNode}     node
+ * @param  {Array<NodeVar>} nodeVars
  * @return {JsFunction}
  */
-function getCreateFn(node: ParsedNode): JsFunction {
-    const varName = 'div';
+function getCreateFn(node: ParsedNode, nodeVars: Array<NodeVar>): JsFunction {
+    const varName = getVarName(node, nodeVars);
 
     const content = [
         createElement(node, varName),
@@ -243,7 +246,7 @@ function getCreateFn(node: ParsedNode): JsFunction {
     // if the node contains dynamic children, we'll create
     // dom elements for each one before hydrating them.
     if (node.hasDynamicChildren) {
-        content.push(createChildElements(node));
+        content.push(createChildElements(node, nodeVars));
     }
 
     // otherwise if our node contains purely static content,
@@ -261,7 +264,7 @@ function getCreateFn(node: ParsedNode): JsFunction {
     content.push(storeVmElement(varName));
 
     return new JsFunction({
-        name: 'c',
+        name: 'create',
         content,
     });
 }
@@ -270,23 +273,39 @@ function getCreateFn(node: ParsedNode): JsFunction {
  * Function to hydrate a node's dom elements.
  * 
  * @param  {ParsedNode}     node
+ * @param  {Array<NodeVar>} nodeVars
  * @return {JsFunction} 
  */
-function getHydrateFn(node: ParsedNode): JsCode {
+function getHydrateFn(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode {
     // if the node doesn't need hydration, use noop
     if (!nodeRequiresHydration(node)) {
         return new JsCode({ content: ['noop'] });
     }
 
-    // otherwise, return our hydration fn
+    // hydrate our root node
+    const rootVarName = getVarName(node, nodeVars);
+
     const content = [
-        attachClasses(node),
-        attachDataAttributes(node),
-        attachStyles(node),
+        attachClasses(node, rootVarName),
+        attachDataAttributes(node, rootVarName),
+        attachStyles(node, rootVarName),
     ];
 
+    // hydrate child nodes
+    node.children.forEach(child => {
+        const childVarName = getVarName(child, nodeVars);
+
+        if (child.type === 'ELEMENT') {
+            content.push(
+                attachClasses(child, childVarName),
+                attachDataAttributes(child, childVarName),
+                attachStyles(child, childVarName),
+            )
+        }
+    });
+
     return new JsFunction({
-        name: 'h',
+        name: 'hydrate',
         content,
     });
 }
@@ -295,16 +314,75 @@ function getHydrateFn(node: ParsedNode): JsCode {
  * Function to insert a fragment into the dom.
  * 
  * @param  {ParsedNode}     node
+ * @param  {Array<NodeVar>} nodeVars
  * @return {JsFunction} 
  */
-function getMountFn(node: ParsedNode): JsFunction {
+function getMountFn(node: ParsedNode, nodeVars: Array<NodeVar>): JsFunction {
+    const rootVarName = getVarName(node, nodeVars);
+
+    const content = [
+        `replaceNode(target, ${rootVarName});`,
+    ];
+
+    // append any of our root node's children
+    if (node.hasDynamicChildren) {
+        node.children.forEach(child => {
+            const childVarName = getVarName(child, nodeVars);
+
+            if (node.type === 'ELEMENT') {
+                content.push(`${rootVarName}.appendChild(${childVarName});`);
+            }
+        });
+    }
+
     return new JsFunction({
-        name: 'm',
+        name: 'mount',
         signature: ['target'],
-        content: [
-            `replaceNode(target, div);`,
-        ],
+        content,
     });
+}
+
+/**
+ * Give each node in the tree a unique var name.
+ * 
+ * @param  {ParsedNode}     node
+ * @return {Array<NodeVar} 
+ */
+function getNodeVars(node: ParsedNode): Array<NodeVar> {
+    const nodeVars = [
+        { node, name: 'root' },
+    ];
+
+    if (node.hasDynamicChildren) {
+        const names = {};
+        
+        node.children.forEach(child => {
+            if (child.type === 'ELEMENT') {
+                const tagName = child.tagName.toLowerCase();
+
+                if (typeof names[tagName] === 'undefined') {
+                    names[tagName] = 0;
+                }
+
+                nodeVars.push({ name: `${tagName}_${names[tagName]++}`, node: child });
+            }
+        }, []);
+    }
+
+    return nodeVars;
+}
+
+/**
+ * Get a node's variable name.
+ * 
+ * @param  {ParsedNode}     node 
+ * @param  {Array<NodeVar>} nodeVars 
+ * @return {string}
+ */
+function getVarName(node: ParsedNode, nodeVars: Array<NodeVar>): string {
+    const nodeVar = nodeVars.find(nv => nv.node === node);
+
+    return nodeVar ? nodeVar.name : 'unknown';
 }
 
 /**
@@ -314,7 +392,7 @@ function getMountFn(node: ParsedNode): JsFunction {
  * @return {boolean}
  */
 function nodeRequiresHydration(node: ParsedNode): boolean {
-    return Object.keys(node.attributes).length > 0;
+    return node.hasDynamicChildren || Object.keys(node.attributes).length > 0;
 }
 
 /**
