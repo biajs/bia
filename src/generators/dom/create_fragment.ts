@@ -140,19 +140,30 @@ function attachStyles(node: ParsedNode, varName: string) {
 }
 
 /**
- * Create a node's child elements
+ * Recursively create a node's dom elements.
  * 
  * @param  {ParsedNode}     node
  * @param  {Array<NodeVar>} nodeVars
- * @return {JsCode}
+ * @return {JsCode} 
  */
-function createChildElements(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode {
-    const content = [];
+function createDomElements(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode {
+    const tagName = node.tagName.toLowerCase();
+    const varName = getVarName(node, nodeVars);
 
-    for (let child of node.children) {
-        const varName = getVarName(child, nodeVars);
+    const content: Array<string|JsCode> = [
+        `${varName} = createElement('${tagName}');`
+    ];
 
-        content.push(`${varName} = createElement('${child.tagName.toLowerCase()}');`);
+    // if the node contains dynamic children, we'll create
+    // dom elements for each one before hydrating them.
+    if (node.hasDynamicChildren) {
+        content.push(...node.children.map(child => createDomElements(child, nodeVars)));
+    }
+
+    // otherwise if our node contains purely static content,
+    // we can save ourselves some hassl by just setting it.
+    else {
+        content.push(setStaticContent(node, varName));
     }
 
     return new JsCode({
@@ -240,20 +251,8 @@ function getCreateFn(node: ParsedNode, nodeVars: Array<NodeVar>): JsFunction {
     const varName = getVarName(node, nodeVars);
 
     const content = [
-        createElement(node, varName),
+        createDomElements(node, nodeVars),
     ];
-
-    // if the node contains dynamic children, we'll create
-    // dom elements for each one before hydrating them.
-    if (node.hasDynamicChildren) {
-        content.push(createChildElements(node, nodeVars));
-    }
-
-    // otherwise if our node contains purely static content,
-    // we can save ourselves some hassl by just setting it.
-    else {
-        content.push(setStaticContent(node, varName));
-    }
 
     // hydrate our fragment if needed
     if (nodeRequiresHydration(node)) {

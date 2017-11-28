@@ -132,19 +132,14 @@ describe('compilation', () => {
         expect(vm.$el.outerHTML).to.equal('<div data-foo="bar" data-one-two="three"></div>');
     });
 
-    it.skip('compiles nodes with dynamic children', () => {
-        const { Component, code } = createComponent('NodeWithDynamicChildren', {
+    it('compiles nodes with dynamic children', () => {
+        const { Component } = createComponent('NodeWithDynamicChildren', {
             filename: 'NodeWithDynamicChildren.bia',
             name: 'NodeWithDynamicChildren',
         });
 
-        console.log (code);
-        console.log();
-        console.log('========================');
-        console.log();
         const vm = new Component({ el });
-
-        console.log (vm.$el.outerHTML);
-        console.log();
+        
+        expect(vm.$el.outerHTML).to.equal('<div class="foo"><span class="bar">static child</span><span class="baz">dynamic child</span></div>')
     });
 });

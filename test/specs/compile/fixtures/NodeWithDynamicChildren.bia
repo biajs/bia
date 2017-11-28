@@ -1,6 +1,6 @@
 <template>
     <div class="foo">
-        <div class="bar">static child</div>
+        <span class="bar">static child</span>
         <span b-if="true" class="baz">dynamic child</span>
     </div>
 </template>
