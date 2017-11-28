@@ -13,7 +13,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment13(vm, state) {
+function fragment14(vm, state) {
     var root, div_0, div_1;
 
     return {
@@ -32,13 +32,14 @@ function fragment13(vm, state) {
         m: function mount(target) {
             replaceNode(target, root);
             root.appendChild(div_0);
+
             root.appendChild(div_1);
         }
     };
 }
 
 function DynamicChildren(options) {
-    this.$fragment = fragment13(this);
+    this.$fragment = fragment14(this);
 
     if (options.el) {
         this.$fragment.c();

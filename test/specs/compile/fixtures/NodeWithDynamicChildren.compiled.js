@@ -13,7 +13,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment5(vm, state) {
+function fragment6(vm, state) {
     var root, span_0, span_1;
 
     return {
@@ -30,19 +30,19 @@ function fragment5(vm, state) {
             setClass(root, 'foo')
 
             setClass(span_0, 'bar')
-
             setClass(span_1, 'baz')
         },
         m: function mount(target) {
             replaceNode(target, root);
             root.appendChild(span_0);
+
             root.appendChild(span_1);
         }
     };
 }
 
 function NodeWithDynamicChildren(options) {
-    this.$fragment = fragment5(this);
+    this.$fragment = fragment6(this);
 
     if (options.el) {
         this.$fragment.c();

@@ -9,7 +9,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment11(vm, state) {
+function fragment12(vm, state) {
     var root, span_0, span_1, span_2, span_3, span_4, span_5, span_6, span_7, span_8, span_9, span_10, span_11, span_12, span_13;
 
     return {
@@ -52,25 +52,38 @@ function fragment11(vm, state) {
         m: function mount(target) {
             replaceNode(target, root);
             root.appendChild(span_0);
+
             root.appendChild(span_1);
+
             root.appendChild(span_2);
+
             root.appendChild(span_3);
+
             root.appendChild(span_4);
+
             root.appendChild(span_5);
+
             root.appendChild(span_6);
+
             root.appendChild(span_7);
+
             root.appendChild(span_8);
+
             root.appendChild(span_9);
+
             root.appendChild(span_10);
+
             root.appendChild(span_11);
+
             root.appendChild(span_12);
+
             root.appendChild(span_13);
         }
     };
 }
 
 function Directives(options) {
-    this.$fragment = fragment11(this);
+    this.$fragment = fragment12(this);
 
     if (options.el) {
         this.$fragment.c();
