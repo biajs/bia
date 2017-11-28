@@ -13,28 +13,28 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment19(vm, state) {
-    var div;
+function fragment20(vm, state) {
+    var root;
 
     return {
-        c: function c() {
-            div = createElement('div');
+        c: function create() {
+            root = createElement('div');
 
             this.h();
-            vm.$el = div;
+            vm.$el = root;
         },
-        h: function h() {
-            setStyle(div, 'color', 'red');
-            setStyle(div, 'font-size', '20px');
+        h: function hydrate() {
+            setStyle(root, 'color', 'red');
+            setStyle(root, 'font-size', '20px');
         },
-        m: function m(target) {
-            replaceNode(target, div);
+        m: function mount(target) {
+            replaceNode(target, root);
         }
     };
 }
 
 function NodeWithStaticStyles(options) {
-    this.$fragment = fragment19(this);
+    this.$fragment = fragment20(this);
 
     if (options.el) {
         this.$fragment.c();

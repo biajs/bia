@@ -1,4 +1,8 @@
 // bia v0.0.0
+function setClass(el, className) {
+    el.className = className;
+}
+
 function createElement(tag) {
     return document.createElement(tag);
 }
@@ -10,18 +14,23 @@ function replaceNode(target, node) {
 function noop() {}
 
 function fragment13(vm, state) {
-    var div;
+    var root, div_0, div_1;
 
     return {
-        c: function c() {
-            div = createElement('div');
+        c: function create() {
+            root = createElement('div');
+            div_0 = createElement('div');
             div_1 = createElement('div');
-            div_2 = createElement('div');
-            vm.$el = div;
+            this.h();
+            vm.$el = root;
         },
-        h: noop,
-        m: function m(target) {
-            replaceNode(target, div);
+        h: function hydrate() {
+            setClass(div_0, 'static')
+        },
+        m: function mount(target) {
+            replaceNode(target, root);
+            root.appendChild(div_0);
+            root.appendChild(div_1);
         }
     };
 }

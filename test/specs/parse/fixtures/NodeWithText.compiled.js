@@ -9,24 +9,24 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment20(vm, state) {
-    var div;
+function fragment21(vm, state) {
+    var root;
 
     return {
-        c: function c() {
-            div = createElement('div');
-            div.textContent = 'Hello world';
-            vm.$el = div;
+        c: function create() {
+            root = createElement('div');
+            root.textContent = 'Hello world';
+            vm.$el = root;
         },
         h: noop,
-        m: function m(target) {
-            replaceNode(target, div);
+        m: function mount(target) {
+            replaceNode(target, root);
         }
     };
 }
 
 function NodeWithText(options) {
-    this.$fragment = fragment20(this);
+    this.$fragment = fragment21(this);
 
     if (options.el) {
         this.$fragment.c();

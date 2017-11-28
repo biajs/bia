@@ -9,24 +9,24 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment22(vm, state) {
-    var div;
+function fragment23(vm, state) {
+    var root;
 
     return {
-        c: function c() {
-            div = createElement('div');
-            div.innerHTML = '\r\n        <div>\r\n            <div>foo</div>\r\n        </div>\r\n    ';
-            vm.$el = div;
+        c: function create() {
+            root = createElement('div');
+            root.innerHTML = '\r\n        <div>\r\n            <div>foo</div>\r\n        </div>\r\n    ';
+            vm.$el = root;
         },
         h: noop,
-        m: function m(target) {
-            replaceNode(target, div);
+        m: function mount(target) {
+            replaceNode(target, root);
         }
     };
 }
 
 function StaticChildren(options) {
-    this.$fragment = fragment22(this);
+    this.$fragment = fragment23(this);
 
     if (options.el) {
         this.$fragment.c();

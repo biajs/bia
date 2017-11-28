@@ -9,13 +9,13 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment1(vm, state) {
-    var root, div_0;
+function fragment18(vm, state) {
+    var root;
 
     return {
         c: function create() {
-            root = createElement('main');
-            div_0 = createElement('div');
+            root = createElement('div');
+
             this.h();
             vm.$el = root;
         },
@@ -24,13 +24,12 @@ function fragment1(vm, state) {
         },
         m: function mount(target) {
             replaceNode(target, root);
-            root.appendChild(div_0);
         }
     };
 }
 
-function IfBlock(options) {
-    this.$fragment = fragment1(this);
+function NodeWithDirective(options) {
+    this.$fragment = fragment18(this);
 
     if (options.el) {
         this.$fragment.c();
@@ -38,4 +37,4 @@ function IfBlock(options) {
     }
 }
 
-export default IfBlock;
+export default NodeWithDirective;

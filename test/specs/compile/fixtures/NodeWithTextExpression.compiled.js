@@ -10,17 +10,17 @@ function replaceNode(target, node) {
 function noop() {}
 
 function fragment9(vm, state) {
-    var div;
+    var root;
 
     return {
-        c: function c() {
-            div = createElement('div');
-            div.textContent = '3';
-            vm.$el = div;
+        c: function create() {
+            root = createElement('div');
+            root.textContent = '3';
+            vm.$el = root;
         },
         h: noop,
-        m: function m(target) {
-            replaceNode(target, div);
+        m: function mount(target) {
+            replaceNode(target, root);
         }
     };
 }

@@ -10,20 +10,20 @@ function replaceNode(target, node) {
 function noop() {}
 
 function fragment15(vm, state) {
-    var div;
+    var root;
 
     return {
-        c: function c() {
-            div = createElement('div');
+        c: function create() {
+            root = createElement('div');
 
             this.h();
-            vm.$el = div;
+            vm.$el = root;
         },
-        h: function h() {
-            div.dataset.baz = 'yar'
+        h: function hydrate() {
+            root.dataset.baz = 'yar'
         },
-        m: function m(target) {
-            replaceNode(target, div);
+        m: function mount(target) {
+            replaceNode(target, root);
         }
     };
 }
