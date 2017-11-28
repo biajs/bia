@@ -210,4 +210,10 @@ describe('parsing', () => {
         
         expect(node.hasDynamicChildren).to.be.false;
     });
+
+    it('doesn\'t include directives in attributes object', () => {
+        const node = parseTemplate('NodeWithDirective', {});
+
+        expect(node.attributes).to.deep.equal({ foo: 'bar' });
+    });
 });

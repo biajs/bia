@@ -77,7 +77,12 @@ function discardIndentation(node: ParsedNode) {
 // <div foo="bar" /> => { foo: 'bar' }
 function getAttributes(el: HTMLElement): Object {
     return Array.from(el.attributes || []).reduce((attributes, attr: ElementAttribute) => {
-        attributes[attr.name] = attr.value;
+        
+        // don't include directives in this array
+        if (!attr.name.startsWith(directivePrefix)) {
+            attributes[attr.name] = attr.value;
+        }
+
         return attributes;
     }, {});
 }
