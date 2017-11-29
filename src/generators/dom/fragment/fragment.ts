@@ -21,6 +21,7 @@ import {
 } from './../global_functions';
 
 import getCreateFn from './create';
+import getHydrateFn from './hydrate';
 
 import { VariableNamer } from '../../../utils/code';
 import { escapeJsString } from '../../../utils/string';
@@ -57,7 +58,7 @@ export function createFragment(fnName: string, node: ParsedNode): JsFunction {
                 value: new JsObject({
                     properties: {
                         c: getCreateFn(node, nodeNamer),
-                        h: getHydrateFn(node, nodeVars),
+                        h: getHydrateFn(node, nodeNamer),
                         m: getMountFn(node, nodeVars),
                     },
                 }),
@@ -113,124 +114,6 @@ function appendChildElements(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode
 
     return new JsCode({
         content,
-    });
-}
-
-/**
- * Attach classes to a node.
- * 
- * @param  {ParsedNode}     node
- * @param  {string}         varName
- * @return {JsCode}
- */
-function attachClasses(node: ParsedNode, varName: string) {
-    const content = [];
-    const globalFunctions = [];
-
-    // start with all of our static classes that we know will be attached
-    if (node.staticClasses.length) {
-        const classes = node.staticClasses.slice(0);
-
-        content.push(`setClass(${varName}, '${escapeJsString(classes.join(' '))}')`);
-        globalFunctions.push(setClass());
-    }
-
-    // @todo: handle dynamic classes
-    
-    return new JsCode({
-        content,
-        globalFunctions,
-    });
-}
-
-/**
- * Attach data attributes to a node.
- * 
- * @param  {ParsedNode}     node
- * @param  {string}         varName
- * @return {JsCode}
- */
-function attachDataAttributes(node: ParsedNode, varName: string) {
-    const attrNames = Object.keys(node.dataAttributes);
-
-    if (attrNames.length > 0) {
-        const content = attrNames.map(name => {
-            return `${varName}.dataset.${name} = '${escapeJsString(node.dataAttributes[name])}'`
-        });
-
-        return new JsCode({ content });
-    }
-}
-
-/**
- * Attach styles to a node.
- * 
- * @param  {ParsedNode}     node
- * @param  {string}         varName
- * @return {JsCode}
- */
-function attachStyles(node: ParsedNode, varName: string) {
-    // start with all of our static styles that we know will be attached
-    const styles = Object.keys(node.staticStyles).reduce((content, styleProperty) => {
-        const property = escapeJsString(styleProperty);
-        const value = escapeJsString(node.staticStyles[styleProperty]);
-
-        content.push(`setStyle(${varName}, '${property}', '${value}');`);
-
-        return content;
-    }, []);
-
-    // @todo: handle dynamic styles
-
-    // attach our setStyle function if neccessary
-    const globalFunctions = styles.length
-        ? [setStyle()]
-        : [];
-    
-    return new JsCode({
-        globalFunctions,
-        content: styles,
-    });
-}
-
-function hydrateDomElements(node, nodeVars) {
-    const content = [];
-    const varName = getVarName(node, nodeVars);
-
-    if (node.type === 'ELEMENT') {
-        content.push(
-            attachClasses(node, varName),
-            attachDataAttributes(node, varName),
-            attachStyles(node, varName),
-            ...node.children.map(child => hydrateDomElements(child, nodeVars)),
-        );
-    }
-
-    return new JsCode({
-        content,
-    });
-}
-
-/**
- * Function to hydrate a node's dom elements.
- * 
- * @param  {ParsedNode}     node
- * @param  {Array<NodeVar>} nodeVars
- * @return {JsFunction} 
- */
-function getHydrateFn(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode {
-    // if the node doesn't need hydration, use noop
-    if (!nodeRequiresHydration(node)) {
-        return new JsCode({ 
-            content: ['noop'],
-        });
-    }
-
-    return new JsFunction({
-        name: 'hydrate',
-        content: [
-            hydrateDomElements(node, nodeVars),
-        ],
     });
 }
 

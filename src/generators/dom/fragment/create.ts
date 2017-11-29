@@ -35,29 +35,19 @@ export default function(node: ParsedNode, nodeNamer: VariableNamer): JsFunction 
 
     // hydrate our fragment if needed
     if (nodeRequiresHydration(node)) {
-        content.push(addHydrationCall(node));
+        content.push(
+            new JsCode({ content: [`this.h();`] })
+        );
     }
 
     // set our root element to vm.$el
-    content.push(storeVmElement(varName));
+    content.push(
+        new JsCode({ content: [`vm.$el = ${varName};`] })
+    );
 
     return new JsFunction({
         name: 'create',
         content,
-    });
-}
-
-/**
- * Add a call to hydrate the fragment.
- * 
- * @param  {ParsedNode}     node
- * @return {JsCode} 
- */
-function addHydrationCall(node: ParsedNode): JsCode {
-    return new JsCode({
-        content: [
-            `this.h();`,
-        ],
     });
 }
 
@@ -193,19 +183,6 @@ function setTextVar(node: ParsedNode, varName: string) {
         ],
         content: [
             `${varName} = createText('${escapeJsString(node.textContent)}');`,
-        ],
-    });
-}
-
-/**
- * 
- * @param  {string}     varName
- * @return {JsCode}
- */
-function storeVmElement(varName: string): JsCode {
-    return new JsCode({
-        content: [
-            `vm.$el = ${varName};`,
         ],
     });
 }
