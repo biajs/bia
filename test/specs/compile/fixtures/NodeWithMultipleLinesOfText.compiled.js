@@ -9,7 +9,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment8(vm) {
+function create_root_fragment(vm) {
     var root, text;
 
     return {
@@ -26,7 +26,7 @@ function fragment8(vm) {
 }
 
 function NodeWithMultipleLinesOfText(options) {
-    this.$fragment = fragment8(this);
+    this.$fragment = create_root_fragment(this);
 
     if (options.el) {
         this.$fragment.c();

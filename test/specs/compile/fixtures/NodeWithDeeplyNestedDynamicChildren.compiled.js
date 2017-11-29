@@ -1,4 +1,22 @@
 // bia v0.0.0
+function create_if_block(vm) {
+    var text;
+
+    return {
+        c: function create() {
+            if (root) root.c();
+            this.h();
+            vm.$el = root;
+        },
+        h: function hydrate() {
+            setClass(root, 'yar')
+        },
+        m: function mount(target) {
+            replaceNode(target, root);
+        }
+    };
+}
+
 function createElement(tag) {
     return document.createElement(tag);
 }
@@ -13,8 +31,10 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment5(vm) {
-    var root, span, text, div, span_0, text_0, div_0, span_1, text_1, div_1, if_block, text_2;
+function create_root_fragment(vm) {
+    var root, span, text, div, span_0, text_0, div_0, span_1, text_1, div_1, text_2;
+
+    var if_block = (true) && create_if_block(vm);
 
     return {
         c: function create() {
@@ -28,8 +48,7 @@ function fragment5(vm) {
             span_1 = createElement('span');
             span_1.textContent = 'baz';
             div_1 = createElement('div');
-            if_block = createElement('p');
-            if_block.textContent = 'yar';
+            if (if_block) if_block.c();
             this.h();
             vm.$el = root;
         },
@@ -58,13 +77,13 @@ function fragment5(vm) {
             div_0.appendChild(span_1);
 
             div_0.appendChild(div_1);
-            div_1.appendChild(if_block);
+            if (if_block) if_block.m(div_1)
         }
     };
 }
 
 function NodeWithDeeplyNestedDynamicChildren(options) {
-    this.$fragment = fragment5(this);
+    this.$fragment = create_root_fragment(this);
 
     if (options.el) {
         this.$fragment.c();

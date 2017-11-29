@@ -9,7 +9,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment14(vm) {
+function create_root_fragment(vm) {
     var root, span, text;
 
     return {
@@ -26,7 +26,7 @@ function fragment14(vm) {
 }
 
 function DiscardIndentation(options) {
-    this.$fragment = fragment14(this);
+    this.$fragment = create_root_fragment(this);
 
     if (options.el) {
         this.$fragment.c();

@@ -9,7 +9,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment25(vm) {
+function create_root_fragment(vm) {
     var root, div, div_0, text;
 
     return {
@@ -26,7 +26,7 @@ function fragment25(vm) {
 }
 
 function StaticChildren(options) {
-    this.$fragment = fragment25(this);
+    this.$fragment = create_root_fragment(this);
 
     if (options.el) {
         this.$fragment.c();

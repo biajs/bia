@@ -1,4 +1,22 @@
 // bia v0.0.0
+function create_if_block(vm) {
+    var text;
+
+    return {
+        c: function create() {
+            if (root) root.c();
+            this.h();
+            vm.$el = root;
+        },
+        h: function hydrate() {
+            setClass(root, 'baz')
+        },
+        m: function mount(target) {
+            replaceNode(target, root);
+        }
+    };
+}
+
 function createElement(tag) {
     return document.createElement(tag);
 }
@@ -13,16 +31,17 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment7(vm) {
-    var root, span, text, if_block, text_0;
+function create_root_fragment(vm) {
+    var root, span, text, text_0;
+
+    var if_block = (true) && create_if_block(vm);
 
     return {
         c: function create() {
             root = createElement('div');
             span = createElement('span');
             span.textContent = 'static child';
-            if_block = createElement('span');
-            if_block.textContent = 'dynamic child';
+            if (if_block) if_block.c();
             this.h();
             vm.$el = root;
         },
@@ -36,13 +55,13 @@ function fragment7(vm) {
             replaceNode(target, root);
             root.appendChild(span);
 
-            root.appendChild(if_block);
+            if (if_block) if_block.m(root)
         }
     };
 }
 
 function NodeWithDynamicChildren(options) {
-    this.$fragment = fragment7(this);
+    this.$fragment = create_root_fragment(this);
 
     if (options.el) {
         this.$fragment.c();

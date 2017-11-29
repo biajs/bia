@@ -9,7 +9,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment13(vm) {
+function create_root_fragment(vm) {
     var root, span, text, span_0, text_0, span_1, text_1, span_2, text_2, span_3, text_3, span_4, text_4, span_5, text_5, span_6, text_6, span_7, text_7, span_8, text_8, span_9, text_9, span_10, text_10, span_11, text_11, span_12, text_12;
 
     return {
@@ -83,7 +83,7 @@ function fragment13(vm) {
 }
 
 function Directives(options) {
-    this.$fragment = fragment13(this);
+    this.$fragment = create_root_fragment(this);
 
     if (options.el) {
         this.$fragment.c();
