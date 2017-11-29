@@ -31,7 +31,7 @@ export default function(source: string, options: CompileOptions) {
 }
 
 // convert an element to a parsed node tree
-function createDomTree(el: HTMLElement): ParsedNode {
+export function createDomTree(el: HTMLElement): ParsedNode {
     const nodeType = nodeTypes[el.nodeType];
 
     return {
