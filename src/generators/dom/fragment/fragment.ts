@@ -2,7 +2,7 @@ import {
     NodeVar,
     ParsedNode,
     TextInterpolation,
-} from '../../interfaces';
+} from '../../../interfaces';
 
 import { 
     JsCode,
@@ -11,18 +11,18 @@ import {
     JsObject,
     JsReturn,
     JsVariable,
-} from '../classes/index';
+} from '../../classes/index';
 
 import {
     createElement,
     createText,
     setClass,
     setStyle,
-} from './global_functions';
+} from './../global_functions';
 
 import { 
     escapeJsString,
-} from '../../utils/string';
+} from '../../../utils/string';
 
 /**
  * Build up a functions to control a dom fragment.
@@ -36,16 +36,23 @@ export function createFragment(fnName: string, node: ParsedNode): JsFunction {
     const nodeVars = getNodeVars(node, varCounter, true);
 
     return new JsFunction({
-        signature: ['vm', 'state'],
+        signature: ['vm'],
         name: fnName,
         content: [
-            // create containers for each of our dom elements
-            defineFragmentVariables(nodeVars),
+            // define variables for each of our fragment's dom nodes
+            new JsVariable({ define: nodeVars.map(v => v.name) }),
+
             null,
 
-            // return an object with methods to control our dom fragment
+            // return an object with methods to manage our fragment
             new JsReturn({ 
-                value: fragmentFunctionsObject(node, nodeVars)
+                value: new JsObject({
+                    properties: {
+                        c: getCreateFn(node, nodeVars),
+                        h: getHydrateFn(node, nodeVars),
+                        m: getMountFn(node, nodeVars),
+                    },
+                }),
             }),
         ],
     });
@@ -206,36 +213,6 @@ function createDomElements(node: ParsedNode, nodeVars: Array<NodeVar>): JsCode {
 
     return new JsCode({
         content,
-    });
-}
-
-/**
- * Define the variables neccessary to build a dom fragment.
- * 
- * @param  {Array<NodeVar>}     nodeVars
- * @return {JsVariable}
- */
-function defineFragmentVariables(nodeVars: Array<NodeVar>) {
-    return new JsVariable({
-        define: nodeVars.map(v => v.name),
-    });
-}
-
-/**
- * Define the functions neccessary to build a dom fragment.
- * 
- * @param  {ParsedNode}     node
- * @param  {Array>NodeVar>} nodeVars
- * @return {JsObject}
- */
-function fragmentFunctionsObject(node: ParsedNode, nodeVars: Array<NodeVar>): JsObject {
-    // this will eventually hold create, destroy, mount, and unmount
-    return new JsObject({
-        properties: {
-            c: getCreateFn(node, nodeVars),
-            h: getHydrateFn(node, nodeVars),
-            m: getMountFn(node, nodeVars),
-        },
     });
 }
 
