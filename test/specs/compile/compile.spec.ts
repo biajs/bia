@@ -143,28 +143,30 @@ describe('compilation', () => {
         expect(vm.$el.outerHTML).to.equal('<div class="foo"><span class="bar">static child</span><span class="baz">dynamic child</span></div>')
     });
 
-    it('compiles deeply nested dynamic children', () => {
+    it.only('compiles deeply nested dynamic children', () => {
         const { Component, code } = createComponent('NodeWithDeeplyNestedDynamicChildren', {
             filename: 'NodeWithDeeplyNestedDynamicChildren.bia',
             name: 'NodeWithDeeplyNestedDynamicChildren',
         });
 
-        const vm = new Component({ el });
+        console.log (code);
 
-        // foo
-        expect(vm.$el.children[0].outerHTML).to.equal('<span class="foo">foo</span>');
-        expect(vm.$el.children[1].tagName).to.equal('DIV');
-        expect(vm.$el.children[1].classList.contains('foo')).to.be.true;
+        // const vm = new Component({ el });
 
-        // bar
-        expect(vm.$el.children[1].children[0].outerHTML).to.equal('<span class="bar">bar</span>');
-        expect(vm.$el.children[1].children[1].tagName).to.equal('DIV');
-        expect(vm.$el.children[1].children[1].classList.contains('bar')).to.be.true;
+        // // foo
+        // expect(vm.$el.children[0].outerHTML).to.equal('<span class="foo">foo</span>');
+        // expect(vm.$el.children[1].tagName).to.equal('DIV');
+        // expect(vm.$el.children[1].classList.contains('foo')).to.be.true;
 
-        // baz
-        expect(vm.$el.children[1].children[1].children[0].outerHTML).to.equal('<span class="baz">baz</span>');
-        expect(vm.$el.children[1].children[1].children[1].tagName).to.equal('DIV');
-        expect(vm.$el.children[1].children[1].children[1].classList.contains('baz')).to.be.true;
+        // // bar
+        // expect(vm.$el.children[1].children[0].outerHTML).to.equal('<span class="bar">bar</span>');
+        // expect(vm.$el.children[1].children[1].tagName).to.equal('DIV');
+        // expect(vm.$el.children[1].children[1].classList.contains('bar')).to.be.true;
+
+        // // baz
+        // expect(vm.$el.children[1].children[1].children[0].outerHTML).to.equal('<span class="baz">baz</span>');
+        // expect(vm.$el.children[1].children[1].children[1].tagName).to.equal('DIV');
+        // expect(vm.$el.children[1].children[1].children[1].classList.contains('baz')).to.be.true;
     });
 
     it('compiles elements with dynamic and text children', () => {
@@ -172,7 +174,7 @@ describe('compilation', () => {
             filename: 'NodeWithDynamicChildAndText.bia',
             name: 'NodeWithDynamicChildAndText',
         });
-
+        
         const vm = new Component({ el });
         expect(vm.$el.outerHTML).to.equal('<div>\r\n        foo\r\n        <span>bar</span></div>');
     });

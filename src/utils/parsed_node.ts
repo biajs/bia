@@ -19,3 +19,8 @@ export function getDirective(node: ParsedNode, directive: string): NodeDirective
 export function nodeHasDirective(node: ParsedNode, directive: string): boolean {
     return isElementNode(node) && node.directives.some(d => d.name === directive);
 }
+
+// determine if a node will require hydration or not
+export function nodeRequiresHydration(node: ParsedNode): boolean {
+    return node.hasDynamicChildren || Object.keys(node.attributes).length > 0;
+}
