@@ -36,10 +36,8 @@ import { nodeHasDirective, nodeRequiresHydration } from '../../../utils/parsed_n
  * @return {JsFunction}
  */
 export function createFragment(fnName: string, node: ParsedNode): JsFunction {
-    const nodeNamer = new VariableNamer;
-    const varCounter = {};
-
     // name all nodes in our tree
+    const nodeNamer = new VariableNamer;
     nameAllNodes(node, nodeNamer);
 
     // return our create fragment function

@@ -1,7 +1,8 @@
+import { ParsedNode, TextInterpolation } from '../../../interfaces';
 import { VariableNamer } from '../../../utils/code';
+import { createElement, createText } from './../global_functions';
 import { escapeJsString } from '../../../utils/string';
 import { nodeHasDirective, nodeRequiresHydration } from '../../../utils/parsed_node';
-import { ParsedNode, TextInterpolation } from '../../../interfaces';
 
 import { 
     JsCode,
@@ -11,13 +12,6 @@ import {
     JsReturn,
     JsVariable,
 } from '../../classes/index';
-
-import {
-    createElement,
-    createText,
-    setClass,
-    setStyle,
-} from './../global_functions';
 
 /**
  * Function to create a new dom fragment.
