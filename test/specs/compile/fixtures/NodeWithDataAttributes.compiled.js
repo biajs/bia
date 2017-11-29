@@ -9,7 +9,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment4(vm, state) {
+function fragment4(vm) {
     var root;
 
     return {

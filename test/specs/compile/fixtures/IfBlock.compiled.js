@@ -9,14 +9,14 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment1(vm, state) {
-    var root, div_0, text_0;
+function fragment1(vm) {
+    var root, if_block, text;
 
     return {
         c: function create() {
             root = createElement('main');
-            div_0 = createElement('div');
-            div_0.textContent = 'bar';
+            if_block = createElement('div');
+            if_block.textContent = 'bar';
             this.h();
             vm.$el = root;
         },
@@ -25,7 +25,7 @@ function fragment1(vm, state) {
         },
         m: function mount(target) {
             replaceNode(target, root);
-            root.appendChild(div_0);
+            root.appendChild(if_block);
         }
     };
 }

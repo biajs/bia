@@ -9,8 +9,8 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment24(vm, state) {
-    var root, text_0;
+function fragment24(vm) {
+    var root, text;
 
     return {
         c: function create() {

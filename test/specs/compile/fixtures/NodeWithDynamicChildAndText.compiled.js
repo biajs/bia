@@ -13,15 +13,15 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment6(vm, state) {
-    var root, text_0, span_0, text_1;
+function fragment6(vm) {
+    var root, text, if_block, text_0;
 
     return {
         c: function create() {
             root = createElement('div');
-            text_0 = createText('\r\n        foo\r\n        ');
-            span_0 = createElement('span');
-            span_0.textContent = 'bar';
+            text = createText('\r\n        foo\r\n        ');
+            if_block = createElement('span');
+            if_block.textContent = 'bar';
             this.h();
             vm.$el = root;
         },
@@ -30,9 +30,9 @@ function fragment6(vm, state) {
         },
         m: function mount(target) {
             replaceNode(target, root);
-            root.appendChild(text_0);
+            root.appendChild(text);
 
-            root.appendChild(span_0);
+            root.appendChild(if_block);
         }
     };
 }

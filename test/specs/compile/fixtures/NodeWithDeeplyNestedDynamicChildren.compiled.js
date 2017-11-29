@@ -13,52 +13,52 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment5(vm, state) {
-    var root, span_0, text_0, div_0, span_1, text_1, div_1, span_2, text_2, div_2, p_0, text_3;
+function fragment5(vm) {
+    var root, span, text, div, span_0, text_0, div_0, span_1, text_1, div_1, if_block, text_2;
 
     return {
         c: function create() {
             root = createElement('div');
+            span = createElement('span');
+            span.textContent = 'foo';
+            div = createElement('div');
             span_0 = createElement('span');
-            span_0.textContent = 'foo';
+            span_0.textContent = 'bar';
             div_0 = createElement('div');
             span_1 = createElement('span');
-            span_1.textContent = 'bar';
+            span_1.textContent = 'baz';
             div_1 = createElement('div');
-            span_2 = createElement('span');
-            span_2.textContent = 'baz';
-            div_2 = createElement('div');
-            p_0 = createElement('p');
-            p_0.textContent = 'yar';
+            if_block = createElement('p');
+            if_block.textContent = 'yar';
             this.h();
             vm.$el = root;
         },
         h: function hydrate() {
             setClass(root, 'root')
 
-            setClass(span_0, 'foo')
-            setClass(div_0, 'foo')
+            setClass(span, 'foo')
+            setClass(div, 'foo')
 
-            setClass(span_1, 'bar')
-            setClass(div_1, 'bar')
+            setClass(span_0, 'bar')
+            setClass(div_0, 'bar')
 
-            setClass(span_2, 'baz')
-            setClass(div_2, 'baz')
+            setClass(span_1, 'baz')
+            setClass(div_1, 'baz')
 
-            setClass(p_0, 'yar')
+            setClass(if_block, 'yar')
         },
         m: function mount(target) {
             replaceNode(target, root);
-            root.appendChild(span_0);
+            root.appendChild(span);
 
-            root.appendChild(div_0);
+            root.appendChild(div);
+            div.appendChild(span_0);
+
+            div.appendChild(div_0);
             div_0.appendChild(span_1);
 
             div_0.appendChild(div_1);
-            div_1.appendChild(span_2);
-
-            div_1.appendChild(div_2);
-            div_2.appendChild(p_0);
+            div_1.appendChild(if_block);
         }
     };
 }

@@ -17,7 +17,7 @@ function replaceNode(target, node) {
 
 function noop() {}
 
-function fragment2(vm, state) {
+function fragment2(vm) {
     var root;
 
     return {
