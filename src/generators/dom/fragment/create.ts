@@ -56,8 +56,13 @@ function createDomElements(node: ParsedNode, nodeNamer: VariableNamer): JsCode {
     const content = [];
     const varName = nodeNamer.getName(node);
 
+    // if blocks
+    if (nodeHasDirective(node, 'if')) {
+        content.push(` if (${varName}) ${varName}.c();`);
+    }
+    
     // elements
-    if (node.type === 'ELEMENT') {
+    else if (node.type === 'ELEMENT') {
         const tagName = node.tagName.toLowerCase();
         content.push(setElementVar(node, varName));
     

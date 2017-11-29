@@ -50,7 +50,14 @@ function appendChildElements(node: ParsedNode, nodeNamer: VariableNamer): JsCode
         node.children.forEach(child => {
             const childVarName = nodeNamer.getName(child);
 
-            if (node.type === 'ELEMENT') {
+            // if blocks
+            if (nodeHasDirective(child, 'if')) {
+                const ifName = nodeNamer.getName(child);
+                content.push(`if (${ifName}) ${ifName}.m(${varName})`);
+            }
+
+            // elements
+            else if (node.type === 'ELEMENT') {
                 content.push(`${varName}.appendChild(${childVarName});`);
             }
 

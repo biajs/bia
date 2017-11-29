@@ -8,12 +8,10 @@ import { createFragment } from './fragment/fragment';
 import uniqueId from '../../utils/unique_id';
 
 export default function(parsedSource, options) {
-    const createFragmentFn = uniqueId('fragment');
-
     return new JsCode({
         content: [
             // define our fragment constructor
-            createFragment(createFragmentFn, parsedSource.template),
+            createFragment('create_root_fragment', parsedSource.template),
             null,
             
             new JsFunction({
@@ -22,7 +20,7 @@ export default function(parsedSource, options) {
                 signature: ['options'],
                 content: [
                     // define this component's fragment
-                    `this.$fragment = ${createFragmentFn}(this);`,
+                    `this.$fragment = create_root_fragment(this);`,
                     null,
                     mountIfStatement(),
                 ],

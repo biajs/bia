@@ -26,7 +26,7 @@ import getMountFn from './mount';
 
 import { VariableNamer } from '../../../utils/code';
 import { escapeJsString } from '../../../utils/string';
-import { nodeHasDirective, nodeRequiresHydration } from '../../../utils/parsed_node';
+import { getDirective, nodeHasDirective, nodeRequiresHydration } from '../../../utils/parsed_node';
 
 /**
  * Build up a functions to control a dom fragment.
@@ -46,10 +46,11 @@ export function createFragment(fnName: string, node: ParsedNode): JsFunction {
         name: fnName,
         content: [
             // define variables for each of our fragment's dom nodes
-            new JsVariable({ 
-                define: nodeNamer.namedNodes.map(n => n.name),
-            }),
+            defineDomNodes(node, nodeNamer),
+            null,
 
+            // define if blocks
+            defineIfBlocks(node, nodeNamer),
             null,
 
             // return an object with methods to manage our fragment
@@ -64,6 +65,54 @@ export function createFragment(fnName: string, node: ParsedNode): JsFunction {
             }),
         ],
     });
+}
+
+function defineDomNodes(node: ParsedNode, nodeNamer: VariableNamer): JsVariable {
+    return new JsVariable({ 
+        define: nodeNamer.namedNodes
+            .filter(n => !nodeHasDirective(n.node, 'if'))
+            .map(n => n.name),
+    });
+}
+
+function defineIfBlocks(node: ParsedNode, nodeNamer: VariableNamer) {
+    const descendentIfNodes = getDescendentIfNodes(node);
+
+    // define a fragment function for each if block
+    const ifFragmentConstructors = descendentIfNodes.map(ifNode => {
+        const name = nodeNamer.getName(ifNode);
+
+        return createFragment(`create_${name}`, ifNode);
+    });
+
+    // and add code to construct our fragment based on the condition
+    const ifNodeDefinitions = descendentIfNodes.map(ifNode => {
+        const name = nodeNamer.getName(ifNode);
+        const directive = getDirective(ifNode, 'if');
+
+        const value = `(${directive.expression}) && create_${name}(vm)`;
+
+        return new JsVariable({ name, value });
+    });
+
+    return new JsCode({
+        globalFunctions: ifFragmentConstructors,
+        content: ifNodeDefinitions,
+    });
+}
+
+function getDescendentIfNodes(node: ParsedNode) {
+    let ifNodes = [];
+
+    node.children.forEach(child => {
+        if (nodeHasDirective(child, 'if')) {
+            ifNodes.push(child);
+        } else {
+            ifNodes = ifNodes.concat(getDescendentIfNodes(child));
+        }        
+    });
+
+    return ifNodes;
 }
 
 /**

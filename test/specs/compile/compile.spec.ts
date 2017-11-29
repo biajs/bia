@@ -133,7 +133,7 @@ describe('compilation', () => {
     });
 
     it('compiles nodes with dynamic children', () => {
-        const { Component } = createComponent('NodeWithDynamicChildren', {
+        const { Component, code } = createComponent('NodeWithDynamicChildren', {
             filename: 'NodeWithDynamicChildren.bia',
             name: 'NodeWithDynamicChildren',
         });
