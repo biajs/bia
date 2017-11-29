@@ -50,5 +50,17 @@ describe('validation', () => {
                 `Failed to parse MultipleRootNodes.bia, template must contain exactly one root element.`
             );
         });
+
+        it('throws an error if there are non-conditional node between if and else blocks')
+
+        it('throws an error if there are non-conditional nodes between if and else-if blocks');
+
+        it('throws an error if there are non-conditional nodes between else-if and other else-if blocks');
+
+        it('throws an error if there are non-conditional nodes between else-if and else blocks');
+
+        it('throws an error if else-if blocks are not preceeded by an if or else-if block');
+
+        it('throws an error if else blocks are not preceeded by an if or else-if block');
     });
 });
