@@ -8,11 +8,22 @@ import Fragment from './fragment/fragment';
 import uniqueId from '../../utils/unique_id';
 
 export default function(parsedSource, options) {
+    const fragment = new Fragment(parsedSource, { name: 'create_main_fragment' });
 
-    const fragment = new Fragment(parsedSource);
-    
     return new JsCode({
-
+        content: [
+            fragment.toCode(),
+            null,
+            new JsFunction({
+                name: options.name,
+                signature: ['options'],
+                content: [
+                    `this.$fragment = create_main_fragment(this);`,
+                    null,
+                    mountIfStatement(),
+                ],
+            }),
+        ],
     });
 };
 

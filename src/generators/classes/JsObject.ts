@@ -2,7 +2,7 @@ import { BaseCode, BaseCodeOptions, DescendentCode } from './BaseCode';
 import { indent } from '../../utils/string';
 
 interface JsObjectOptions extends BaseCodeOptions {
-    properties?: Object;
+    properties?: Object
 }
 
 /**

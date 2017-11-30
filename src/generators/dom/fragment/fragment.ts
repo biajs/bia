@@ -1,8 +1,15 @@
 import { ParsedNode } from '../../../interfaces';
 import { nodeHasDirective } from '../../../utils/parsed_node';
-import { JsVariable } from '../../classes/index';
+import { JsCode, JsFunction, JsObject, JsReturn, JsVariable } from '../../classes/index';
+import CreateFn from './create';
+import HydrateFn from './hydrate';
+import MountFn from './mount';
 
+//
+// interfaces
+//
 interface FragmentOptions {
+    name: string,
     parent?: Fragment,
 }
 
@@ -11,20 +18,23 @@ interface NamedNode {
     node: ParsedNode,
 }
 
+//
+// fragment
+//
 class Fragment {
     public nameCounter: Object;
     public namedNodes: Array<NamedNode>;
     public node: ParsedNode;
-    public parent: Fragment | null;
+    public options: FragmentOptions;
 
     /**
      * Constructor.
      */
-    constructor(node: ParsedNode, options: FragmentOptions = {}) {
+    constructor(parsedSource, options: FragmentOptions) {
         this.nameCounter = {};
         this.namedNodes = [];
-        this.node = node;
-        this.parent = options.parent || null;
+        this.node = parsedSource.template;
+        this.options = options;
     }
 
     /**
@@ -95,6 +105,36 @@ class Fragment {
         }
 
         return getChildNodes([], this.node);
+    }
+
+    /**
+     * Convert our fragment to a constructor function.
+     * 
+     * @return JsFunction
+     */
+    public toCode(): JsFunction {
+        const content = [];
+
+        // define our various dom elements
+        content.push(this.getElementVariables(), null);
+
+        // return an object with fragment's lifecycle methods
+        content.push(new JsReturn({
+            value: new JsObject({
+                properties: {
+                    c: new CreateFn(this).toCode(),
+                    h: new HydrateFn(this).toCode(),
+                    m: new MountFn(this).toCode(),
+                },
+            }),
+        }));
+
+        return new JsFunction({
+            id: this.options.name,
+            name: this.options.name,
+            signature: ['vm'],
+            content,
+        });
     }
 }
 

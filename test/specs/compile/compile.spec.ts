@@ -23,30 +23,32 @@ describe('compilation', () => {
         
         return { 
             code, 
-            // Component: new Function(code)(),
+            Component: new Function(code)(),
         };
     }
 
-    // it('EmptyNode', () => {
-    //     const { Component } = createComponent('EmptyNode', {
-    //         filename: 'EmptyNode.bia',
-    //         name: 'EmptyNode',
-    //     });
+    it('renders an empty element', () => {
+        const { Component, code } = createComponent('EmptyNode', {
+            filename: 'EmptyNode.bia',
+            name: 'EmptyNode',
+        });
 
-    //     const vm = new Component({ el });
+        const vm = new Component({ el });
 
-    //     expect(vm.$el.outerHTML).to.equal(`<div></div>`);
-    // });
+        expect(vm.$el.outerHTML).to.equal(`<div></div>`);
+    });
 
-    // it('NodeWithAttributes', () => {
-    //     const { Component } = createComponent('NodeWithAttributes', {
+    // it.only('NodeWithAttributes', () => {
+    //     const { Component, code } = createComponent('NodeWithAttributes', {
     //         filename: 'NodeWithAttributes.bia',
     //         name: 'NodeWithAttributes',
     //     });
+        
+    //     console.log (code);
 
-    //     const vm = new Component({ el });
+        // const vm = new Component({ el });
 
-    //     expect(vm.$el.outerHTML).to.equal('<div class="foo" style="color: red;"></div>');
+        // expect(vm.$el.outerHTML).to.equal('<div class="foo" style="color: red;"></div>');
     // });
 
     // it('NodeWithChild', () => {
@@ -121,16 +123,16 @@ describe('compilation', () => {
     //     expect(vm.$el.outerHTML).to.equal('<div>\n        <span>3</span>\n    </div>');
     // });
 
-    // it('NodeWithDataAttributes', () => {
-    //     const { Component } = createComponent('NodeWithDataAttributes', {
-    //         filename: 'NodeWithDataAttributes.bia',
-    //         name: 'NodeWithDataAttributes',
-    //     });
+    it('renders elements with data-attributes', () => {
+        const { Component, code } = createComponent('NodeWithDataAttributes', {
+            filename: 'NodeWithDataAttributes.bia',
+            name: 'NodeWithDataAttributes',
+        });
 
-    //     const vm = new Component({ el });
+        const vm = new Component({ el });
     
-    //     expect(vm.$el.outerHTML).to.equal('<div data-foo="bar" data-one-two="three"></div>');
-    // });
+        expect(vm.$el.outerHTML).to.equal('<div data-foo="bar" data-one-two="three"></div>');
+    });
 
     // it('compiles nodes with dynamic children', () => {
     //     const { Component, code } = createComponent('NodeWithDynamicChildren', {
@@ -143,11 +145,11 @@ describe('compilation', () => {
     //     expect(vm.$el.outerHTML).to.equal('<div class="foo"><span class="bar">static child</span><span class="baz">dynamic child</span></div>')
     // });
 
-    it('compiles deeply nested dynamic children', () => {
-        const { code } = createComponent('NodeWithDeeplyNestedDynamicChildren', {
-            filename: 'NodeWithDeeplyNestedDynamicChildren.bia',
-            name: 'NodeWithDeeplyNestedDynamicChildren',
-        });
+    // it('compiles deeply nested dynamic children', () => {
+    //     const { code } = createComponent('NodeWithDeeplyNestedDynamicChildren', {
+    //         filename: 'NodeWithDeeplyNestedDynamicChildren.bia',
+    //         name: 'NodeWithDeeplyNestedDynamicChildren',
+    //     });
 
         // console.log (code);
 
@@ -167,7 +169,7 @@ describe('compilation', () => {
         // expect(vm.$el.children[1].children[1].children[0].outerHTML).to.equal('<span class="baz">baz</span>');
         // expect(vm.$el.children[1].children[1].children[1].tagName).to.equal('DIV');
         // expect(vm.$el.children[1].children[1].children[1].classList.contains('baz')).to.be.true;
-    });
+    // });
 
     // it('compiles elements with dynamic and text children', () => {
     //     const { Component, code } = createComponent('NodeWithDynamicChildAndText', {

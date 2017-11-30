@@ -1,137 +1,49 @@
-import { ParsedNode, TextInterpolation } from '../../../interfaces';
-import { VariableNamer } from '../../../utils/code';
+import Fragment from './fragment';
+import { JsCode, JsFunction } from '../../classes/index';
 import { escapeJsString } from '../../../utils/string';
-import { nodeHasDirective, nodeRequiresHydration } from '../../../utils/parsed_node';
-import { setClass, setStyle } from './../global_functions';
 
-import { 
-    JsCode,
-    JsFunction,
-    JsIf,
-    JsObject,
-    JsReturn,
-    JsVariable,
-} from '../../classes/index';
+class FragmentHydrate {
+    public fragment: Fragment;
 
-/**
- * Function to hydrate a node's dom elements.
- * 
- * @param  {ParsedNode}     node
- * @param  {Array<NodeVar>} nodeVars
- * @return {JsFunction} 
- */
-export default function (node: ParsedNode, nodeNamer: VariableNamer): JsCode {
-    // if the node doesn't need hydration, use noop
-    if (!nodeRequiresHydration(node)) {
-        return new JsCode({ content: ['noop'] });
+    /**
+     * Constructor
+     * 
+     * @param {Fragment} fragment
+     */
+    constructor(fragment) {
+        this.fragment = fragment;
     }
 
-    return new JsFunction({
-        name: 'hydrate',
-        content: [
-            hydrateDomElements(node, nodeNamer),
-        ],
-    });
-}
+    public setElementAttributes() {
+        return this.fragment.getElementNodes()
+            .filter(node => Object.keys(node.attributes).length)
+            .reduce((attrs, node) => {
+                const varName = this.fragment.getName(node);
+                
+                Object.keys(node.dataAttributes).forEach(key => {
+                    const value = node.dataAttributes[key];
+                    attrs.push(`${varName}.dataset.${key} = '${escapeJsString(value)}';`);
+                });
 
-/**
- * Attach classes to a node.
- * 
- * @param  {ParsedNode}     node
- * @param  {string}         varName
- * @return {JsCode}
- */
-function attachClasses(node: ParsedNode, varName: string) {
-    const content = [];
-    const globalFunctions = [];
-
-    // start with all of our static classes that we know will be attached
-    if (node.staticClasses.length) {
-        const classes = node.staticClasses.slice(0);
-
-        content.push(`setClass(${varName}, '${escapeJsString(classes.join(' '))}')`);
-        globalFunctions.push(setClass());
+                return attrs;
+            }, []);
     }
 
-    // @todo: handle dynamic classes
-    
-    return new JsCode({
-        content,
-        globalFunctions,
-    });
-}
+    /**
+     * Convert to a fragment hydrate function.
+     * 
+     * @return {JsCode}
+     */
+    public toCode(): JsCode {
+        const content = [];
+        const globalFunctions = [];
 
-/**
- * Attach data attributes to a node.
- * 
- * @param  {ParsedNode}     node
- * @param  {string}         varName
- * @return {JsCode}
- */
-function attachDataAttributes(node: ParsedNode, varName: string) {
-    const attrNames = Object.keys(node.dataAttributes);
+        content.push(...this.setElementAttributes());
 
-    if (attrNames.length > 0) {
-        const content = attrNames.map(name => {
-            return `${varName}.dataset.${name} = '${escapeJsString(node.dataAttributes[name])}'`
-        });
-
-        return new JsCode({ content });
+        return content.filter(c => c).length
+            ? new JsFunction({ name: 'hydrate', globalFunctions, content })
+            : new JsCode({ content: ['noop'] });
     }
 }
 
-/**
- * Attach styles to a node.
- * 
- * @param  {ParsedNode}     node
- * @param  {string}         varName
- * @return {JsCode}
- */
-function attachStyles(node: ParsedNode, varName: string) {
-    // start with all of our static styles that we know will be attached
-    const styles = Object.keys(node.staticStyles).reduce((content, styleProperty) => {
-        const property = escapeJsString(styleProperty);
-        const value = escapeJsString(node.staticStyles[styleProperty]);
-
-        content.push(`setStyle(${varName}, '${property}', '${value}');`);
-
-        return content;
-    }, []);
-
-    // @todo: handle dynamic styles
-
-    // attach our setStyle function if neccessary
-    const globalFunctions = styles.length
-        ? [setStyle()]
-        : [];
-    
-    return new JsCode({
-        globalFunctions,
-        content: styles,
-    });
-}
-
-/**
- * Recursively hydrate dom elements.
- * 
- * @param  {ParsedNode}     node 
- * @param  {VariableNamer}  nodeNamer 
- * @return {JsCode}
- */
-function hydrateDomElements(node: ParsedNode, nodeNamer: VariableNamer): JsCode {
-    const content = [];
-    const varName = nodeNamer.getName(node);
-
-    if (node.type === 'ELEMENT') {
-        content.push(
-            attachClasses(node, varName),
-            attachDataAttributes(node, varName),
-            attachStyles(node, varName),
-            ...node.children.map(child => hydrateDomElements(child, nodeNamer)),
-        );
-    }
-
-    return new JsCode({
-        content,
-    });
-}
+export default FragmentHydrate;

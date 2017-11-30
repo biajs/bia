@@ -3,7 +3,11 @@ import parseTemplate from '../../../src/parse/template';
 import { CompileOptions } from '../../../src/interfaces';
 import { expect } from 'chai';
 
-describe.only('Fragment', () => {
+describe('Fragment', () => {
+
+    const opts = {
+        name: 'foo',
+    }
 
     function template(source: string, options: CompileOptions = { filename: 'test.bia', name: 'test' }) {
         return parseTemplate(`<template>${source.trim()}</template>`, { filename: 'test.bia', name: 'test' });
@@ -11,7 +15,7 @@ describe.only('Fragment', () => {
 
     it('sets it\'s node on construction', () => {
         const node = template(`<div>Hello world</div>`);
-        const fragment = new Fragment(node);
+        const fragment = new Fragment({ template: node }, opts);
 
         expect(fragment.node).to.equal(node);
     });
@@ -20,11 +24,11 @@ describe.only('Fragment', () => {
         const staticNode = template(`<div><span></span></div>`);
         const dynamicNode = template(`<div><p><span b-if="bar"></span></p></div>`);
 
-        const staticEls = new Fragment(staticNode).getElementNodes();
+        const staticEls = new Fragment({ template: staticNode }, opts).getElementNodes();
         expect(staticEls[0]).to.deep.equal(staticNode);
         expect(staticEls.length).to.equal(1);
         
-        const dynamicEls = new Fragment(dynamicNode).getElementNodes();
+        const dynamicEls = new Fragment({ template: dynamicNode }, opts).getElementNodes();
         expect(dynamicEls[0]).to.deep.equal(dynamicNode);
         expect(dynamicEls[1]).to.deep.equal(dynamicNode.children[0]);
         expect(dynamicEls.length).to.equal(2);
@@ -39,7 +43,7 @@ describe.only('Fragment', () => {
             </div>
         `);
 
-        const fragment = new Fragment(node);
+        const fragment = new Fragment({ template: node }, opts);
 
         expect(String(fragment.getElementVariables())).to.equal('var div;');
     });
@@ -65,7 +69,7 @@ describe.only('Fragment', () => {
             </div>
         `);
         
-        expect(String(new Fragment(node).getElementVariables())).to.equal(
+        expect(String(new Fragment({ template: node }, opts).getElementVariables())).to.equal(
             'var div, text, span, i, text_1, div_1;'
         );
     });
