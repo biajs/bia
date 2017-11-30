@@ -17,26 +17,56 @@ describe.only('Fragment', () => {
     });
 
     it('determines which variables need to be defined', () => {
-        const node = template(`
-            <div>
-                <span></span>
-            </div>
-        `);
+        const staticNode = template(`<div><span></span></div>`);
+        const dynamicNode = template(`<div><p><span b-if="bar"></span></p></div>`);
 
-        const elementNodes = new Fragment(node).getElementNodes();
-
-        expect(elementNodes[0]).to.deep.equal(node);
-        expect(elementNodes[1]).to.deep.equal(node.children[0]);
-        expect(elementNodes.length).to.equal(2);
+        const staticEls = new Fragment(staticNode).getElementNodes();
+        expect(staticEls[0]).to.deep.equal(staticNode);
+        expect(staticEls.length).to.equal(1);
+        
+        const dynamicEls = new Fragment(dynamicNode).getElementNodes();
+        expect(dynamicEls[0]).to.deep.equal(dynamicNode);
+        expect(dynamicEls[1]).to.deep.equal(dynamicNode.children[0]);
+        expect(dynamicEls.length).to.equal(2);
     });
 
-    it('defines each element node as a javascript variable', () => {
+    it('defines a single variable for nodes with purely static content', () => {
         const node = template(`
             <div>
-                <span></span>
+                <p>
+                    <span>hello world</span>
+                </p>
             </div>
         `);
 
-        const defs = new Fragment(node).getVariables();
-    })
+        const fragment = new Fragment(node);
+
+        expect(String(fragment.getElementVariables())).to.equal('var div;');
+    });
+
+    it('defines variables for each node in dynamic content', () => {
+        const node = template(`
+            <div>
+                foo
+                <span>
+                    <u b-if="false"></u>
+                    <i>
+                        this span has dynamic content, so this
+                        i tag should be assigned a variable name
+                    </i>
+                </span>
+                baz
+                <div>
+                    <b>
+                        this div has purely static content, so this
+                        b tag shouldn't assigned a variable name
+                    </b>
+                </div>
+            </div>
+        `);
+        
+        expect(String(new Fragment(node).getElementVariables())).to.equal(
+            'var div, text, span, i, text_1, div_1;'
+        );
+    });
 });
