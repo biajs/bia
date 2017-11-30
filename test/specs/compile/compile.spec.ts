@@ -38,18 +38,16 @@ describe('compilation', () => {
         expect(vm.$el.outerHTML).to.equal(`<div></div>`);
     });
 
-    // it.only('NodeWithAttributes', () => {
-    //     const { Component, code } = createComponent('NodeWithAttributes', {
-    //         filename: 'NodeWithAttributes.bia',
-    //         name: 'NodeWithAttributes',
-    //     });
-        
-    //     console.log (code);
+    it('renders static classes and styles', () => {
+        const { Component, code } = createComponent('NodeWithAttributes', {
+            filename: 'NodeWithAttributes.bia',
+            name: 'NodeWithAttributes',
+        });
 
-        // const vm = new Component({ el });
+        const vm = new Component({ el });
 
-        // expect(vm.$el.outerHTML).to.equal('<div class="foo" style="color: red;"></div>');
-    // });
+        expect(vm.$el.outerHTML).to.equal('<div class="foo" style="color: red;"></div>');
+    });
 
     // it('NodeWithChild', () => {
     //     const { Component } = createComponent('NodeWithChild', {
