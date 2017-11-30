@@ -1,7 +1,9 @@
-import { JsFunction } from '../../classes/JsFunction';
+import { JsCode, JsFunction } from '../../classes/index';
 import Fragment from './fragment';
 import { createElement } from '../global_functions';
 import { nodeRequiresHydration } from '../../../utils/parsed_node';
+import { ParsedNode } from '../../../interfaces';
+import { escapeJsString} from '../../../utils/string';
 
 class FragmentCreate {
     public fragment: Fragment;
@@ -15,16 +17,73 @@ class FragmentCreate {
         this.fragment = fragment
     }
 
-    public defineDomNodes() {
-        const nodes = [];
+    /**
+     * Define variables for the fragment's nodes.
+     * 
+     * @param  {Array<ParsedNode>} nodes
+     * @return {JsCode}
+     */
+    public defineDomNodes(nodes: Array<ParsedNode>): JsCode {
+        const content = [];
+        const globalFunctions = [];
+        let usedCreateElement = false;
         
-        this.fragment.getElementNodes().forEach(node => {
+        nodes.forEach(node => {
             if (node.type === 'ELEMENT') {
-                nodes.push(`${this.fragment.getName(node)} = createElement("${node.tagName.toLowerCase()}");`);
+                usedCreateElement = true;
+                content.push(`${this.fragment.getName(node)} = createElement('${node.tagName.toLowerCase()}');`);
             }
         });
 
-        return nodes;
+        // include the createElement function if we used it
+        if (usedCreateElement) {
+            globalFunctions.push(createElement());
+        }
+
+        return new JsCode({
+            content,
+            globalFunctions,
+        });
+    }
+
+    public defineTextValues(nodes: Array<ParsedNode>): JsCode {
+        const content = [];
+
+        // @todo...
+
+        return new JsCode({
+            content,
+        });
+    }
+
+    /**
+     * Set purely static content.
+     * 
+     * @param  {Array<ParsedNode} nodes
+     * @return {JsCode}
+     */
+    public setStaticContent(nodes: Array<ParsedNode>): JsCode {
+        const content = [];
+
+        nodes.forEach(node => {
+            if (!node.hasDynamicChildren) {
+                const varName = this.fragment.getName(node);
+
+                if (node.type === 'ELEMENT') {
+                    if (node.children.length === 1 && node.children[0].type === 'TEXT') {
+                        const textNode = node.children[0];
+                            
+                        content.push(`${varName}.textContent = '${escapeJsString(textNode.textContent)}';`);
+                    } else {
+                        content.push(`${varName}.innerHTML = '${escapeJsString(node.innerHTML)}';`);
+                    }
+                }
+            }
+        });
+
+        return new JsCode({
+            content,
+        });
     }
 
     /**
@@ -35,14 +94,14 @@ class FragmentCreate {
     public toCode(): JsFunction {
         const content = [];
         const globalFunctions = [];
+        const nodes = this.fragment.getElementNodes();
 
-        // define any dom nodes that we need to
-        const definedDomNodes = this.defineDomNodes();
+        // define neccessary fragment variables
+        content.push(this.defineDomNodes(nodes));
+        content.push(this.defineTextValues(nodes));
 
-        if (definedDomNodes) {
-            globalFunctions.push(createElement());
-            content.push(...definedDomNodes);
-        }
+        // set static content
+        content.push(this.setStaticContent(nodes));
 
         // hydrate our node if neccessary
         if (nodeRequiresHydration(this.fragment.node)) {

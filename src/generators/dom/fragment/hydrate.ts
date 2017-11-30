@@ -52,8 +52,8 @@ class FragmentHydrate {
      * @param  {Array<ParsedNode>}  nodes
      * @return {Array>string>}
      */
-    public setDataAttributes(nodes): Array<string> {
-        return nodes.filter(node => Object.keys(node.attributes).length)
+    public setDataAttributes(nodes): JsCode {
+        const content = nodes.filter(node => Object.keys(node.attributes).length)
             .reduce((attrs, node) => {
                 const varName = this.fragment.getName(node);
                 
@@ -64,6 +64,10 @@ class FragmentHydrate {
 
                 return attrs;
             }, []);
+
+        return new JsCode({
+            content,
+        });
     }
 
     /**
@@ -111,9 +115,9 @@ class FragmentHydrate {
         // set various element attributes
         content.push(this.setClasses(nodes));
         content.push(this.setStyles(nodes));
-        content.push(...this.setDataAttributes(nodes));
+        content.push(this.setDataAttributes(nodes));
 
-        return content.filter(c => c).length
+        return content.filter(code => code.content.length).length
             ? new JsFunction({ name: 'hydrate', globalFunctions, content })
             : new JsCode({ content: ['noop'] });
     }

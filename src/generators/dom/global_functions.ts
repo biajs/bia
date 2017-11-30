@@ -54,6 +54,22 @@ export function createText() {
 }
 
 /**
+ * Interpolate text.
+ * 
+ * @return {JsFunction}
+ */
+export function interpolate() {
+    return new JsFunction({
+        id: 'interpolate',
+        name: 'interpolate',
+        signature: ['vm', 'expression'],
+        content: [
+            `return new Function('return 5')()`,
+        ]
+    });
+}
+
+/**
  * Insert a dom node before a target.
  * 
  * @return {Object}
