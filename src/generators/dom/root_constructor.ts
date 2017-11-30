@@ -4,28 +4,15 @@ import {
     JsIf,
 } from '../classes/index';
 
-import { createFragment } from './fragment/fragment';
+import Fragment from './fragment/fragment';
 import uniqueId from '../../utils/unique_id';
 
 export default function(parsedSource, options) {
+
+    const fragment = new Fragment(parsedSource);
+    
     return new JsCode({
-        content: [
-            // define our fragment constructor
-            createFragment('create_root_fragment', parsedSource.template),
-            null,
-            
-            new JsFunction({
-                id: 'rootFn',
-                name: options.name,
-                signature: ['options'],
-                content: [
-                    // define this component's fragment
-                    `this.$fragment = create_root_fragment(this);`,
-                    null,
-                    mountIfStatement(),
-                ],
-            }),
-        ],
+
     });
 };
 

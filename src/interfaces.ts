@@ -1,6 +1,6 @@
 export interface CompileOptions {
-    filename: 'string';
-    name: 'string';
+    filename: string;
+    name: string;
 };
 
 // directive object parsed from dom element
