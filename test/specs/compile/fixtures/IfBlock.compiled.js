@@ -1,15 +1,18 @@
 // bia v0.0.0
 function create_if_block(vm) {
-    var text;
+    var div;
 
     return {
         c: function create() {
-            if (root) root.c();
-            vm.$el = root;
+            div = createElement('div');
+
+            div.textContent = 'bar';
+
+            vm.$el = div;
         },
         h: noop,
         m: function mount(target) {
-            replaceNode(target, root);
+            appendChild(target, div);
         }
     };
 }
@@ -18,36 +21,40 @@ function createElement(tag) {
     return document.createElement(tag);
 }
 
+function appendChild(target, el) {
+    return target.appendChild(el);
+}
 function replaceNode(target, node) {
     target.replaceWith(node);
 }
 
 function noop() {}
 
-function create_root_fragment(vm) {
-    var root, text;
+function create_main_fragment(vm) {
+    var main;
 
     var if_block = (foo) && create_if_block(vm);
 
     return {
         c: function create() {
-            root = createElement('main');
-            if (if_block) if_block.c();
-            this.h();
-            vm.$el = root;
-        },
-        h: function hydrate() {
+            main = createElement('main');
 
+            if (if_block) if_block.c();
+
+            this.h();
+
+            vm.$el = main;
         },
+        h: noop,
         m: function mount(target) {
-            replaceNode(target, root);
-            if (if_block) if_block.m(root)
+            appendChild(target, main);
+            if (if_block) if_block.m(main);
         }
     };
 }
 
 function IfBlock(options) {
-    this.$fragment = create_root_fragment(this);
+    this.$fragment = create_main_fragment(this);
 
     if (options.el) {
         this.$fragment.c();

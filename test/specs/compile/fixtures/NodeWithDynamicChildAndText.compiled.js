@@ -1,15 +1,18 @@
 // bia v0.0.0
 function create_if_block(vm) {
-    var text;
+    var span;
 
     return {
         c: function create() {
-            if (root) root.c();
-            vm.$el = root;
+            span = createElement('span');
+
+            span.textContent = 'bar';
+
+            vm.$el = span;
         },
         h: noop,
         m: function mount(target) {
-            replaceNode(target, root);
+            appendChild(target, span);
         }
     };
 }
@@ -18,43 +21,41 @@ function createElement(tag) {
     return document.createElement(tag);
 }
 
-function createText(text) {
-    return document.createTextNode(text);
+function appendChild(target, el) {
+    return target.appendChild(el);
 }
-
 function replaceNode(target, node) {
     target.replaceWith(node);
 }
 
 function noop() {}
 
-function create_root_fragment(vm) {
-    var root, text, text_0;
+function create_main_fragment(vm) {
+    var div, text;
 
     var if_block = (true) && create_if_block(vm);
 
     return {
         c: function create() {
-            root = createElement('div');
-            text = createText('\r\n        foo\r\n        ');
+            div = createElement('div');
+
             if (if_block) if_block.c();
+
             this.h();
-            vm.$el = root;
-        },
-        h: function hydrate() {
 
+            vm.$el = div;
         },
+        h: noop,
         m: function mount(target) {
-            replaceNode(target, root);
-            root.appendChild(text);
-
-            if (if_block) if_block.m(root)
+            appendChild(target, div);
+            appendChild(div, text);
+            if (if_block) if_block.m(div);
         }
     };
 }
 
 function NodeWithDynamicChildAndText(options) {
-    this.$fragment = create_root_fragment(this);
+    this.$fragment = create_main_fragment(this);
 
     if (options.el) {
         this.$fragment.c();

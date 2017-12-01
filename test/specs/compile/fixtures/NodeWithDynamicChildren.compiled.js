@@ -1,18 +1,22 @@
 // bia v0.0.0
 function create_if_block(vm) {
-    var text;
+    var span;
 
     return {
         c: function create() {
-            if (root) root.c();
+            span = createElement('span');
+
+            span.textContent = 'dynamic child';
+
             this.h();
-            vm.$el = root;
+
+            vm.$el = span;
         },
         h: function hydrate() {
-            setClass(root, 'baz')
+            setClass(span, 'baz');
         },
         m: function mount(target) {
-            replaceNode(target, root);
+            appendChild(target, span);
         }
     };
 }
@@ -25,43 +29,46 @@ function setClass(el, className) {
     el.className = className;
 }
 
+function appendChild(target, el) {
+    return target.appendChild(el);
+}
 function replaceNode(target, node) {
     target.replaceWith(node);
 }
 
 function noop() {}
 
-function create_root_fragment(vm) {
-    var root, span, text, text_0;
+function create_main_fragment(vm) {
+    var div, span;
 
     var if_block = (true) && create_if_block(vm);
 
     return {
         c: function create() {
-            root = createElement('div');
+            div = createElement('div');
             span = createElement('span');
-            span.textContent = 'static child';
+
             if (if_block) if_block.c();
+            span.textContent = 'static child';
+
             this.h();
-            vm.$el = root;
+
+            vm.$el = div;
         },
         h: function hydrate() {
-            setClass(root, 'foo')
-
-            setClass(span, 'bar')
-            setClass(if_block, 'baz')
+            setClass(div, 'foo');
+            setClass(span, 'bar');
         },
         m: function mount(target) {
-            replaceNode(target, root);
-            root.appendChild(span);
-
-            if (if_block) if_block.m(root)
+            appendChild(target, div);
+            appendChild(div, span);
+            if (if_block) if_block.m(div);
         }
     };
 }
 
 function NodeWithDynamicChildren(options) {
-    this.$fragment = create_root_fragment(this);
+    this.$fragment = create_main_fragment(this);
 
     if (options.el) {
         this.$fragment.c();
