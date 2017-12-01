@@ -57,8 +57,10 @@ describe('parsing', () => {
         });
     });
 
-    it('NodeWithChild', () => {
-        expect(parseTemplate('NodeWithChild', {})).to.containSubset({
+    it('parses child nodes, while keeping a reference to the parent', () => {
+        const node = parseTemplate('NodeWithChild', {});
+
+        expect(node).to.containSubset({
             attributes: {},
             tagName: 'DIV',
             textContent: null,
@@ -73,6 +75,8 @@ describe('parsing', () => {
                 }
             ],
         });
+
+        expect(node.children[0].parent).to.equal(node);
     });
 
     it('NodeWithStaticClasses', () => {

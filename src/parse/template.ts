@@ -31,18 +31,17 @@ export default function(source: string, options: CompileOptions) {
 }
 
 // convert an element to a parsed node tree
-export function createDomTree(el: HTMLElement): ParsedNode {
+export function createDomTree(el: HTMLElement, parent: ParsedNode | null = null): ParsedNode {
     const nodeType = nodeTypes[el.nodeType];
 
-    return {
+    const node = {
         attributes: getAttributes(el),
-        children: Array.from(el.childNodes)
-            .map(createDomTree)
-            .filter(discardIndentation),
+        children: [],
         dataAttributes: getDataAttributes(el),
         directives: getDirectives(el, nodeType),
         hasDynamicChildren: checkForDynamicChildren(el, nodeType),
         innerHTML: getInnerHTML(el),
+        parent: parent,
         staticClasses: getStaticClasses(el),
         staticStyles: getStaticStyles(el),
         tagName: getTagName(el),
@@ -50,6 +49,12 @@ export function createDomTree(el: HTMLElement): ParsedNode {
         textInterpolations: getInterpolations(el, nodeType),
         type: nodeType,
     };
+
+    node.children = Array.from(el.childNodes)
+        .map((el: HTMLElement) => createDomTree(el, node))
+        .filter(discardIndentation)
+
+    return node;
 }
 
 // determine if a node has purely static content, or if

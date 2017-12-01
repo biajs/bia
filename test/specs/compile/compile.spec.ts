@@ -5,7 +5,7 @@ const path = require('path');
 
 import { JsCode, JsReturn, JsFunction, JsObject } from '../../../src/generators/classes/index';
 
-describe.only('compilation', () => {
+describe('compilation', () => {
     let el; 
 
     // create a new in-memory div for each test
@@ -104,24 +104,16 @@ describe.only('compilation', () => {
         expect(vm.$el.outerHTML).to.equal('<div>Foo\'s \"bar\"</div>');
     });
 
-    it.skip('renders interpolated text', () => {
-        const { Component, code } = createComponent('NodeWithTextExpression', {
-            filename: 'NodeWithTextExpression.bia',
-            name: 'NodeWithTextExpression',
-        });
+    // it('renders interpolated text', () => {
+    //     const { Component, code } = createComponent('NodeWithTextExpression', {
+    //         filename: 'NodeWithTextExpression.bia',
+    //         name: 'NodeWithTextExpression',
+    //     });
 
-        // console.log();
-        // console.log();
-        // console.log('=============================');
-        // console.log();
-        // console.log();
-        // console.log (code);
+    //     const vm = new Component({ el });
 
-        // const vm = new Component({ el });
-        
-        // // <div>{{ 1 + 2 }}</div>
-        // expect(vm.$el.outerHTML).to.equal('<div>3</div>');
-    });
+    //     expect(vm.$el.outerHTML).to.equal('<div>3</div>');
+    // });
 
     // it('NodeWithTextExpressionInChild', () => {
     //     const { Component } = createComponent('NodeWithTextExpressionInChild', {
@@ -137,16 +129,16 @@ describe.only('compilation', () => {
     //     expect(vm.$el.outerHTML).to.equal('<div>\n        <span>3</span>\n    </div>');
     // });
 
-    // it('compiles nodes with dynamic children', () => {
-    //     const { Component, code } = createComponent('NodeWithDynamicChildren', {
-    //         filename: 'NodeWithDynamicChildren.bia',
-    //         name: 'NodeWithDynamicChildren',
-    //     });
-
-    //     const vm = new Component({ el });
+    it('compiles nodes with dynamic children', () => {
+        const { Component, code } = createComponent('NodeWithDynamicChildren', {
+            filename: 'NodeWithDynamicChildren.bia',
+            name: 'NodeWithDynamicChildren',
+        });
         
-    //     expect(vm.$el.outerHTML).to.equal('<div class="foo"><span class="bar">static child</span><span class="baz">dynamic child</span></div>')
-    // });
+        const vm = new Component({ el });
+        
+        expect(vm.$el.outerHTML).to.equal('<div class="foo"><span class="bar">static child</span><span class="baz">dynamic child</span></div>')
+    });
 
     it('compiles deeply nested dynamic children', () => {
         const { Component, code } = createComponent('NodeWithDeeplyNestedDynamicChildren', {

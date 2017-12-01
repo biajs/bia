@@ -14,9 +14,21 @@ import {
 export default function() {
     return new JsCode({
         content: [
+            appendChild(),
             replaceNode(),
             null,
             noop(),
+        ],
+    });
+}
+
+export function appendChild() {
+    return new JsFunction({
+        id: 'appendChild',
+        name: 'appendChild',
+        signature: ['target', 'el'],
+        content: [
+            `return target.appendChild(el);`,
         ],
     });
 }

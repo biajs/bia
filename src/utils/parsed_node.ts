@@ -24,3 +24,11 @@ export function nodeHasDirective(node: ParsedNode, directive: string): boolean {
 export function nodeRequiresHydration(node: ParsedNode): boolean {
     return node.hasDynamicChildren || Object.keys(node.attributes).length > 0;
 }
+
+// remove a directive from a node that has already been processed
+export function removeProcessedDirective(node: ParsedNode, directive: NodeDirective) {
+    return {
+        ...node,
+        directives: node.directives.filter(nodeDirective => nodeDirective !== directive),
+    };
+}

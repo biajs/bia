@@ -32,10 +32,11 @@ class MountFn {
                 node.children.forEach(child => {
                     // @todo: append if blocks
                     if (nodeHasDirective(child, 'if')) {
-
+                        const ifName = this.fragment.getChildFragmentName(child);
+                        content.push(`if (${ifName}) ${ifName}.m(${varName});`);
                     } else {
                         const childName = this.fragment.getName(child);
-                        content.push(`${varName}.appendChild(${childName});`)
+                        content.push(`appendChild(${varName}, ${childName});`);
                     }
                 });
             }
@@ -56,10 +57,10 @@ class MountFn {
      */
     public toCode(): JsFunction {
         const content = [];
-        const nodes = this.fragment.getElementNodes();
+        const nodes = this.fragment.getChildNodes();
 
         // mount our root node
-        content.push(`replaceNode(${this.fragment.getName(this.fragment.node)});`);
+        content.push(`appendChild(target, ${this.fragment.getName(this.fragment.node)});`);
 
         // mount child nodes
         content.push(this.mountChildNodes(nodes));

@@ -46,6 +46,26 @@ class FragmentCreate {
         });
     }
 
+    /**
+     * Create an if block if it's condition is true.
+     * 
+     * @param nodes 
+     */
+    public defineIfBlocks(): JsCode {
+        const content = [];
+
+        this.fragment.getIfNodes().forEach(node => {
+            const varName = this.fragment.getChildFragmentName(node);
+            const parentName = this.fragment.getName(node.parent);
+
+            content.push(`if (${varName}) ${varName}.c();`);
+        });
+
+        return new JsCode({
+            content,
+        });
+    }
+
     public defineTextValues(nodes: Array<ParsedNode>): JsCode {
         const content = [];
 
@@ -94,11 +114,12 @@ class FragmentCreate {
     public toCode(): JsFunction {
         const content = [];
         const globalFunctions = [];
-        const nodes = this.fragment.getElementNodes();
+        const nodes = this.fragment.getChildNodes();
 
         // define neccessary fragment variables
         content.push(this.defineDomNodes(nodes));
         content.push(this.defineTextValues(nodes));
+        content.push(this.defineIfBlocks());
 
         // set static content
         content.push(this.setStaticContent(nodes));

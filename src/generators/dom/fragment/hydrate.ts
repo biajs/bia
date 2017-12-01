@@ -110,7 +110,7 @@ class FragmentHydrate {
     public toCode(): JsCode {
         const content = [];
         const globalFunctions = [];
-        const nodes = this.fragment.getElementNodes();
+        const nodes = this.fragment.getChildNodes();
 
         // set various element attributes
         content.push(this.setClasses(nodes));

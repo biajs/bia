@@ -24,11 +24,11 @@ describe('Fragment', () => {
         const staticNode = template(`<div><span></span></div>`);
         const dynamicNode = template(`<div><p><span b-if="bar"></span></p></div>`);
 
-        const staticEls = new Fragment({ template: staticNode }, opts).getElementNodes();
+        const staticEls = new Fragment({ template: staticNode }, opts).getChildNodes();
         expect(staticEls[0]).to.deep.equal(staticNode);
         expect(staticEls.length).to.equal(1);
         
-        const dynamicEls = new Fragment({ template: dynamicNode }, opts).getElementNodes();
+        const dynamicEls = new Fragment({ template: dynamicNode }, opts).getChildNodes();
         expect(dynamicEls[0]).to.deep.equal(dynamicNode);
         expect(dynamicEls[1]).to.deep.equal(dynamicNode.children[0]);
         expect(dynamicEls.length).to.equal(2);
