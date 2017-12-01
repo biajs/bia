@@ -118,7 +118,7 @@ export class JsCode {
      * Insert code after another piece of code.
      * 
      * @param  {JsCode} insertCode
-     * @param  {string} targetId
+     * @param  {string} target
      * @return {void} 
      */
     public insertAfter(insertCode: JsCode, target: JsCode|string): void {
@@ -128,6 +128,8 @@ export class JsCode {
             insertCode.parent = targetCode.parent;
             
             targetCode.parent.content.splice(targetCode.parent.content.indexOf(targetCode) + 1, 0, insertCode);
+        } else {
+            throw `Failed to insert code, target code not found.`;
         }
     }
 
@@ -135,7 +137,7 @@ export class JsCode {
      * Insert code before another piece of code.
      * 
      * @param  {JsCode} insertCode
-     * @param  {string} targetId
+     * @param  {string} target
      * @return {void} 
      */
     public insertBefore(insertCode: JsCode, target: JsCode|string): void {
@@ -145,7 +147,29 @@ export class JsCode {
             insertCode.parent = targetCode.parent;
             
             targetCode.parent.content.splice(targetCode.parent.content.indexOf(targetCode), 0, insertCode);
+        } else {
+            throw `Failed to insert code, target code not found.`;
         }
+    }
+
+    /**
+     * Helper function to insert the current code instance after related code.
+     * 
+     * @param  {JsCode} target
+     * @return {void} 
+     */
+    public insertSelfAfter(target: JsCode): void {
+        target.getRoot().insertAfter(this, target);
+    }
+  
+    /**
+     * Helper function to insert the current code instance before related code.
+     * 
+     * @param  {JsCode} target
+     * @return {void} 
+     */
+    public insertSelfBefore(target: JsCode): void {
+        target.getRoot().insertBefore(this, target);
     }
 
     /**

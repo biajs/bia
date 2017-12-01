@@ -144,6 +144,30 @@ describe.only('JsCode', () => {
         expect(bar.content[1]).to.equal(baz);
     });
 
+    it('can insert itself after nested code', () => {
+        const foo = new JsCode({ id: 'foo' });
+        const bar = new JsCode({ id: 'bar' });
+        const baz = new JsCode({ id: 'baz' });
+
+        foo.append(bar);
+
+        baz.insertSelfAfter(bar);
+        expect(foo.content[0]).to.equal(bar);
+        expect(foo.content[1]).to.equal(baz);
+    });
+
+    it('can insert itself before nested code', () => {
+        const foo = new JsCode({ id: 'foo' });
+        const bar = new JsCode({ id: 'bar' });
+        const baz = new JsCode({ id: 'baz' });
+
+        foo.append(bar);
+
+        baz.insertSelfBefore(bar);
+        expect(foo.content[0]).to.equal(baz);
+        expect(foo.content[1]).to.equal(bar);
+    });
+
     it('can find it\'s root code instance', () => {
         const parent = new JsCode({ id: 'parent' });
         const child = new JsCode({ id: 'child' });
