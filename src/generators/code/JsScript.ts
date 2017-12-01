@@ -64,6 +64,8 @@ export class JsScript {
             this.content.splice(this.content.indexOf(targetCode) + 1, 0, insertCode);
             insertCode.script = this;
         }
+
+        // @todo: insert code after descendent code
     }
 
     /**
@@ -81,6 +83,8 @@ export class JsScript {
             this.content.splice(this.content.indexOf(targetCode), 0, insertCode);
             insertCode.script = this;
         }
+
+        // @todo: insert code before descendent code
     }
 
     /**
