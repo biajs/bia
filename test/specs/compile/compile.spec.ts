@@ -164,15 +164,14 @@ describe('compilation', () => {
         expect(vm.$el.children[1].children[1].children[1].classList.contains('baz')).to.be.true;
     });
 
-    // it.skip('compiles elements with dynamic and text children', () => {
-    //     const { Component, code } = createComponent('NodeWithDynamicChildAndText', {
-    //         filename: 'NodeWithDynamicChildAndText.bia',
-    //         name: 'NodeWithDynamicChildAndText',
-    //     });
-
-    //     console.log (code);
+    it('compiles elements with dynamic and text children', () => {
+        const { Component, code } = createComponent('NodeWithDynamicChildAndText', {
+            filename: 'NodeWithDynamicChildAndText.bia',
+            name: 'NodeWithDynamicChildAndText',
+        });
         
-    //     const vm = new Component({ el });
-    //     expect(vm.$el.outerHTML).to.equal('<div>\r\n        foo\r\n        <span>bar</span></div>');
-    // });
+        const vm = new Component({ el });
+
+        expect(vm.$el.outerHTML).to.equal('<div>\r\n        foo\r\n        <span>bar</span></div>');
+    });
 });

@@ -1,6 +1,6 @@
 import { JsCode, JsFunction } from '../../classes/index';
 import Fragment from './fragment';
-import { createElement } from '../global_functions';
+import { createElement, createText } from '../global_functions';
 import { nodeRequiresHydration } from '../../../utils/parsed_node';
 import { ParsedNode } from '../../../interfaces';
 import { escapeJsString} from '../../../utils/string';
@@ -18,27 +18,32 @@ class FragmentCreate {
     }
 
     /**
-     * Define variables for the fragment's nodes.
+     * Define this fragment's child nodes.
      * 
      * @param  {Array<ParsedNode>} nodes
      * @return {JsCode}
      */
-    public defineDomNodes(nodes: Array<ParsedNode>): JsCode {
+    public defineChildNodes(nodes: Array<ParsedNode>): JsCode {
         const content = [];
         const globalFunctions = [];
         let usedCreateElement = false;
+        let usedCreateText = false;
         
         nodes.forEach(node => {
+            const varName = this.fragment.getName(node);
+
             if (node.type === 'ELEMENT') {
                 usedCreateElement = true;
-                content.push(`${this.fragment.getName(node)} = createElement('${node.tagName.toLowerCase()}');`);
+                content.push(`${varName} = createElement('${node.tagName.toLowerCase()}');`);
+            } else if (node.type === 'TEXT') {
+                usedCreateText = true;
+                content.push(`${varName} = createText('${escapeJsString(node.textContent)}');`);
             }
         });
 
         // include the createElement function if we used it
-        if (usedCreateElement) {
-            globalFunctions.push(createElement());
-        }
+        if (usedCreateElement) globalFunctions.push(createElement());
+        if (usedCreateText) globalFunctions.push(createText());
 
         return new JsCode({
             content,
@@ -66,14 +71,13 @@ class FragmentCreate {
         });
     }
 
-    public defineTextValues(nodes: Array<ParsedNode>): JsCode {
+    public defineTextNodes(nodes: Array<ParsedNode>): JsCode {
         const content = [];
 
-        // @todo...
 
         return new JsCode({
             content,
-        });
+        })
     }
 
     /**
@@ -117,8 +121,7 @@ class FragmentCreate {
         const nodes = this.fragment.getChildNodes();
 
         // define neccessary fragment variables
-        content.push(this.defineDomNodes(nodes));
-        content.push(this.defineTextValues(nodes));
+        content.push(this.defineChildNodes(nodes));
         content.push(this.defineIfBlocks());
 
         // set static content
