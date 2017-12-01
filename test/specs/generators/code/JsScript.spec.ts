@@ -16,10 +16,8 @@ describe.only('JsScript', () => {
         const bar = new JsCode({ id: 'bar' });
         const baz = new JsCode({ id: 'baz' });
 
-        const script = new JsScript({
-            content: [
-                bar
-            ],
+        const script = new JsScript({ 
+            content: [bar],
         });
 
         script.prepend(foo);
@@ -32,5 +30,41 @@ describe.only('JsScript', () => {
         expect(foo.script).to.equal(script);
         expect(bar.script).to.equal(script);
         expect(baz.script).to.equal(script);
+    });
+
+    it('can insert code before a particular id', () => {
+        const foo = new JsCode({ id: 'foo' });
+        const bar = new JsCode({ id: 'bar' });
+        const baz = new JsCode({ id: 'baz' });
+
+        const script = new JsScript({
+            content: [foo, baz],
+        });
+
+        script.insertBefore(bar, 'baz');
+
+        expect(script.content[0]).to.equal(foo);
+        expect(script.content[1]).to.equal(bar);
+        expect(script.content[2]).to.equal(baz);
+
+        expect(bar.script).to.equal(script);
+    });
+
+    it('can insert code after a particular id', () => {
+        const foo = new JsCode({ id: 'foo' });
+        const bar = new JsCode({ id: 'bar' });
+        const baz = new JsCode({ id: 'baz' });
+
+        const script = new JsScript({
+            content: [foo, baz],
+        });
+
+        script.insertAfter(bar, 'foo');
+
+        expect(script.content[0]).to.equal(foo);
+        expect(script.content[1]).to.equal(bar);
+        expect(script.content[2]).to.equal(baz);
+
+        expect(bar.script).to.equal(script);
     });
 });
