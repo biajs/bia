@@ -64,6 +64,17 @@ export abstract class BaseCode {
     }
 
     /**
+     * Get the id of all descendent code.
+     * 
+     * @return {Array<string>}
+     */
+    public getDescendentIds(): Array<string> {
+        return this.getDescendents()
+            .map(descendent => descendent.id)
+            .filter(id => id !== null);
+    }
+
+    /**
      * Get the root code instance.
      * 
      * @return {BaseCode|null}
@@ -84,11 +95,11 @@ export abstract class BaseCode {
      * @throws  {string}
      */
     public validateIds() {
-        const ids = this.getRoot()
-            .getDescendents()
-            .map(code => code.id)
-            .concat(this.id)
-            .filter(id => id !== null);
+        const ids = this.getRoot().getDescendentIds();
+
+        if (this.id) {
+            ids.push(this.id);
+        }
 
         const duplicates = getDuplicateMembers(ids);
         
