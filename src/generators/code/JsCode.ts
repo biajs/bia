@@ -1,11 +1,11 @@
 import { BaseCode, BaseCodeOptions } from './BaseCode';
 
 export interface JsCodeOptions extends BaseCodeOptions {
-    content?: Array<BaseCode|string>;
+    content?: Array<BaseCode|string|null>;
 }
 
 export class JsCode extends BaseCode {
-    public content: Array<BaseCode|string>;
+    public content: Array<BaseCode|string|null>;
     
     /**
      * Constructor.
@@ -20,11 +20,14 @@ export class JsCode extends BaseCode {
     /**
      * Append a piece of code to the script.
      * 
-     * @param  {BaseCode} code 
+     * @param  {BaseCode|string} code 
      * @return {void}
      */
-    public append(code: BaseCode): void {
-        code.parent = this;
+    public append(code: BaseCode|string): void {
+        if (code instanceof BaseCode) {
+            code.parent = this;
+        }
+        
         this.content.push(code);
     }
 
@@ -142,13 +145,25 @@ export class JsCode extends BaseCode {
     }
 
     /**
+     * Determine if the code block is empty.
+     * 
+     * @return {boolean}
+     */
+    public isEmpty(): boolean {
+        return this.content.filter(line => line !== null).length === 0;
+    }
+
+    /**
      * Prepend a piece of code to the script.
      * 
-     * @param  {BaseCode} code 
+     * @param  {BaseCode|string} code 
      * @return {void}
      */
-    public prepend(code: BaseCode): void {
-        code.parent = this;
+    public prepend(code: BaseCode|string): void {
+        if (code instanceof BaseCode) {
+            code.parent = this;
+        }
+
         this.content.unshift(code);
     }
     

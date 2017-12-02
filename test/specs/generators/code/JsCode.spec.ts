@@ -175,4 +175,14 @@ describe('JsCode', () => {
         expect(foo.content[0]).to.equal(baz);
         expect(foo.content[1]).to.equal(bar);
     });
+
+    it('can check if the code block is empty', () => {
+        const foo = new JsCode;
+
+        expect(foo.isEmpty()).to.be.true;
+
+        foo.append('// foo');
+
+        expect(foo.isEmpty()).to.be.false;
+    })
 });
