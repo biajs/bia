@@ -1,18 +1,20 @@
 import { BaseCode, BaseCodeOptions } from './BaseCode';
 
 export interface JsCodeOptions extends BaseCodeOptions {
-
+    content?: Array<BaseCode|string>;
 }
 
 export class JsCode extends BaseCode {
+    public content: Array<BaseCode|string>;
     
     /**
      * Constructor.
      */
     constructor(options: JsCodeOptions = {}) {
         super(options);
-        
+        this.content = options.content || [];
         this.setContentParent();
+        this.validateIds();
     }
 
     /**
@@ -24,6 +26,19 @@ export class JsCode extends BaseCode {
     public append(code: BaseCode): void {
         code.parent = this;
         this.content.push(code);
+    }
+
+    /**
+     * Find a piece of code that is a direct child of the content.
+     * 
+     * @param  {BaseCode|string}      target
+     * @return {BaseCode|undefined} 
+     */
+    public findCode(target: BaseCode|string) {
+        return this.content.find(code => {
+            return (typeof target === 'string' && typeof code !== 'string' && code.id === target)
+                || code === target;
+        });
     }
     
     /**
@@ -57,11 +72,15 @@ export class JsCode extends BaseCode {
      */
     public insertAfter(insertCode: BaseCode, target: BaseCode|string): void {
         const targetCode = this.findRelatedCode(target);
-        
+
         if (targetCode) {
             insertCode.parent = targetCode.parent;
             
-            targetCode.parent.content.splice(targetCode.parent.content.indexOf(targetCode) + 1, 0, insertCode);
+            if (targetCode.parent instanceof JsCode) {
+                targetCode.parent.content.splice(targetCode.parent.content.indexOf(targetCode) + 1, 0, insertCode);
+            } else {
+                throw `Failed to insert code after, the target's parent is not a JsCode instance.`;
+            }
         } else {
             throw `Failed to insert code, target code not found.`;
         }
@@ -80,7 +99,11 @@ export class JsCode extends BaseCode {
         if (targetCode) {
             insertCode.parent = targetCode.parent;
             
-            targetCode.parent.content.splice(targetCode.parent.content.indexOf(targetCode), 0, insertCode);
+            if (targetCode.parent instanceof JsCode) {
+                targetCode.parent.content.splice(targetCode.parent.content.indexOf(targetCode), 0, insertCode);
+            } else {
+                throw `Failed to insert code after, the target's parent is not a JsCode instance.`;
+            }
         } else {
             throw `Failed to insert code, target code not found.`;
         }
@@ -93,9 +116,15 @@ export class JsCode extends BaseCode {
      * @return {void} 
      */
     public insertSelfAfter(target: BaseCode): void {
-        target.getRoot().insertAfter(this, target);
+        const root = target.getRoot();
+
+        if (root instanceof JsCode) {
+            root.insertAfter(this, target);
+        } else {
+            throw `Failed to insert code, root node is not a JsCode instance.`;
+        }
     }
-    
+  
     /**
      * Helper function to insert the current code instance before related code.
      * 
@@ -103,7 +132,13 @@ export class JsCode extends BaseCode {
      * @return {void} 
      */
     public insertSelfBefore(target: BaseCode): void {
-        target.getRoot().insertBefore(this, target);
+        const root = target.getRoot();
+        
+        if (root instanceof JsCode) {
+            root.insertBefore(this, target);
+        } else {
+            throw `Failed to insert code, root node is not a JsCode instance.`;
+        }
     }
 
     /**
@@ -128,5 +163,14 @@ export class JsCode extends BaseCode {
                 child.parent = this;
             }
         });
+    }
+
+    /**
+     * Convert object to javascript source code.
+     * 
+     * @return {string}
+     */
+    public toString(): string {
+        return this.content.join('\n');
     }
 }

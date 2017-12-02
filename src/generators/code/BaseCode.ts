@@ -1,8 +1,9 @@
+import { getDuplicateMembers } from '../../utils/array';
+
 //
 // Options
 //
 export interface BaseCodeOptions {
-    content?: Array<BaseCode>;
     id?: string;
 }
 
@@ -10,9 +11,9 @@ export interface BaseCodeOptions {
 // BaseCode
 //
 export abstract class BaseCode {
-    public content: Array<BaseCode|string>;
     public id: string|null;
     public parent: BaseCode|null;
+    public options: BaseCodeOptions;
 
     /**
      * Constructor.
@@ -20,23 +21,24 @@ export abstract class BaseCode {
      * @param  {BaseCodeOptions} options
      */
     constructor(options: BaseCodeOptions = {}) {
-        this.content = options.content || [];
         this.id = options.id || null;
+        this.options = options;
         this.parent = null;
     }
+    
+    /**
+     * Get all descendents of the current code.
+     * 
+     * @return {Array<BaseCode>}
+     */
+    abstract getDescendents(): Array<BaseCode>;
 
     /**
-     * Find a piece of code that is a direct child of the content.
+     * Convert object to javascript source code.
      * 
-     * @param  {BaseCode|string}      target
-     * @return {BaseCode|undefined} 
+     * @return {string}
      */
-    public findCode(target: BaseCode|string) {
-        return this.content.find(code => {
-            return (typeof target === 'string' && typeof code !== 'string' && code.id === target)
-                || code === target;
-        });
-    }
+    abstract toString(): string;
 
     /**
      * Find a piece of descendent code.
@@ -60,13 +62,6 @@ export abstract class BaseCode {
     public findRelatedCode(target: BaseCode|string) {
         return this.getRoot().findDescendentCode(target);
     }
-    
-    /**
-     * Get all descendents of the current code.
-     * 
-     * @return {Array<DescendentCode>}
-     */
-    abstract getDescendents();
 
     /**
      * Get the root code instance.
@@ -76,7 +71,7 @@ export abstract class BaseCode {
     public getRoot() {
         let parent = this.parent;
 
-        while(parent && parent.parent) {
+        while (parent && parent.parent) {
             parent = parent.parent;
         }
 
@@ -84,60 +79,21 @@ export abstract class BaseCode {
     }
 
     /**
-     * Insert code after another piece of code.
+     * Ensure that no two code objects in the tree has the same id.
      * 
-     * @param  {BaseCode} insertCode
-     * @param  {string} target
-     * @return {void} 
+     * @throws  {string}
      */
-    public insertAfter(insertCode: BaseCode, target: BaseCode|string): void {
-        const targetCode = this.findRelatedCode(target);
+    public validateIds() {
+        const ids = this.getRoot()
+            .getDescendents()
+            .map(code => code.id)
+            .concat(this.id)
+            .filter(id => id !== null);
+
+        const duplicates = getDuplicateMembers(ids);
         
-        if (targetCode) {
-            insertCode.parent = targetCode.parent;
-            
-            targetCode.parent.content.splice(targetCode.parent.content.indexOf(targetCode) + 1, 0, insertCode);
-        } else {
-            throw `Failed to insert code, target code not found.`;
+        if (duplicates.length > 0) {
+            throw `Failed to construct code tree, the ID "${duplicates[0]}" occured multiple times.`;
         }
-    }
-
-    /**
-     * Insert code before another piece of code.
-     * 
-     * @param  {BaseCode} insertCode
-     * @param  {string} target
-     * @return {void} 
-     */
-    public insertBefore(insertCode: BaseCode, target: BaseCode|string): void {
-        const targetCode = this.findRelatedCode(target);
-
-        if (targetCode) {
-            insertCode.parent = targetCode.parent;
-            
-            targetCode.parent.content.splice(targetCode.parent.content.indexOf(targetCode), 0, insertCode);
-        } else {
-            throw `Failed to insert code, target code not found.`;
-        }
-    }
-
-    /**
-     * Helper function to insert the current code instance after related code.
-     * 
-     * @param  {BaseCode} target
-     * @return {void} 
-     */
-    public insertSelfAfter(target: BaseCode): void {
-        target.getRoot().insertAfter(this, target);
-    }
-  
-    /**
-     * Helper function to insert the current code instance before related code.
-     * 
-     * @param  {BaseCode} target
-     * @return {void} 
-     */
-    public insertSelfBefore(target: BaseCode): void {
-        target.getRoot().insertBefore(this, target);
     }
 }

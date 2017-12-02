@@ -1,19 +1,27 @@
-import { JsCode } from '../../../../src/generators/code/index';
+import { JsCode } from '../../../../src/generators/code';
 import { expect } from 'chai';
 
-describe.only('JsCode', () => {
-    it('can be constructed without an id or content', () => {
-        const code = new JsCode;
+describe('JsCode', () => {
+    it('can be cast to a string', () => {
+        const code = new JsCode({
+            content: [
+                '// foo',
+                '// bar',
+            ],
+        });
 
-        expect(code.id).to.equal(null);
-        expect(code.content).to.deep.equal([]);
+        expect(String(code)).to.equal('// foo\n// bar');
     });
 
-    it('sets the parent instance of constructed content', () => {
-        let foo = new JsCode;
-        let bar = new JsCode({ content: [foo] });
+    it('can contain other code instances', () => {
+        const code = new JsCode({
+            content: [
+                '// foo',
+                new JsCode({ content: ['// bar'] }),
+            ],
+        });
 
-        expect(foo.parent).to.equal(bar);
+        expect(String(code)).to.equal('// foo\n// bar');
     });
 
     it('sets the parent instance on append', () => {
@@ -166,50 +174,5 @@ describe.only('JsCode', () => {
         baz.insertSelfBefore(bar);
         expect(foo.content[0]).to.equal(baz);
         expect(foo.content[1]).to.equal(bar);
-    });
-
-    it('can find it\'s root code instance', () => {
-        const parent = new JsCode({ id: 'parent' });
-        const child = new JsCode({ id: 'child' });
-        const grandchild = new JsCode({ id: 'grandchild' });
-
-        parent.append(child);
-        child.append(grandchild);
-        
-        expect(grandchild.getRoot()).to.equal(parent);
-    });
-
-    it('can find descendent code', () => {
-        const parent = new JsCode({ id: 'parent' });
-        const child = new JsCode({ id: 'child' });
-        const grandchild = new JsCode({ id: 'grandchild' });
-
-        parent.append(child);
-        child.append(grandchild);
-
-        expect(parent.findDescendentCode(grandchild)).to.equal(grandchild);
-        expect(parent.findDescendentCode('grandchild')).to.equal(grandchild);
-    });
-
-    it('can find related code', () => {
-        const parent = new JsCode({ id: 'parent' });
-        const foo = new JsCode({ id: 'foo' });
-        const bar = new JsCode({ id: 'bar' });
-
-        parent.append(foo);
-        parent.append(bar);
-
-        expect(bar.findRelatedCode(foo)).to.equal(foo);
-        expect(foo.findRelatedCode(bar)).to.equal(bar);
-        expect(bar.findRelatedCode('foo')).to.equal(foo);
-        expect(foo.findRelatedCode('bar')).to.equal(bar);
-        expect(parent.findRelatedCode('foo')).to.equal(foo);
-        expect(parent.findRelatedCode('bar')).to.equal(bar);
-    });
-
-    it('returns itself as the root when there is no parent', () => {
-        const foo = new JsCode;
-
-        expect(foo.getRoot()).to.equal(foo);
     });
 });
