@@ -1,86 +1,35 @@
-//
-// Options
-//
-export interface JsCodeOptions {
-    content?: Array<JsCode>;
-    id?: string;
+import { BaseCode, BaseCodeOptions } from './BaseCode';
+
+export interface JsCodeOptions extends BaseCodeOptions {
+
 }
 
-//
-// JsCode
-//
-export class JsCode {
-    public content: Array<JsCode|string>;
-    public id: string|null;
-    public parent: JsCode|null;
-    public root: JsCode|null;
-
+export class JsCode extends BaseCode {
+    
     /**
      * Constructor.
-     * 
-     * @param  {JsCodeOptions} options
      */
     constructor(options: JsCodeOptions = {}) {
-        this.content = options.content || [];
-        this.id = options.id || null;
-        this.parent = null;
-        this.root = null;
-
+        super(options);
+        
         this.setContentParent();
     }
 
     /**
      * Append a piece of code to the script.
      * 
-     * @param  {JsCode} code 
+     * @param  {BaseCode} code 
      * @return {void}
      */
-    public append(code: JsCode): void {
+    public append(code: BaseCode): void {
         code.parent = this;
-        code.root = this.root;
         this.content.push(code);
     }
-
-    /**
-     * Find a piece of code that is a direct child of the content.
-     * 
-     * @param  {JsCode|string}      target
-     * @return {JsCode|undefined} 
-     */
-    public findCode(target: JsCode|string) {
-        return this.content.find(code => {
-            return (typeof target === 'string' && typeof code !== 'string' && code.id === target)
-                || code === target;
-        });
-    }
-
-    /**
-     * Find a piece of descendent code.
-     * 
-     * @param  {JsCode|string}      target
-     * @return {JsCode|undefined} 
-     */
-    public findDescendentCode(target: JsCode|string) {
-        return this.getDescendents().find(code => {
-            return (typeof target === 'string' && typeof code !== 'string' && code.id === target)
-                || code === target;
-        });
-    }
-
-    /**
-     * Helper function to find a piece of related code.
-     * 
-     * @param  {JsCode|string}      target
-     * @return {JsCode|undefined} 
-     */
-    public findRelatedCode(target: JsCode|string) {
-        return (this.getRoot() || this).findDescendentCode(target);
-    }
-
+    
     /**
      * Get an array of all descendent code.
      * 
-     * @return {Array<JsCode>}
+     * @return {Array<BaseCode>}
      */
     public getDescendents() {
         const descendents = [];
@@ -98,30 +47,15 @@ export class JsCode {
 
         return descendents;
     }
-
-    /**
-     * Get the root code instance.
-     * 
-     * @return {JsCode|null}
-     */
-    public getRoot() {
-        let parent = this.parent;
-
-        while(parent && parent.parent) {
-            parent = parent.parent;
-        }
-
-        return parent || this;
-    }
-
+    
     /**
      * Insert code after another piece of code.
      * 
-     * @param  {JsCode} insertCode
+     * @param  {BaseCode} insertCode
      * @param  {string} target
      * @return {void} 
      */
-    public insertAfter(insertCode: JsCode, target: JsCode|string): void {
+    public insertAfter(insertCode: BaseCode, target: BaseCode|string): void {
         const targetCode = this.findRelatedCode(target);
         
         if (targetCode) {
@@ -136,11 +70,11 @@ export class JsCode {
     /**
      * Insert code before another piece of code.
      * 
-     * @param  {JsCode} insertCode
+     * @param  {BaseCode} insertCode
      * @param  {string} target
      * @return {void} 
      */
-    public insertBefore(insertCode: JsCode, target: JsCode|string): void {
+    public insertBefore(insertCode: BaseCode, target: BaseCode|string): void {
         const targetCode = this.findRelatedCode(target);
 
         if (targetCode) {
@@ -155,35 +89,34 @@ export class JsCode {
     /**
      * Helper function to insert the current code instance after related code.
      * 
-     * @param  {JsCode} target
+     * @param  {BaseCode} target
      * @return {void} 
      */
-    public insertSelfAfter(target: JsCode): void {
+    public insertSelfAfter(target: BaseCode): void {
         target.getRoot().insertAfter(this, target);
     }
-  
+    
     /**
      * Helper function to insert the current code instance before related code.
      * 
-     * @param  {JsCode} target
+     * @param  {BaseCode} target
      * @return {void} 
      */
-    public insertSelfBefore(target: JsCode): void {
+    public insertSelfBefore(target: BaseCode): void {
         target.getRoot().insertBefore(this, target);
     }
 
     /**
      * Prepend a piece of code to the script.
      * 
-     * @param  {JsCode} code 
+     * @param  {BaseCode} code 
      * @return {void}
      */
-    public prepend(code: JsCode): void {
+    public prepend(code: BaseCode): void {
         code.parent = this;
-        code.root = this.root;
         this.content.unshift(code);
     }
-
+    
     /**
      * Register each piece of descendent code with the script.
      * 
