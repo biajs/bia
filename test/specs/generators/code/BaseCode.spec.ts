@@ -88,4 +88,6 @@ describe('BaseCode', () => {
 
         expect(foo.getParentFunction()).to.equal(code);
     });
+
+    it('can add helper functions as depenedencies');
 });
