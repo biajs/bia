@@ -1,4 +1,4 @@
-import { JsCode } from '../../../../src/generators/code/index';
+import { JsCode, JsFunction } from '../../../../src/generators/code/index';
 import { expect } from 'chai';
 
 describe('BaseCode', () => {
@@ -70,5 +70,22 @@ describe('BaseCode', () => {
         const foo = new JsCode;
 
         expect(foo.getRoot()).to.equal(foo);
+    });
+
+    it('can find the nearest function instance', () => {
+        const foo = new JsCode;
+
+        // create some deeply nested code so we can find the parent fn
+        const code = new JsFunction({
+            content: [
+                new JsCode({
+                    content: [
+                        new JsCode({ content: [foo] }),
+                    ],
+                }),
+            ],
+        });
+
+        expect(foo.getParentFunction()).to.equal(code);
     });
 });

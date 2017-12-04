@@ -1,4 +1,5 @@
 import { getDuplicateMembers } from '../../utils/array';
+import { JsFunction } from './JsFunction';
 
 //
 // Options
@@ -72,6 +73,24 @@ export abstract class BaseCode {
         return this.getDescendents()
             .map(descendent => descendent.id)
             .filter(id => id !== null);
+    }
+
+    /**
+     * Find the current JsFunction scope.
+     * 
+     * @return {JsFunction|void}
+     */
+    public getParentFunction(): JsFunction | void {
+        let parent = this.parent;
+
+        while (parent) {
+            if (parent.constructor.name === 'JsFunction') {
+                // @ts-ignore: we know the return value is a JsFunction
+                return parent;
+            }
+
+            parent = parent.parent;
+        }
     }
 
     /**
