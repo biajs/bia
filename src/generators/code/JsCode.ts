@@ -173,11 +173,9 @@ export class JsCode extends BaseCode {
      * @return {void}
      */
     public setContentParent(): void {
-        this.content.forEach(child => {
-            if (typeof child !== 'string') {
-                child.parent = this;
-            }
-        });
+        this.content
+            .filter(child => typeof child !== 'string')
+            .forEach((child: BaseCode) => child.parent = this);
     }
 
     /**

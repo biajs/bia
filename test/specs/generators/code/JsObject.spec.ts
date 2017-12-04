@@ -1,7 +1,7 @@
 import { JsObject } from '../../../../src/generators/code';
 import { expect } from 'chai';
 
-describe.only('JsObject', () => {
+describe('JsObject', () => {
     it('treats properties as descendent code', () => {
         const obj = new JsObject({
             id: 'foo',
