@@ -1,10 +1,11 @@
-import { getDuplicateMembers } from '../../utils/array';
-import { JsFunction } from './JsFunction';
+import { getDuplicateMembers, getUniqueMembers } from '../../utils/array';
+import { JsFunction, JsHelper } from './index';
 
 //
 // Options
 //
 export interface BaseCodeOptions {
+    helpers?: Array<JsHelper>;
     id?: string;
 }
 
@@ -12,9 +13,10 @@ export interface BaseCodeOptions {
 // BaseCode
 //
 export abstract class BaseCode {
+    public helpers: Array<JsHelper>;
     public id: string|null;
-    public parent: BaseCode|null;
     public options: BaseCodeOptions;
+    public parent: BaseCode|null;
 
     /**
      * Constructor.
@@ -22,6 +24,7 @@ export abstract class BaseCode {
      * @param  {BaseCodeOptions} options
      */
     constructor(options: BaseCodeOptions = {}) {
+        this.helpers = options.helpers || [];
         this.id = options.id || null;
         this.options = options;
         this.parent = null;
@@ -62,6 +65,21 @@ export abstract class BaseCode {
      */
     public findRelatedCode(target: BaseCode|string) {
         return this.getRoot().findDescendentCode(target);
+    }
+
+    /**
+     * Get all descendent dependency functions.
+     * 
+     * @return {Array<JsHelper>}
+     */
+    public getHelpers(): Array<JsHelper> {
+        const helpers = this.helpers;
+
+        this.getDescendents().forEach(descendent => {
+            helpers.push(...descendent.helpers);
+        });
+        
+        return getUniqueMembers(helpers);
     }
 
     /**

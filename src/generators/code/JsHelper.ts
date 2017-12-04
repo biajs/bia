@@ -3,8 +3,9 @@ import { JsFunction, JsFunctionOptions } from './JsFunction';
 //
 // Options
 //
-export interface JsHelperOptions extends JsFunction {
-
+export interface JsHelperOptions extends JsFunctionOptions {
+    id: string;
+    name: string;
 }
 
 //

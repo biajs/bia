@@ -1,4 +1,4 @@
-import { JsCode, JsFunction } from '../../../../src/generators/code/index';
+import { JsCode, JsFunction, JsHelper } from '../../../../src/generators/code/index';
 import { expect } from 'chai';
 
 describe('BaseCode', () => {
@@ -89,5 +89,20 @@ describe('BaseCode', () => {
         expect(foo.getParentFunction()).to.equal(code);
     });
 
-    it('can add helper functions as depenedencies');
+    it('can add helper functions from anywhere in the tree', () => {
+        const foo = new JsHelper({ id: 'foo', name: 'foo' });
+        const bar = new JsHelper({ id: 'bar', name: 'bar' });
+        const baz = new JsHelper({ id: 'baz', name: 'baz' });
+
+        const code = new JsCode({
+            helpers: [foo],
+            content: [
+                new JsCode({ helpers: [bar] }),
+                new JsCode({ helpers: [bar, baz] }),
+            ],
+        });
+
+        // only one instance of foo should be included
+        expect(code.getHelpers()).to.deep.equal([foo, bar, baz]);
+    });
 });
