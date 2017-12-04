@@ -2,15 +2,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-			"args": [
+            "args": [
                 "test/test.js"
             ],
-			"name": "Debug",
-			"stopOnEntry": false,
-			"type": "node",
+            "name": "Debug",
+            "stopOnEntry": false,
+            "type": "node",
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "request": "launch"
-		}
+        }
     ],
     "compounds": []
 }
