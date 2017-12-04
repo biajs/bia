@@ -7,6 +7,7 @@ import { indent } from '../../utils/string';
 export interface JsFunctionOptions extends JsCodeOptions {
     name?: string|null;
     signature?: Array<string>;
+    variables?: Array<string>;
 }
 
 //
@@ -15,6 +16,7 @@ export interface JsFunctionOptions extends JsCodeOptions {
 export class JsFunction extends JsCode {
     public name: string|null;
     public signature: Array<string>;
+    public variables: Array<string>;
 
     /**
      * Constructor.
@@ -24,6 +26,17 @@ export class JsFunction extends JsCode {
 
         this.name = options.name || null;
         this.signature = options.signature || [];
+        this.variables = options.variables || [];
+    }
+
+    /**
+     * Define a local variable.
+     * 
+     * @param  {string} varName
+     * @return {void}
+     */
+    public define(varName: string): void {
+        this.variables.push(varName);
     }
 
     /**
@@ -38,8 +51,13 @@ export class JsFunction extends JsCode {
         }
 
         const signature = this.signature.join(', ');
+        
         const content = indent(this.content.join('\n').trim());
 
-        return `function ${this.name || ''}(${signature}) {\n${content}\n}`;
+        const variables = this.variables.length > 0
+            ? `${indent(`let ${this.variables.join(', ')};`)}\n\n`
+            : '';
+
+        return `function ${this.name || ''}(${signature}) {\n${variables}${content}\n}`;
     }
 }

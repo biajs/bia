@@ -40,4 +40,12 @@ describe('JsFunction', () => {
 
         expect(String(fn)).to.equal('noop');
     });
+
+    it('contains an array of variables to define', () => {
+        const fn = new JsFunction({ content: ['// foo'] });
+
+        fn.define('foo');
+
+        expect(String(fn)).to.equal(`function () {\n    let foo;\n\n    // foo\n}`);
+    })
 })
