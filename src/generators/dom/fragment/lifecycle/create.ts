@@ -3,7 +3,7 @@ import { JsFunction } from '../../../code/index';
 import { ParsedNode } from '../../../../interfaces';
 import { createElement } from '../../helpers/index';
 
-export default class Create extends JsFunction {
+export default class CreateFunction extends JsFunction {
     public fragment: Fragment;
 
     /**
