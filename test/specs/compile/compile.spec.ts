@@ -95,7 +95,7 @@ describe('compilation', () => {
     // conditional branches
     //
     describe('conditional branches', () => {
-        it('renders a stand-alone if block', () => {
+        it.only('renders a stand-alone if block', () => {
             const { Component, code } = createFromSource(`
                 <template>
                     <div>
@@ -103,6 +103,8 @@ describe('compilation', () => {
                     </div>
                 </template>
             `);
+
+            debug(code);
         });
     });
 });

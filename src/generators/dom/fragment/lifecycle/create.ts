@@ -40,9 +40,13 @@ export default class CreateFunction extends JsFunction {
      * @return {void} 
      */
     public defineConditionalBranches(node: ParsedNode): void {
+        const branch = new JsCode;
+
         const varName = this.fragment.getVariableName(node, 'if_block');
-        
-        // @todo...
+
+        branch.append(`// var ${varName} = create_if_block(vm);`);
+
+        this.insertBefore(branch, this.findAncestor('JsReturn'));
     }
 
     /**
