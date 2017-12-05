@@ -10,6 +10,6 @@ export default new JsHelper({
     name: 'createElement',
     signature: ['tag'],
     content: [
-        `document.createElement(tag);`,
+        `return document.createElement(tag);`,
     ],
 });

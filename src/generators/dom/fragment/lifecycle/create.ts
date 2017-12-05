@@ -28,6 +28,8 @@ export default class CreateFunction extends JsFunction {
         this.defineStaticElements();
         this.setStaticContent();
         // define if blocks
+
+        this.setVmElement();
     }
 
     /**
@@ -40,8 +42,8 @@ export default class CreateFunction extends JsFunction {
         const varName = this.fragment.getVariableName(this.fragment.node, tagName);
 
         this.fragment.define(varName);
-        this.helpers.push(createElement);
-        this.content.push(`${varName} = createElement('${tagName}');`);
+        this.useHelper(createElement);
+        this.append(`${varName} = createElement('${tagName}');`);
     }
 
     /**
@@ -50,7 +52,7 @@ export default class CreateFunction extends JsFunction {
      * @return {void}
      */
     public defineStaticElements() {
-        
+        // console.log (this.fragment.node);
     }
 
     /**
@@ -60,5 +62,19 @@ export default class CreateFunction extends JsFunction {
      */
     public setStaticContent(): void {
 
+    }
+
+    /**
+     * Define the element on our VM instance.
+     * 
+     * @return {void}
+     */
+    public setVmElement(): void {
+        const tagName = this.fragment.node.tagName.toLowerCase();
+
+        // this.append('console.log(vm)');
+        
+        this.append(null);
+        this.append(`vm.$el = ${this.fragment.getVariableName(this.fragment.node, tagName)};`)
     }
 }

@@ -21,16 +21,22 @@ describe('compilation', () => {
         
         return { 
             code, 
-            // Component: new Function(code)(),
+            Component: new Function(code)(),
         };
     }
 
-    it.only('renders an empty element', () => {
-        const { /*Component,*/ code } = createComponent('EmptyNode', {
+    it('renders an empty element', () => {
+        const { Component, code } = createComponent('EmptyNode', {
             filename: 'EmptyNode.bia',
             name: 'EmptyNode',
         });
 
-        console.log (code);
+        const vm = new Component({ el });
+
+        expect(vm.$el.outerHTML).to.equal(`<div></div>`);
+    });
+
+    it('renders purely static child elements', () => {
+        
     });
 });

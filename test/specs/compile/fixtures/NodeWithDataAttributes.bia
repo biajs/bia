@@ -1,3 +1,0 @@
-<template>
-    <div data-foo="bar" data-one-two="three"></div>
-</template>

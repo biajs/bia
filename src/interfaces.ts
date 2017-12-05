@@ -1,5 +1,6 @@
 export interface CompileOptions {
     filename: string;
+    format: 'es' | 'fn';
     name: string;
 };
 

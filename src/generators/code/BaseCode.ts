@@ -129,6 +129,18 @@ export abstract class BaseCode {
     }
 
     /**
+     * Use a helper if it isn't already.
+     * 
+     * @param  {JsHelper} helper
+     * @return {void}
+     */
+    public useHelper(helper: JsHelper): void {
+        if (!this.helpers.includes(helper)) {
+            this.helpers.push(helper);
+        }
+    }
+
+    /**
      * Ensure that no two code objects in the tree has the same id.
      * 
      * @throws  {string}
