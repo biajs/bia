@@ -1,47 +1,35 @@
 // bia v0.0.0
+function setHtml(el, html) {
+    el.innerHTML = html;
+}
+
 function createElement(tag) {
     return document.createElement(tag);
-}
-
-function setStyle(el, name, value) {
-    el.style.setProperty(name, value);
-}
-
-function appendChild(target, el) {
-    return target.appendChild(el);
-}
-function replaceNode(target, node) {
-    target.replaceWith(node);
 }
 
 function noop() {}
 
 function create_main_fragment(vm) {
-    var div;
+    let div;
 
     return {
         c: function create() {
             div = createElement('div');
-
-            div.innerHTML = '';
-
-            this.h();
-
+            setHtml(div, '');
+            
             vm.$el = div;
         },
-        h: function hydrate() {
-            setStyle(div, 'color', 'red');
-            setStyle(div, 'font-size', '20px');
-        },
-        m: function mount(target) {
-            appendChild(target, div);
-        }
+        d: noop,
+        h: noop,
+        m: noop,
+        p: noop,
+        u: noop
     };
 }
 
 function NodeWithStaticStyles(options) {
     this.$fragment = create_main_fragment(this);
-
+    
     if (options.el) {
         this.$fragment.c();
         this.$fragment.m(options.el);

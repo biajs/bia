@@ -1,7 +1,9 @@
 import Fragment from '../fragment';
 import { JsFunction } from '../../../code/index';
 import { ParsedNode } from '../../../../interfaces';
-import { createElement } from '../../helpers/index';
+import { createElement, setHtml, setText } from '../../helpers/index';
+import { escapeJsString } from '../../../../utils/string';
+import { isTextNode } from '../../../../utils/parsed_node';
 
 export default class CreateFunction extends JsFunction {
     public fragment: Fragment;
@@ -26,8 +28,16 @@ export default class CreateFunction extends JsFunction {
     public build(): void {
         this.defineRootElement();
         this.defineStaticElements();
-        this.setStaticContent();
-        // define if blocks
+
+        // if the node has dynamic content, create it.
+        // otherwise set our purely static content.
+        if (this.fragment.node.hasDynamicChildren) {
+            // @todo: set dynamic content
+        } else {
+            this.setStaticContent();
+        }
+
+        // @todo: define if blocks
 
         this.setVmElement();
     }
@@ -61,7 +71,21 @@ export default class CreateFunction extends JsFunction {
      * @return {void}
      */
     public setStaticContent(): void {
+        const node = this.fragment.node;
+        const tagName = this.fragment.node.tagName.toLowerCase();
+        const varName = this.fragment.getVariableName(node, tagName);
+        
+        // if the node only has text content, set that directly
+        if (node.children.length === 1 && isTextNode(node.children[0])) {
+            this.useHelper(setText);
+            this.append(`setText(${varName}, '${escapeJsString(node.children[0].textContent)}');`);
+        }
 
+        // otherwise set the node's inner html
+        else {
+            this.useHelper(setHtml);
+            this.append(`setHtml(${varName}, '${escapeJsString(node.innerHTML)}');`);
+        }
     }
 
     /**

@@ -1,0 +1,6 @@
+<template>
+    <div>
+        Hello world
+        foo bar baz
+    </div>
+</template>

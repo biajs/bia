@@ -1,40 +1,35 @@
 // bia v0.0.0
-function createElement(tag) {
-    return document.createElement(tag);
+function setHtml(el, html) {
+    el.innerHTML = html;
 }
 
-function appendChild(target, el) {
-    return target.appendChild(el);
-}
-function replaceNode(target, node) {
-    target.replaceWith(node);
+function createElement(tag) {
+    return document.createElement(tag);
 }
 
 function noop() {}
 
 function create_main_fragment(vm) {
-    var div;
+    let div;
 
     return {
         c: function create() {
             div = createElement('div');
-
-            div.innerHTML = '';
-
-            this.h();
-
+            setHtml(div, '');
+            
             vm.$el = div;
         },
+        d: noop,
         h: noop,
-        m: function mount(target) {
-            appendChild(target, div);
-        }
+        m: noop,
+        p: noop,
+        u: noop
     };
 }
 
 function NodeWithDirective(options) {
     this.$fragment = create_main_fragment(this);
-
+    
     if (options.el) {
         this.$fragment.c();
         this.$fragment.m(options.el);

@@ -3,7 +3,7 @@ import { expect } from 'chai';
 const fs = require('fs');
 const path = require('path');
 
-describe('compilation', () => {
+describe.only('compilation', () => {
     let el; 
     
     // create a new in-memory div for each test
@@ -11,13 +11,13 @@ describe('compilation', () => {
         el = document.createElement('div');
     });
 
-    // helper function to compile source code to a component
-    let createComponent = (name, options) => {
-        options.format = 'fn';
-
-        const source = fs.readFileSync(path.resolve(__dirname, 'fixtures', name + '.bia'), 'utf8');
-        
-        const { code } = compile(source, options);
+    let createFromSource = (source, options = {}) => {
+        const { code } = compile(source, {
+            format: 'fn',
+            filename: 'Test.bia',
+            name: 'Test',
+            ...options,
+        });
         
         return { 
             code, 
@@ -25,18 +25,42 @@ describe('compilation', () => {
         };
     }
 
+    // helper function to compile source code to a component
+    let createComponent = (name, options = {}) => {
+        const source = fs.readFileSync(path.resolve(__dirname, 'fixtures', name + '.bia'), 'utf8');
+        
+        return createFromSource(source, options);
+    }
+
     it('renders an empty element', () => {
-        const { Component, code } = createComponent('EmptyNode', {
-            filename: 'EmptyNode.bia',
-            name: 'EmptyNode',
-        });
+        const { Component, code } = createComponent('EmptyNode');
 
         const vm = new Component({ el });
 
         expect(vm.$el.outerHTML).to.equal(`<div></div>`);
     });
 
-    it('renders purely static child elements', () => {
-        
+    it('renders purely static child text', () => {
+        const { Component, code } = createComponent('NodeWithText');
+
+        const vm = new Component({ el });
+
+        expect(vm.$el.outerHTML).to.equal('<div>Hello world</div>');
     });
+
+    it('renders purely static child elements', () => {
+        const { Component, code } = createComponent('NodeWithChildAndText');
+
+        const vm = new Component({ el });
+
+        expect(vm.$el.outerHTML).to.equal('<div>\n        <span>Hello world</span>\n    </div>');
+    });
+    
+    it('renders multiple lines of text content', () => {
+        const { Component, code } = createComponent('NodeWithMultipleLinesOfText');
+
+        const vm = new Component({ el });
+        
+        expect(vm.$el.outerHTML).to.equal('<div>\r\n        Hello world\r\n        foo bar baz\r\n    </div>');
+    })
 });

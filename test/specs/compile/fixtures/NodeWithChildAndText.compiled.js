@@ -1,4 +1,8 @@
 // bia v0.0.0
+function setHtml(el, html) {
+    el.innerHTML = html;
+}
+
 function createElement(tag) {
     return document.createElement(tag);
 }
@@ -11,6 +15,7 @@ function create_main_fragment(vm) {
     return {
         c: function create() {
             div = createElement('div');
+            setHtml(div, '\r\n        <span>Hello world</span>\r\n    ');
             
             vm.$el = div;
         },
@@ -22,7 +27,7 @@ function create_main_fragment(vm) {
     };
 }
 
-function Directives(options) {
+function NodeWithChildAndText(options) {
     this.$fragment = create_main_fragment(this);
     
     if (options.el) {
@@ -31,4 +36,4 @@ function Directives(options) {
     }
 }
 
-export default Directives;
+export default NodeWithChildAndText;

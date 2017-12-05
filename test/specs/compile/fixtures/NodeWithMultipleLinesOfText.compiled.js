@@ -1,4 +1,8 @@
 // bia v0.0.0
+function setText(el, text) {
+    el.textContent = text;
+}
+
 function createElement(tag) {
     return document.createElement(tag);
 }
@@ -11,6 +15,7 @@ function create_main_fragment(vm) {
     return {
         c: function create() {
             div = createElement('div');
+            setText(div, '\r\n        Hello world\r\n        foo bar baz\r\n    ');
             
             vm.$el = div;
         },
@@ -22,7 +27,7 @@ function create_main_fragment(vm) {
     };
 }
 
-function Directives(options) {
+function NodeWithMultipleLinesOfText(options) {
     this.$fragment = create_main_fragment(this);
     
     if (options.el) {
@@ -31,4 +36,4 @@ function Directives(options) {
     }
 }
 
-export default Directives;
+export default NodeWithMultipleLinesOfText;
