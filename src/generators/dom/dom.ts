@@ -1,23 +1,26 @@
-import defineExport from './define_export';
-import defineGlobalFunctions from './global_functions';
-import defineRootConstructor from './root_constructor';
-import { JsCode } from '../classes/index';
-import { collapseNewlines } from '../../utils/string';
+import Fragment from './fragment/fragment';
+import { JsCode } from '../code/index';
+import { ParsedSource } from '../../interfaces';
 
 // @todo: read this value from package.json
 const version = '0.0.0';
 
-export default function(parsedSource, options) {
-    const code = new JsCode({
-        content: [
-            defineGlobalFunctions(),
-            null,
-            defineRootConstructor(parsedSource, options),
-            null,
-            defineExport(options),
-        ],
-        root: true,
+export default function(source: ParsedSource, options) {
+    const code = new JsCode({ id: 'root' });
+
+    // stick the compiler version at the top of the file
+    code.append(`// bia v${version}`);
+
+    // create our main fragment
+    const fragment = new Fragment({
+        name: 'create_main_fragment',
+        node: source.template,
     });
 
-    return `// bia v${version}\n${collapseNewlines(String(code))}`;
+    code.append(fragment);
+
+    // build the dom fragment and return the source code
+    fragment.build();
+
+    return String(code);
 }

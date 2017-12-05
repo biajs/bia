@@ -98,17 +98,19 @@ export abstract class BaseCode {
      * 
      * @return {JsFunction|void}
      */
-    public getParentFunction(): JsFunction | void {
+    public getParentFunction(): JsFunction {
         let parent = this.parent;
 
         while (parent) {
-            if (parent.constructor.name === 'JsFunction') {
+            if (parent instanceof JsFunction) {
                 // @ts-ignore: we know the return value is a JsFunction
                 return parent;
             }
 
             parent = parent.parent;
         }
+
+        throw 'Failed to find parent function.';
     }
 
     /**

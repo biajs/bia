@@ -45,6 +45,11 @@ export interface ParsedNode {
     type: NodeType;
 };
 
+// a parsed .bia file
+export interface ParsedSource {
+    template: ParsedNode;
+}
+
 export interface TextInterpolation {
     expression: string;
     text: string;

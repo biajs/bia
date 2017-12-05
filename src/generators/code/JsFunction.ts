@@ -46,7 +46,7 @@ export class JsFunction extends JsCode {
      */
     public toString(): string {
         // if our function has no content, and no name, return noop
-        if (!this.name && this.isEmpty()) {
+        if (this.isEmpty()) {
             return 'noop';
         }
 
