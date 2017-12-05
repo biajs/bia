@@ -1,5 +1,5 @@
 import Fragment from '../fragment';
-import { JsFunction } from '../../../code/index';
+import { JsCode, JsFunction } from '../../../code/index';
 import { ParsedNode } from '../../../../interfaces';
 import { createElement, createText, setHtml, setText } from '../../helpers/index';
 import { escapeJsString } from '../../../../utils/string';
@@ -34,6 +34,18 @@ export default class CreateFunction extends JsFunction {
     }
 
     /**
+     * Define if, else if, and else branches.
+     * 
+     * @param  {ParsedNode} node
+     * @return {void} 
+     */
+    public defineConditionalBranches(node: ParsedNode): void {
+        const varName = this.fragment.getVariableName(node, 'if_block');
+        
+        // @todo...
+    }
+
+    /**
      * Define a dom element.
      * 
      * @param  {ParsedNode} node
@@ -51,7 +63,7 @@ export default class CreateFunction extends JsFunction {
         if (node.hasDynamicChildren) {
             node.children.forEach(child => {
                 if (nodeHasDirective(child, 'if')) {
-                    // @todo: this.defineIfBlock(child);
+                    this.defineConditionalBranches(child);
                 } else {
                     this.defineDomNodes(child);
                 }

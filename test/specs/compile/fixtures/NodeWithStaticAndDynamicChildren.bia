@@ -2,6 +2,6 @@
     <div>
         text node
         <span>static</span>
-        <span b-if="true">dynamic</span>
+        <span b-if="false">dynamic</span>
     </div>
 </template>

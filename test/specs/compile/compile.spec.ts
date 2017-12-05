@@ -3,7 +3,7 @@ import { expect } from 'chai';
 const fs = require('fs');
 const path = require('path');
 
-describe.only('compilation', () => {
+describe('compilation', () => {
     let el; 
     
     // create a new in-memory div for each test
@@ -83,11 +83,26 @@ describe.only('compilation', () => {
         expect(vm.$el.outerHTML).to.equal('<div>Foo\'s \"bar\"</div>');
     });
 
-    it.only('renders static and dynamic siblings', () => {
+    it('renders static and dynamic siblings', () => {
         const { Component, code } = createComponent('NodeWithStaticAndDynamicChildren');
 
         const vm = new Component({ el });
         
-        console.log (vm.$el.outerHTML);
+        expect(vm.$el.outerHTML).to.equal('<div>\r\n        text node\r\n        <span>static</span></div>')
+    });
+
+    //
+    // conditional branches
+    //
+    describe('conditional branches', () => {
+        it('renders a stand-alone if block', () => {
+            const { Component, code } = createFromSource(`
+                <template>
+                    <div>
+                        <span b-if="true">i should be visible</span>
+                    </div>
+                </template>
+            `);
+        });
     });
 });
