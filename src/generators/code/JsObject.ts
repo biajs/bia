@@ -1,5 +1,6 @@
 import { BaseCode, BaseCodeOptions } from './BaseCode';
 import { indent } from '../../utils/string';
+import { isCodeInstance } from '../../utils/code';
 
 interface JsObjectOptions extends BaseCodeOptions {
     properties?: Object
@@ -17,6 +18,7 @@ export class JsObject extends BaseCode {
     constructor(options: JsObjectOptions) {
         super(options);
         this.properties = options.properties || {};
+        this.setDescendentParent();
         this.validateIds();
     }
 
@@ -94,6 +96,17 @@ export class JsObject extends BaseCode {
         }
 
         delete this.properties[key];
+    }
+
+    /**
+     * Set the parent property of descendent code.
+     * 
+     * @return {void}
+     */
+    public setDescendentParent(): void {
+        Object.keys(this.properties)
+            .filter(key => isCodeInstance(this.properties[key]))
+            .forEach(key => this.properties[key].parent = this);
     }
 
     /**
