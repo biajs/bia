@@ -1,9 +1,9 @@
 import Fragment from '../fragment';
 import { JsFunction } from '../../../code/index';
 import { ParsedNode } from '../../../../interfaces';
-import { createElement, setHtml, setText } from '../../helpers/index';
+import { createElement, createText, setHtml, setText } from '../../helpers/index';
 import { escapeJsString } from '../../../../utils/string';
-import { isTextNode } from '../../../../utils/parsed_node';
+import { isElementNode, isTextNode, nodeHasDirective } from '../../../../utils/parsed_node';
 
 export default class CreateFunction extends JsFunction {
     public fragment: Fragment;
@@ -26,16 +26,7 @@ export default class CreateFunction extends JsFunction {
      * @return {void}
      */
     public build(): void {
-        this.defineRootElement();
-        this.defineStaticElements();
-
-        // if the node has dynamic content, create it.
-        // otherwise set our purely static content.
-        if (this.fragment.node.hasDynamicChildren) {
-            // @todo: set dynamic content
-        } else {
-            this.setStaticContent();
-        }
+        this.defineDomNodes(this.fragment.node);
 
         // @todo: define if blocks
 
@@ -43,26 +34,67 @@ export default class CreateFunction extends JsFunction {
     }
 
     /**
-     * Define the root dom element.
+     * Define a dom element.
      * 
+     * @param  {ParsedNode} node
      * @return {void}
      */
-    public defineRootElement(): void {
-        const tagName = this.fragment.node.tagName.toLowerCase();
-        const varName = this.fragment.getVariableName(this.fragment.node, tagName);
+    public defineElementNode(node: ParsedNode): void {
+        const tagName = node.tagName.toLowerCase();
+        const varName = this.fragment.getVariableName(node, tagName);
 
         this.fragment.define(varName);
         this.useHelper(createElement);
         this.append(`${varName} = createElement('${tagName}');`);
+
+        // if the node has dynamic children, define them
+        if (node.hasDynamicChildren) {
+            node.children.forEach(child => {
+                if (nodeHasDirective(child, 'if')) {
+                    // @todo: this.defineIfBlock(child);
+                } else {
+                    this.defineDomNodes(child);
+                }
+            });
+        }
+
+        // otherwise set purely static content
+        else {
+            this.setStaticContent(node);
+        }
     }
 
     /**
-     * Walk the dom node and define any purely static elements.
+     * Define a text node.
+     * 
+     * @param  {ParsedNode} node
+     * @return {void}
+     */
+    public defineTextNode(node: ParsedNode): void {
+        const varName = this.fragment.getVariableName(node, 'text');
+
+        this.fragment.define(varName);
+
+        this.useHelper(createText);
+        
+        this.append(`${varName} = createText('${escapeJsString(node.textContent)}');`);
+    }
+
+    /**
+     * Define any child text or dom nodes.
      * 
      * @return {void}
      */
-    public defineStaticElements() {
-        // console.log (this.fragment.node);
+    public defineDomNodes(node: ParsedNode) {
+        // define dom elements
+        if (isElementNode(node)) {
+            this.defineElementNode(node);
+        }
+
+        // define text nodes
+        else if (isTextNode(node)) {
+            this.defineTextNode(node);
+        }
     }
 
     /**
@@ -70,9 +102,8 @@ export default class CreateFunction extends JsFunction {
      * 
      * @return {void}
      */
-    public setStaticContent(): void {
-        const node = this.fragment.node;
-        const tagName = this.fragment.node.tagName.toLowerCase();
+    public setStaticContent(node: ParsedNode): void {
+        const tagName = node.tagName.toLowerCase();
         const varName = this.fragment.getVariableName(node, tagName);
         
         // if the node only has text content, set that directly

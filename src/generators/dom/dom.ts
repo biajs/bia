@@ -62,7 +62,7 @@ function getComponentConstructor(source: ParsedSource, options: CompileOptions):
         condition: 'options.el',
         content: [
             `this.$fragment.c();`,
-            `this.$fragment.m(options.el);`,
+            `this.$fragment.m(options.el, options.anchor || null);`,
         ],
     }));
 

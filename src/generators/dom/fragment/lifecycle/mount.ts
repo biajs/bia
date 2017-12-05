@@ -1,7 +1,8 @@
 import Fragment from '../fragment';
 import { JsFunction } from '../../../code/index';
 import { ParsedNode } from '../../../../interfaces';
-import { createElement } from '../../helpers/index';
+import { appendNode, insertNode } from '../../helpers/index';
+import { nodeHasDirective } from '../../../../utils/parsed_node';
 
 export default class MountFunction extends JsFunction {
     public fragment: Fragment;
@@ -15,7 +16,31 @@ export default class MountFunction extends JsFunction {
         super({});
 
         this.name = 'mount';
+        this.signature = ['target', 'anchor'];
         this.fragment = fragment;
+    }
+
+    /**
+     * Recursively append child nodes.
+     * 
+     * @param  {ParsedNode} node
+     * @return {void}
+     */
+    public appendChildNode(node: ParsedNode): void {
+        // mount if blocks
+        if (nodeHasDirective(node, 'if')) {
+            // @todo
+        }
+
+        // mount static nodes
+        else {
+            const varName = this.fragment.getVariableName(node);
+            const parentVarName = this.fragment.getVariableName(node.parent);
+
+            this.useHelper(appendNode);
+            
+            this.append(`appendNode(${varName}, ${parentVarName});`);
+        }
     }
 
     /**
@@ -24,6 +49,24 @@ export default class MountFunction extends JsFunction {
      * @return {void}
      */
     public build(): void {
+        this.insertRootElement();
 
+        if (this.fragment.node.hasDynamicChildren) {
+            this.fragment.node.children.forEach(child => {
+                this.appendChildNode(child);
+            });
+        }
+    }
+
+    /**
+     * Insert the root element into the dom.
+     * 
+     * @return {void}
+     */
+    public insertRootElement(): void {
+        this.useHelper(insertNode);
+        const varName = this.fragment.getVariableName(this.fragment.node);
+
+        this.append(`insertNode(${varName}, target, anchor);`);
     }
 }

@@ -78,7 +78,7 @@ export class JsCode extends BaseCode {
      * @param  {string} prefix
      * @return {string} 
      */
-    public getVariableName(obj: Object, prefix: string): string {
+    public getVariableName(obj: Object, prefix: string = 'unknown'): string {
         // return the name if we've already named this object
         const namedObj = this.variableNames.find(namedObj => namedObj.obj === obj);
 

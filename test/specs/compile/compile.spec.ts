@@ -32,6 +32,17 @@ describe.only('compilation', () => {
         return createFromSource(source, options);
     }
 
+    // helper function to log code with a bit of spacing
+    let debug = (code) => {
+        console.log();
+        console.log('====================================================================');
+        console.log();
+        console.log(code);
+        console.log();
+        console.log('====================================================================');
+        console.log();
+    }
+
     it('renders an empty element', () => {
         const { Component, code } = createComponent('EmptyNode');
 
@@ -70,5 +81,13 @@ describe.only('compilation', () => {
         const vm = new Component({ el });
         
         expect(vm.$el.outerHTML).to.equal('<div>Foo\'s \"bar\"</div>');
-    })
+    });
+
+    it.only('renders static and dynamic siblings', () => {
+        const { Component, code } = createComponent('NodeWithStaticAndDynamicChildren');
+
+        const vm = new Component({ el });
+        
+        console.log (vm.$el.outerHTML);
+    });
 });
