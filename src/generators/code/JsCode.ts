@@ -55,6 +55,15 @@ export class JsCode extends BaseCode {
                 || code === target;
         });
     }
+
+    /**
+     * Get class name.
+     * 
+     * @return {string}
+     */
+    public getClassName(): string {
+        return 'JsCode';
+    }
     
     /**
      * Get an array of all descendent code.

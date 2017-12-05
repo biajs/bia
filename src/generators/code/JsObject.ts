@@ -43,6 +43,15 @@ export class JsObject extends BaseCode {
         // and if it wasn't go ahead and attach our new property
         this.properties[key] = value;
     }
+    
+    /**
+     * Get class name.
+     * 
+     * @return {string}
+     */
+    public getClassName(): string {
+        return 'JsObject';
+    }
 
     /**
      * Create an array of all descendent code instances.

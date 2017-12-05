@@ -38,6 +38,15 @@ export class JsFunction extends JsCode {
     public define(varName: string): void {
         this.variables.push(varName);
     }
+    
+    /**
+     * Get class name.
+     * 
+     * @return {string}
+     */
+    public getClassName(): string {
+        return 'JsFunction';
+    }
 
     /**
      * Cast a function to a string.

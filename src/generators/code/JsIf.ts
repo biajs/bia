@@ -39,6 +39,15 @@ export class JsIf extends BaseCode {
         this.validateIds();
         this.setDescendentParents();
     }
+    
+    /**
+     * Get class name.
+     * 
+     * @return {string}
+     */
+    public getClassName(): string {
+        return 'JsIf';
+    }
 
     /**
      * Get descendent code.
