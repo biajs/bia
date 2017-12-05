@@ -25,12 +25,12 @@ describe('compilation', () => {
         };
     }
 
-    it.skip('renders an empty element', () => {
+    it.only('renders an empty element', () => {
         const { /*Component,*/ code } = createComponent('EmptyNode', {
             filename: 'EmptyNode.bia',
             name: 'EmptyNode',
         });
 
-        // console.log (code);
+        console.log (code);
     });
 });

@@ -36,7 +36,7 @@ export default class extends JsFunction {
      */
     public build() {
         // create our lifecycle methods
-        const create = new CreateFunction({});
+        const create = new CreateFunction(this);
 
         // add a return statement containing our lifecycle methods
         this.append(new JsReturn({

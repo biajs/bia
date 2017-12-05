@@ -1,18 +1,30 @@
 import { BaseCode, BaseCodeOptions } from './BaseCode';
+import { isCodeInstance } from '../../utils/code';
 
 export interface JsCodeOptions extends BaseCodeOptions {
     content?: Array<BaseCode|string|null>;
 }
 
+export interface JsCodeVariable {
+    name: string;
+    obj: Object;
+}
+
 export class JsCode extends BaseCode {
     public content: Array<BaseCode|string|null>;
+    public variableNames: Array<JsCodeVariable>;
+    public variablePrefixCounter: Object;
     
     /**
      * Constructor.
      */
     constructor(options: JsCodeOptions = {}) {
         super(options);
+
         this.content = options.content || [];
+        this.variableNames = [];
+        this.variablePrefixCounter = {};
+
         this.setContentParent();
         this.validateIds();
     }
@@ -52,18 +64,40 @@ export class JsCode extends BaseCode {
     public getDescendents() {
         const descendents = [];
 
-        function walkDescendents(code) {
-            code.content
-                .filter(child => typeof child !== 'string')
-                .forEach(child => {
-                    descendents.push(child);
-                    walkDescendents(child);
-                });
-        }
-
-        walkDescendents(this);
+        this.content
+            .filter(isCodeInstance)
+            .forEach((child: BaseCode) => descendents.push(child, ...child.getDescendents()));
 
         return descendents;
+    }
+
+    /**
+     * Get the name of a variable.
+     * 
+     * @param  {Object} obj
+     * @param  {string} prefix
+     * @return {string} 
+     */
+    public getVariableName(obj: Object, prefix: string): string {
+        // return the name if we've already named this object
+        const namedObj = this.variableNames.find(namedObj => namedObj.obj === obj);
+
+        if (namedObj) {
+            return namedObj.name;
+        }
+
+        // otherwise name the variable, and keep track of our prefix counts
+        let name = prefix;
+
+        if(typeof this.variablePrefixCounter[prefix] === 'undefined') {
+            this.variablePrefixCounter[prefix] = 1;
+        } else {
+            name = `${prefix}_${this.variablePrefixCounter[prefix]++}`;
+        }
+
+        this.variableNames.push({ name, obj });
+
+        return name;
     }
     
     /**
