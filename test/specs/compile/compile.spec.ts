@@ -62,5 +62,13 @@ describe.only('compilation', () => {
         const vm = new Component({ el });
         
         expect(vm.$el.outerHTML).to.equal('<div>\r\n        Hello world\r\n        foo bar baz\r\n    </div>');
+    });
+
+    it('renders text with quotes', () => {
+        const { Component, code } = createComponent('NodeWithQuotedText');
+
+        const vm = new Component({ el });
+        
+        expect(vm.$el.outerHTML).to.equal('<div>Foo\'s \"bar\"</div>');
     })
 });
