@@ -104,7 +104,10 @@ describe('compilation', () => {
                 </template>
             `);
 
+            const vm = new Component({ el });
+
             debug(code);
+            console.log (vm.$el.outerHTML);
         });
     });
 });

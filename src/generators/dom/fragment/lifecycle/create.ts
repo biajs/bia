@@ -3,7 +3,7 @@ import { JsCode, JsFunction } from '../../../code/index';
 import { ParsedNode } from '../../../../interfaces';
 import { createElement, createText, setHtml, setText } from '../../helpers/index';
 import { escapeJsString } from '../../../../utils/string';
-import { isElementNode, isTextNode, nodeHasDirective } from '../../../../utils/parsed_node';
+import { getDirective, isElementNode, isTextNode, nodeHasDirective, removeProcessedDirective } from '../../../../utils/parsed_node';
 
 export default class CreateFunction extends JsFunction {
     public fragment: Fragment;
@@ -27,10 +27,7 @@ export default class CreateFunction extends JsFunction {
      */
     public build(): void {
         this.defineDomNodes(this.fragment.node);
-
-        // @todo: define if blocks
-
-        this.setVmElement();
+        this.returnRootElement();
     }
 
     /**
@@ -41,12 +38,43 @@ export default class CreateFunction extends JsFunction {
      */
     public defineConditionalBranches(node: ParsedNode): void {
         const branch = new JsCode;
-
+        const directive = getDirective(node, 'if');
         const varName = this.fragment.getVariableName(node, 'if_block');
+        const fragmentName = `create_${varName}`;
+        const processedNode = removeProcessedDirective(node, directive);
 
-        branch.append(`// var ${varName} = create_if_block(vm);`);
+        const childFragment = new Fragment({
+            name: fragmentName,
+            node: processedNode,
+        });
+
+        childFragment.build();
+        childFragment.insertSelfBefore(this.fragment);
+
+        branch.append(`var ${varName} = (${directive.expression}) && ${fragmentName}(vm);`);
+        branch.append(null);
+
+        const rootVarName = this.fragment.getVariableName(this.fragment.node);
+        this.append(`if (${varName}) ${varName}.c();`);
 
         this.insertBefore(branch, this.findAncestor('JsReturn'));
+    }
+    
+    /**
+     * Define any child text or dom nodes.
+     * 
+     * @return {void}
+     */
+    public defineDomNodes(node: ParsedNode) {
+        // define dom elements
+        if (isElementNode(node)) {
+            this.defineElementNode(node);
+        }
+
+        // define text nodes
+        else if (isTextNode(node)) {
+            this.defineTextNode(node);
+        }
     }
 
     /**
@@ -68,6 +96,7 @@ export default class CreateFunction extends JsFunction {
             node.children.forEach(child => {
                 if (nodeHasDirective(child, 'if')) {
                     this.defineConditionalBranches(child);
+                    // @todo: handle else-if and else branches
                 } else {
                     this.defineDomNodes(child);
                 }
@@ -97,20 +126,15 @@ export default class CreateFunction extends JsFunction {
     }
 
     /**
-     * Define any child text or dom nodes.
+     * Return the root element.
      * 
      * @return {void}
      */
-    public defineDomNodes(node: ParsedNode) {
-        // define dom elements
-        if (isElementNode(node)) {
-            this.defineElementNode(node);
-        }
+    public returnRootElement(): void {
+        const varName = this.fragment.getVariableName(this.fragment.node);
 
-        // define text nodes
-        else if (isTextNode(node)) {
-            this.defineTextNode(node);
-        }
+        this.append(null);
+        this.append(`return ${varName};`);
     }
 
     /**
@@ -133,19 +157,5 @@ export default class CreateFunction extends JsFunction {
             this.useHelper(setHtml);
             this.append(`setHtml(${varName}, '${escapeJsString(node.innerHTML)}');`);
         }
-    }
-
-    /**
-     * Define the element on our VM instance.
-     * 
-     * @return {void}
-     */
-    public setVmElement(): void {
-        const tagName = this.fragment.node.tagName.toLowerCase();
-
-        // this.append('console.log(vm)');
-        
-        this.append(null);
-        this.append(`vm.$el = ${this.fragment.getVariableName(this.fragment.node, tagName)};`)
     }
 }

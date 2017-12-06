@@ -12,6 +12,7 @@ import { ParsedNode } from '../../../interfaces';
 // Options
 //
 export interface FragmentOptions extends JsFunctionOptions {
+    isRoot?: boolean;
     node: ParsedNode;
 }
 
@@ -19,6 +20,7 @@ export interface FragmentOptions extends JsFunctionOptions {
 // Fragment
 //
 export default class extends JsFunction {
+    public isRoot: boolean;
     public node: ParsedNode;
 
     /**
@@ -31,6 +33,7 @@ export default class extends JsFunction {
 
         // set our fragment's node and signature
         this.node = options.node;
+        this.isRoot = options.isRoot || false;
         this.signature = ['vm'];
     }
 
