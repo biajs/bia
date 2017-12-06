@@ -29,7 +29,10 @@ export default class MountFunction extends JsFunction {
     public appendChildNode(node: ParsedNode): void {
         // mount if blocks
         if (nodeHasDirective(node, 'if')) {
-            // @todo
+            const varName = this.fragment.getVariableName(node);
+            const parentVarName = this.fragment.getVariableName(node.parent);
+
+            this.append(`if (${varName}) ${varName}.m(${parentVarName}, null);`)
         }
 
         // mount static nodes

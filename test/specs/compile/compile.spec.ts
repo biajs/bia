@@ -95,19 +95,12 @@ describe('compilation', () => {
     // conditional branches
     //
     describe('conditional branches', () => {
-        it.only('renders a stand-alone if block', () => {
-            const { Component, code } = createFromSource(`
-                <template>
-                    <div>
-                        <span b-if="true">i should be visible</span>
-                    </div>
-                </template>
-            `);
+        it('renders a stand-alone if block', () => {
+            const { Component, code } = createComponent('IfBlock');
 
             const vm = new Component({ el });
-
-            debug(code);
-            console.log (vm.$el.outerHTML);
+            
+            expect(vm.$el.outerHTML).to.equal('<div><span>i should be visible</span></div>');
         });
     });
 });

@@ -37,27 +37,31 @@ export default class CreateFunction extends JsFunction {
      * @return {void} 
      */
     public defineConditionalBranches(node: ParsedNode): void {
-        const branch = new JsCode;
         const directive = getDirective(node, 'if');
         const varName = this.fragment.getVariableName(node, 'if_block');
-        const fragmentName = `create_${varName}`;
-        const processedNode = removeProcessedDirective(node, directive);
 
+        // create a child fragment constructor, and insert it before out
+        // this fragment. we'll call this when the condition is true.
         const childFragment = new Fragment({
-            name: fragmentName,
-            node: processedNode,
+            name: `create_${varName}`,
+            node: removeProcessedDirective(node, directive),
         });
 
         childFragment.build();
+
         childFragment.insertSelfBefore(this.fragment);
 
-        branch.append(`var ${varName} = (${directive.expression}) && ${fragmentName}(vm);`);
-        branch.append(null);
+        // insert code to instantiate our branch into the fragment
+        const branch = new JsCode({
+            content: [`var ${varName} = (${directive.expression}) && create_${varName}(vm);`, null],
+        });
 
+        branch.insertSelfBefore(this.findAncestor('JsReturn'));
+
+        // and finally, if the condition is true, call the child fragment's create method
         const rootVarName = this.fragment.getVariableName(this.fragment.node);
+        
         this.append(`if (${varName}) ${varName}.c();`);
-
-        this.insertBefore(branch, this.findAncestor('JsReturn'));
     }
     
     /**

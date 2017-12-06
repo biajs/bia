@@ -1,0 +1,5 @@
+<template>
+    <div>
+        <span b-if="true">i should be visible</span>
+    </div>
+</template>

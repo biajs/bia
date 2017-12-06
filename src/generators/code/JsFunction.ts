@@ -64,7 +64,7 @@ export class JsFunction extends JsCode {
         const content = indent(this.content.join('\n').trim());
 
         const variables = this.variables.length > 0
-            ? `${indent(`let ${this.variables.join(', ')};`)}\n\n`
+            ? `${indent(`var ${this.variables.join(', ')};`)}\n\n`
             : '';
 
         return `function ${this.name || ''}(${signature}) {\n${variables}${content}\n}`;
