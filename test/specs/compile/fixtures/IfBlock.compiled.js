@@ -3,8 +3,8 @@ function insertNode(node, target, anchor) {
     target.insertBefore(node, anchor);
 }
 
-function setHtml(el, html) {
-    el.innerHTML = html;
+function setText(el, text) {
+    el.textContent = text;
 }
 
 function createElement(tag) {
@@ -13,13 +13,34 @@ function createElement(tag) {
 
 function noop() {}
 
-function create_main_fragment(vm) {
-    var div;
+function create_if_block(vm) {
+    var span;
 
     return {
         c: function create() {
+            span = createElement('span');
+            setText(span, 'i should be visible');
+            
+            return span;
+        },
+        d: noop,
+        h: noop,
+        m: function mount(target, anchor) {
+            insertNode(span, target, anchor);
+        },
+        p: noop,
+        u: noop
+    };
+}
+function create_main_fragment(vm) {
+    var div;
+
+    var if_block = (true) && create_if_block(vm);
+    
+    return {
+        c: function create() {
             div = createElement('div');
-            setHtml(div, '\r\n        <div>\r\n            <div>foo</div>\r\n        </div>\r\n    ');
+            if (if_block) if_block.c();
             
             return div;
         },
@@ -27,13 +48,14 @@ function create_main_fragment(vm) {
         h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
+            if (if_block) if_block.m(div, null);
         },
         p: noop,
         u: noop
     };
 }
 
-function StaticChildren(options) {
+function IfBlock(options) {
     this.$fragment = create_main_fragment(this);
     
     if (options.el) {
@@ -42,4 +64,4 @@ function StaticChildren(options) {
     }
 }
 
-export default StaticChildren;
+export default IfBlock;
