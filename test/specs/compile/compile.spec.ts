@@ -102,5 +102,13 @@ describe('compilation', () => {
             
             expect(vm.$el.outerHTML).to.equal('<div><span>i should be visible</span></div>');
         });
+
+        it('renders nested if blocks', () => {
+            const { Component, code } = createComponent('NestedIfBlock');
+            
+            const vm = new Component({ el });
+
+            expect(vm.$el.outerHTML).to.equal('<div><div><p><span>hooray</span></p></div></div>');
+        });
     });
 });

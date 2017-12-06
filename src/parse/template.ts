@@ -125,7 +125,13 @@ function getDirectives(el: HTMLElement, nodeType: NodeType): Array<NodeDirective
             const argMatch = new RegExp(`^${directivePrefix}[a-zA-Z-]+(?:\.[a-zA-Z\.-]+)?\:([a-zA-Z]+)`).exec(attr.name);
             const arg = argMatch ? argMatch[1] : null;
 
-            return directives.concat({ name, modifiers, arg, expression: attr.value });
+            return directives.concat({ 
+                arg, 
+                modifiers, 
+                name, 
+                expression: attr.value,
+                isProcessed: false,
+            });
         }, []);
 }
 

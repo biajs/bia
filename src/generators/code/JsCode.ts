@@ -112,8 +112,8 @@ export class JsCode extends BaseCode {
     /**
      * Insert code after another piece of code.
      * 
-     * @param  {BaseCode} insertCode
-     * @param  {string} target
+     * @param  {BaseCode}   insertCode
+     * @param  {string}     target
      * @return {void} 
      */
     public insertAfter(insertCode: BaseCode, target: BaseCode|string): void {
@@ -128,18 +128,18 @@ export class JsCode extends BaseCode {
                 throw `Failed to insert code after, the target's parent is not a JsCode instance.`;
             }
         } else {
-            throw `Failed to insert code, target code not found.`;
+            throw `Failed to insert code after, target code not found.`;
         }
     }
 
     /**
      * Insert code before another piece of code.
      * 
-     * @param  {BaseCode} insertCode
-     * @param  {string} target
+     * @param  {BaseCode}   insertCode
+     * @param  {string}     target
      * @return {void} 
      */
-    public insertBefore(insertCode: BaseCode, target: BaseCode|string): void {
+    public insertBefore(insertCode: BaseCode, target: BaseCode): void {
         const targetCode = this.findRelatedCode(target);
 
         if (targetCode) {
@@ -148,10 +148,10 @@ export class JsCode extends BaseCode {
             if (targetCode.parent instanceof JsCode) {
                 targetCode.parent.content.splice(targetCode.parent.content.indexOf(targetCode), 0, insertCode);
             } else {
-                throw `Failed to insert code after, the target's parent is not a JsCode instance.`;
+                throw `Failed to insert code before, the target's parent is not a JsCode instance.`;
             }
         } else {
-            throw `Failed to insert code, target code not found.`;
+            throw `Failed to insert code before, target code not found.`;
         }
     }
 

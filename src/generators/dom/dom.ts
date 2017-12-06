@@ -12,6 +12,7 @@ export default function(source: ParsedSource, options: CompileOptions) {
     const fragment = new Fragment({
         name: 'create_main_fragment',
         node: source.template,
+        parent: code,
     });
 
     code.append(fragment);

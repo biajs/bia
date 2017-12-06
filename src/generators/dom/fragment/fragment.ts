@@ -4,7 +4,7 @@ import HydrateFunction from './lifecycle/hydrate';
 import MountFunction from './lifecycle/mount';
 import UnmountFunction from './lifecycle/unmount';
 import UpdateFunction from './lifecycle/update';
-import { JsFunction, JsObject, JsReturn } from '../../code/index';
+import { JsCode, JsFunction, JsObject, JsReturn } from '../../code/index';
 import { JsFunctionOptions } from '../../code/JsFunction';
 import { ParsedNode } from '../../../interfaces';
 
@@ -12,17 +12,17 @@ import { ParsedNode } from '../../../interfaces';
 // Options
 //
 export interface FragmentOptions extends JsFunctionOptions {
-    isRoot?: boolean;
     node: ParsedNode;
+    parent: JsCode;
 }
 
 //
 // Fragment
 //
 export default class extends JsFunction {
-    public isRoot: boolean;
     public node: ParsedNode;
-
+    public parent: JsCode;
+    
     /**
      * Constructor.
      * 
@@ -33,7 +33,7 @@ export default class extends JsFunction {
 
         // set our fragment's node and signature
         this.node = options.node;
-        this.isRoot = options.isRoot || false;
+        this.parent = options.parent;
         this.signature = ['vm'];
     }
 

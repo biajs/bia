@@ -27,8 +27,7 @@ export function nodeRequiresHydration(node: ParsedNode): boolean {
 
 // remove a directive from a node that has already been processed
 export function removeProcessedDirective(node: ParsedNode, directive: NodeDirective) {
-    return {
-        ...node,
-        directives: node.directives.filter(nodeDirective => nodeDirective !== directive),
-    };
+    node.directives = node.directives.filter(nodeDirective => nodeDirective !== directive);
+
+    return node;
 }

@@ -38,18 +38,28 @@ export default class CreateFunction extends JsFunction {
      */
     public defineConditionalBranches(node: ParsedNode): void {
         const directive = getDirective(node, 'if');
-        const varName = this.fragment.getVariableName(node, 'if_block');
+
+        // do nothing if we've already processed this directive
+        if (directive.isProcessed) {
+            return;
+        }
+
+        // otherwise process it
+        directive.isProcessed = true;
 
         // create a child fragment constructor, and insert it before out
-        // this fragment. we'll call this when the condition is true.
+        // this fragment. we'll call this when it's condition is true.
+        const varName = this.fragment.parent.getVariableName(node, 'if_block');
+
         const childFragment = new Fragment({
+            node,
             name: `create_${varName}`,
-            node: removeProcessedDirective(node, directive),
+            parent: this.fragment.parent,
         });
 
-        childFragment.build();
+        this.fragment.parent.insertBefore(childFragment, this.fragment);
 
-        childFragment.insertSelfBefore(this.fragment);
+        childFragment.build();
 
         // insert code to instantiate our branch into the fragment
         const branch = new JsCode({

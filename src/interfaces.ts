@@ -9,6 +9,7 @@ export interface CompileOptions {
 export interface NodeDirective {
     arg: string | null;         // 'baz'
     expression: string;         // 'yar'
+    isProcessed: boolean;       // determins if the node has been processed
     modifiers: Array<string>;   // ['foo', 'bar']
     name: string;               // 'whatever'
 }
