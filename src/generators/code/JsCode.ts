@@ -139,7 +139,7 @@ export class JsCode extends BaseCode {
      * @param  {string}     target
      * @return {void} 
      */
-    public insertBefore(insertCode: BaseCode, target: BaseCode): void {
+    public insertBefore(insertCode: BaseCode, target: BaseCode|string): void {
         const targetCode = this.findRelatedCode(target);
 
         if (targetCode) {
