@@ -1,0 +1,6 @@
+<template>
+    <div>
+        <p>else-if nodes should be preceeded by if nodes</p>
+        <span b-else-if="true">which means this one is invalid</span>
+    </div>
+</template>
