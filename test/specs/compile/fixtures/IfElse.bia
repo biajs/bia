@@ -1,6 +1,0 @@
-<template>
-    <div>
-        <span b-if="false">one</span>
-        <span b-else>two</span>
-    </div>
-</template>

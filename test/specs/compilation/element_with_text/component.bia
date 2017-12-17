@@ -1,6 +1,5 @@
 <template>
     <div>
-        Hello world
-        foo bar baz
+        Hello world!
     </div>
 </template>
