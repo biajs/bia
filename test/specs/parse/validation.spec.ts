@@ -58,6 +58,18 @@ describe('validation', () => {
         it('throws an error for if blocks with no condition');
 
         it('throws an error for else-if blocks with no condition');
+
+        it('throws an error for if blocks that also have else-if/else directives');
+
+        it('throws an error for else-if blocks that also have if/else directives');
+
+        it('throws an error for else blocks that also have if/else-if directives');
+
+        it('throws an error for multiple if directives on a single node');
+
+        it('throws an error for multiple else-if directives on a single node');
+
+        it('throws an error for multiple else directives on a single node');
         
         it('throws an error when else-if blocks are not preceeded by an if or else-if node', () => {
             expect(() => parseFixture('InvalidNodeBeforeElseIf', {})).to.throw(

@@ -1,9 +1,10 @@
 import Fragment from '../fragment';
 import { JsCode, JsFunction } from '../../../code/index';
-import { ParsedNode } from '../../../../interfaces';
+import { NodeDirective, ParsedNode } from '../../../../interfaces';
 import { createElement, createText, setHtml, setText } from '../../helpers/index';
 import { escapeJsString } from '../../../../utils/string';
-import { getDirective, isElementNode, isTextNode, nodeHasDirective, removeProcessedDirective } from '../../../../utils/parsed_node';
+import { getDirective, getNextElementNode, isElementNode, isTextNode, nodeHasDirective, removeProcessedDirective } from '../../../../utils/parsed_node';
+const snakeCase = require('snake-case');
 
 export default class CreateFunction extends JsFunction {
     public fragment: Fragment;
@@ -29,16 +30,15 @@ export default class CreateFunction extends JsFunction {
         this.defineDomNodes(this.fragment.node);
         this.returnRootElement();
     }
-
+    
     /**
-     * Define if, else if, and else branches.
+     * Define if block fragments
      * 
-     * @param  {ParsedNode} node
-     * @return {void} 
+     * @param  {ParsedNode}     node
+     * @param  {NodeDirective}  directive
+     * @return {void}
      */
-    public defineConditionalBranches(node: ParsedNode): void {
-        const directive = getDirective(node, 'if');
-
+    public createIfBlock(node: ParsedNode, directive: NodeDirective) {
         // do nothing if we've already processed this directive
         if (directive.isProcessed) {
             return;
@@ -49,11 +49,11 @@ export default class CreateFunction extends JsFunction {
 
         // create a child fragment constructor, and insert it before out
         // this fragment. we'll call this when it's condition is true.
-        const varName = this.fragment.parent.getVariableName(node, 'if_block');
+        const varName = this.fragment.parent.getVariableName(node, snakeCase(directive.name));
 
         const childFragment = new Fragment({
             node,
-            name: `create_${varName}`,
+            name: `create_${varName}_block`,
             parent: this.fragment.parent,
         });
 
@@ -61,17 +61,80 @@ export default class CreateFunction extends JsFunction {
 
         childFragment.build();
 
-        // insert code to instantiate our branch into the fragment
-        const branch = new JsCode({
-            content: [`var ${varName} = (${directive.expression}) && create_${varName}(vm);`, null],
+        // // insert code to instantiate our branch into the fragment
+        // const branch = new JsCode({
+        //     content: [`var ${varName} = (${directive.expression}) && create_${varName}(vm);`, null],
+        // });
+
+        // branch.insertSelfBefore(this.findAncestor('JsReturn'));
+
+        // // and finally, if the condition is true, call the child fragment's create method
+        // const rootVarName = this.fragment.getVariableName(this.fragment.node);
+        
+        // this.append(`if (${varName}) ${varName}.c();`);
+
+        return `create_${varName}_block`;
+    }
+
+    /**
+     * Define if, else if, and else branches.
+     * 
+     * @param  {ParsedNode} node
+     * @return {void} 
+     */
+    public defineConditionalBranches(node: ParsedNode): void {
+        // check if the next node also has conditional directives
+        const nextNode = getNextElementNode(node);
+
+        if (nodeHasDirective(nextNode, 'else-if') || nodeHasDirective(nextNode, 'else')) {
+            this.defineFullIfBranch(node);
+        }
+
+        // otherwise, define a stand-alone if block
+        // else this.createIfBlock(node);
+    }
+
+    /**
+     * Define an if/else-if/else block.
+     * 
+     * @param node 
+     */
+    public defineFullIfBranch(node: ParsedNode): void {
+        const name = this.fragment.parent.getVariableName(node, 'select_block_type');
+
+        // define our select block within this fragment
+        const fragmentDefinition = new JsCode({
+            content: ['// ohsdfsdfsdfshit']
         });
 
-        branch.insertSelfBefore(this.findAncestor('JsReturn'));
+        this.fragment.insertBefore(fragmentDefinition, this.findAncestor('JsReturn'));
 
-        // and finally, if the condition is true, call the child fragment's create method
-        const rootVarName = this.fragment.getVariableName(this.fragment.node);
-        
-        this.append(`if (${varName}) ${varName}.c();`);
+        const selectBlock = new JsFunction({
+            name,
+        });
+
+        // append our initial condition
+        const directive = getDirective(node, 'if');
+        const ifBlock = this.createIfBlock(node, directive);
+        selectBlock.append(`if (${directive.expression}) return ${ifBlock};`);
+
+        // walk down the tree and define any else-if / else branches
+        let next = getNextElementNode(node);
+
+        while (nodeHasDirective(next, 'else-if') || nodeHasDirective(next, 'else')) {
+
+            // once we hit an else block, break out of this loop
+            if (nodeHasDirective(next, 'else')) {
+                let elseDirective = getDirective(next, 'else');
+                let elseBlock = this.createIfBlock(next, elseDirective);
+
+                selectBlock.append(`return ${elseBlock};`);
+
+                break;
+            }
+
+            next = getNextElementNode(next);
+        }
     }
     
     /**
@@ -110,7 +173,6 @@ export default class CreateFunction extends JsFunction {
             node.children.forEach(child => {
                 if (nodeHasDirective(child, 'if')) {
                     this.defineConditionalBranches(child);
-                    // @todo: handle else-if and else branches
                 } else {
                     this.defineDomNodes(child);
                 }

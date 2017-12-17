@@ -21,7 +21,7 @@ describe('compilation', () => {
         
         return { 
             code, 
-            Component: new Function(code)(),
+            Component: null,//new Function(code)(),
         };
     }
 
@@ -109,6 +109,12 @@ describe('compilation', () => {
             const vm = new Component({ el });
 
             expect(vm.$el.outerHTML).to.equal('<div><div><p><span>hooray</span></p></div></div>');
+        });
+
+        it.only('renders if/else blocks', () => {
+            const { Component, code } = createComponent('IfElse');
+
+            console.log (code);
         });
     });
 });

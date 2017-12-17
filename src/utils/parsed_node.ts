@@ -15,6 +15,15 @@ export function getDirective(node: ParsedNode, directive: string): NodeDirective
     return node.directives.find(d => d.name === directive);
 }
 
+// find the next element node
+export function getNextElementNode(node: ParsedNode) {
+    if (node.parent) {
+        const index = node.parent.children.indexOf(node);
+        
+        return node.parent.children[index + 1];
+    }
+}
+
 // determine if a node has a particular directive
 export function nodeHasDirective(node: ParsedNode, directive: string): boolean {
     return isElementNode(node) && node.directives.some(d => d.name === directive);
