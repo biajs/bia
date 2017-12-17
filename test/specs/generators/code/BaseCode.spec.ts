@@ -1,4 +1,4 @@
-import { JsCode, JsFunction, JsHelper } from '../../../../src/generators/code/index';
+import { JsCode, JsFunction, JsHelper, JsObject, JsReturn } from '../../../../src/generators/code/index';
 import { expect } from 'chai';
 
 describe('BaseCode', () => {
@@ -64,6 +64,28 @@ describe('BaseCode', () => {
         expect(foo.findRelatedCode('bar')).to.equal(bar);
         expect(parent.findRelatedCode('foo')).to.equal(foo);
         expect(parent.findRelatedCode('bar')).to.equal(bar);
+    });
+
+    it('can find the nearest ancesetor', () => {
+        const grandchildFn = new JsFunction;
+
+        const childReturnObj = new JsReturn({
+            value: new JsObject({ properties: { grandchildFn } }),
+        });
+
+        const childFn = new JsFunction({ content: [childReturnObj] });
+
+        const returnObj = new JsReturn({
+            value: new JsObject({ properties: { childFn } }),
+        });
+
+        const parentFn = new JsFunction({ content: [returnObj] });
+
+        expect(childFn.findAncestor('JsFunction')).to.equal(parentFn);
+        expect(childFn.findAncestor('JsReturn')).to.equal(returnObj);
+        expect(grandchildFn.findAncestor('JsFunction')).to.equal(childFn);
+        expect(grandchildFn.findAncestor('JsFunction', 1)).to.equal(parentFn);
+        expect(() => childFn.findAncestor('JsFunction', 2)).to.throw();
     });
 
     it('returns itself as the root when there is no parent', () => {

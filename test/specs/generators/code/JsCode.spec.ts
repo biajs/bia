@@ -184,5 +184,17 @@ describe('JsCode', () => {
         foo.append('// foo');
 
         expect(foo.isEmpty()).to.be.false;
-    })
+    });
+
+    it('can generate unique variables names', () => {
+        let foo = {};
+        let bar = {};
+
+        const code = new JsCode;
+
+        expect(code.getVariableName(foo, 'div')).to.equal('div');
+        expect(code.getVariableName(foo, 'div')).to.equal('div');
+        expect(code.getVariableName(bar, 'div')).to.equal('div_1');
+
+    });
 });

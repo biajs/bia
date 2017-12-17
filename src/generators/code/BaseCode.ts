@@ -31,6 +31,13 @@ export abstract class BaseCode {
     }
     
     /**
+     * Get class name.
+     * 
+     * @return {string}
+     */
+    abstract getClassName(): string;
+
+    /**
      * Get all descendents of the current code.
      * 
      * @return {Array<BaseCode>}
@@ -43,6 +50,31 @@ export abstract class BaseCode {
      * @return {string}
      */
     abstract toString(): string;
+    
+    /**
+     * Get an ancestor piece of code.
+     * 
+     * @param  {string} target 
+     * @param  {number} distance 
+     */
+    public findAncestor(target: string, distance: number = 0): BaseCode {
+        let parent = this.parent;
+        let ancestorCount = 0;
+
+        while (parent) {
+            if (parent.getClassName() === target) {
+                if (ancestorCount >= distance) {
+                    return parent;
+                }
+
+                ancestorCount += 1;
+            }
+
+            parent = parent.parent;
+        }
+
+        throw `Failed to find ancestor.`;
+    }
 
     /**
      * Find a piece of descendent code.
@@ -98,17 +130,8 @@ export abstract class BaseCode {
      * 
      * @return {JsFunction|void}
      */
-    public getParentFunction(): JsFunction | void {
-        let parent = this.parent;
-
-        while (parent) {
-            if (parent.constructor.name === 'JsFunction') {
-                // @ts-ignore: we know the return value is a JsFunction
-                return parent;
-            }
-
-            parent = parent.parent;
-        }
+    public getParentFunction(): BaseCode {
+        return this.findAncestor('JsFunction');
     }
 
     /**
@@ -124,6 +147,18 @@ export abstract class BaseCode {
         }
 
         return parent || this;
+    }
+
+    /**
+     * Use a helper if it isn't already.
+     * 
+     * @param  {JsHelper} helper
+     * @return {void}
+     */
+    public useHelper(helper: JsHelper): void {
+        if (!this.helpers.includes(helper)) {
+            this.helpers.push(helper);
+        }
     }
 
     /**

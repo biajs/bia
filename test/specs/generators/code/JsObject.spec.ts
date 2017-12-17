@@ -1,4 +1,4 @@
-import { JsObject } from '../../../../src/generators/code';
+import { JsFunction, JsObject } from '../../../../src/generators/code';
 import { expect } from 'chai';
 
 describe('JsObject', () => {
@@ -115,6 +115,17 @@ describe('JsObject', () => {
                 bar: new JsObject({}),
             },
         }))).to.equal(`{\n    foo: {},\n    bar: {}\n}`);
+    });
+
+    it('sets the parent property of descendent code properties', () => {
+        const someMethod = new JsFunction;
+        const obj = new JsObject({
+            properties: {
+                someMethod,
+            },
+        });
+
+        expect(someMethod.parent).to.equal(obj);
     });
 
     it('casts complex objects to a string');

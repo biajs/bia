@@ -1,73 +1,73 @@
 // bia v0.0.0
-function create_if_block(vm) {
-    var div;
+function appendNode(node, target) {
+    target.appendChild(node);
+}
 
-    return {
-        c: function create() {
-            div = createElement('div');
+function insertNode(node, target, anchor) {
+    target.insertBefore(node, anchor);
+}
 
-            div.textContent = 'dynamic';
-
-            vm.$el = div;
-        },
-        h: noop,
-        m: function mount(target) {
-            appendChild(target, div);
-        }
-    };
+function setText(el, text) {
+    el.textContent = text;
 }
 
 function createElement(tag) {
     return document.createElement(tag);
 }
 
-function setClass(el, className) {
-    el.className = className;
-}
-
-function appendChild(target, el) {
-    return target.appendChild(el);
-}
-function replaceNode(target, node) {
-    target.replaceWith(node);
-}
-
 function noop() {}
 
-function create_main_fragment(vm) {
-    var div, div_1;
-
-    var if_block = (dynamic) && create_if_block(vm);
+function create_if_block(vm) {
+    var div;
 
     return {
         c: function create() {
             div = createElement('div');
+            setText(div, 'dynamic');
+            
+            return div;
+        },
+        d: noop,
+        h: noop,
+        m: function mount(target, anchor) {
+            insertNode(div, target, anchor);
+        },
+        p: noop,
+        u: noop
+    };
+}
+function create_main_fragment(vm) {
+    var div, div_1;
+
+    var if_block = (dynamic) && create_if_block(vm);
+    
+    return {
+        c: function create() {
+            div = createElement('div');
             div_1 = createElement('div');
-
+            setText(div_1, 'static');
             if (if_block) if_block.c();
-            div_1.textContent = 'static';
-
-            this.h();
-
-            vm.$el = div;
+            
+            return div;
         },
-        h: function hydrate() {
-            setClass(div_1, 'static');
+        d: noop,
+        h: noop,
+        m: function mount(target, anchor) {
+            insertNode(div, target, anchor);
+            appendNode(div_1, div);
+            if (if_block) if_block.m(div, null);
         },
-        m: function mount(target) {
-            appendChild(target, div);
-            appendChild(div, div_1);
-            if (if_block) if_block.m(div);
-        }
+        p: noop,
+        u: noop
     };
 }
 
 function DynamicChildren(options) {
     this.$fragment = create_main_fragment(this);
-
+    
     if (options.el) {
-        this.$fragment.c();
-        this.$fragment.m(options.el);
+        this.$el = this.$fragment.c();
+        this.$fragment.m(options.el, options.anchor || null);
     }
 }
 

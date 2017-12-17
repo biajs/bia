@@ -1,5 +1,6 @@
 export interface CompileOptions {
     filename: string;
+    format: 'es' | 'fn';
     name: string;
 };
 
@@ -8,6 +9,7 @@ export interface CompileOptions {
 export interface NodeDirective {
     arg: string | null;         // 'baz'
     expression: string;         // 'yar'
+    isProcessed: boolean;       // determins if the node has been processed
     modifiers: Array<string>;   // ['foo', 'bar']
     name: string;               // 'whatever'
 }
@@ -44,6 +46,11 @@ export interface ParsedNode {
     textInterpolations: Array<TextInterpolation>;
     type: NodeType;
 };
+
+// a parsed .bia file
+export interface ParsedSource {
+    template: ParsedNode;
+}
 
 export interface TextInterpolation {
     expression: string;

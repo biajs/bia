@@ -31,6 +31,15 @@ export class JsImport extends BaseCode {
 
         this.validateIds();
     }
+    
+    /**
+     * Get class name.
+     * 
+     * @return {string}
+     */
+    public getClassName(): string {
+        return 'JsImport';
+    }
 
     /**
      * Get descendent code.

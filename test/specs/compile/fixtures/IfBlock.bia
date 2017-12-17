@@ -1,5 +1,5 @@
 <template>
-    <main>
-        <div b-if="foo">bar</div>
-    </main>
+    <div>
+        <span b-if="true">i should be visible</span>
+    </div>
 </template>

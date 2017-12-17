@@ -38,6 +38,15 @@ export class JsFunction extends JsCode {
     public define(varName: string): void {
         this.variables.push(varName);
     }
+    
+    /**
+     * Get class name.
+     * 
+     * @return {string}
+     */
+    public getClassName(): string {
+        return 'JsFunction';
+    }
 
     /**
      * Cast a function to a string.
@@ -46,7 +55,7 @@ export class JsFunction extends JsCode {
      */
     public toString(): string {
         // if our function has no content, and no name, return noop
-        if (!this.name && this.isEmpty()) {
+        if (this.isEmpty()) {
             return 'noop';
         }
 
@@ -55,7 +64,7 @@ export class JsFunction extends JsCode {
         const content = indent(this.content.join('\n').trim());
 
         const variables = this.variables.length > 0
-            ? `${indent(`let ${this.variables.join(', ')};`)}\n\n`
+            ? `${indent(`var ${this.variables.join(', ')};`)}\n\n`
             : '';
 
         return `function ${this.name || ''}(${signature}) {\n${variables}${content}\n}`;

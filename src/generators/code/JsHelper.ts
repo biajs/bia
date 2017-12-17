@@ -21,4 +21,13 @@ export class JsHelper extends JsFunction {
     constructor(options: JsHelperOptions) {
         super(options);
     }
+    
+    /**
+     * Get class name.
+     * 
+     * @return {string}
+     */
+    public getClassName(): string {
+        return 'JsHelper';
+    }
 }

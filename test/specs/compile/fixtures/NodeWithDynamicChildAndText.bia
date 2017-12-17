@@ -1,5 +1,0 @@
-<template>
-    <div>
-        foo
-        <span b-if="true">bar</span>
-    </div>

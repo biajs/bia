@@ -1,0 +1,6 @@
+<template>
+    <div>
+        <p>else nodes should be preceeded by if nodes</p>
+        <span b-else>which means this one is invalid</span>
+    </div>
+</template>

@@ -46,6 +46,6 @@ describe('JsFunction', () => {
 
         fn.define('foo');
 
-        expect(String(fn)).to.equal(`function () {\n    let foo;\n\n    // foo\n}`);
+        expect(String(fn)).to.equal(`function () {\n    var foo;\n\n    // foo\n}`);
     });
 });

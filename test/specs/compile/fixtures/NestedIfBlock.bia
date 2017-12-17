@@ -1,0 +1,9 @@
+<template>
+    <div>
+        <div b-if="true">
+            <p b-if="true">
+                <span b-if="true">hooray</span>
+            </p>
+        </div>
+    </div>
+</template>

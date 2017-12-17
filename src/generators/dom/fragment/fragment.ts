@@ -1,248 +1,76 @@
+import CreateFunction from './lifecycle/create';
+import DestroyFunction from './lifecycle/destroy';
+import HydrateFunction from './lifecycle/hydrate';
+import MountFunction from './lifecycle/mount';
+import UnmountFunction from './lifecycle/unmount';
+import UpdateFunction from './lifecycle/update';
+import { JsCode, JsFunction, JsObject, JsReturn } from '../../code/index';
+import { JsFunctionOptions } from '../../code/JsFunction';
 import { ParsedNode } from '../../../interfaces';
-import { getDirective, nodeHasDirective, removeProcessedDirective } from '../../../utils/parsed_node';
-import { JsCode, JsFunction, JsObject, JsReturn, JsVariable } from '../../classes/index';
-import CreateFn from './create';
-import HydrateFn from './hydrate';
-import MountFn from './mount';
 
 //
-// interfaces
+// Options
 //
-interface FragmentOptions {
-    name: string,
-    parent?: Fragment,
-}
-
-interface NamedNode {
-    name: string,
-    node: ParsedNode,
+export interface FragmentOptions extends JsFunctionOptions {
+    node: ParsedNode;
+    parent: JsCode;
 }
 
 //
-// fragment
+// Fragment
 //
-class Fragment {
-    public nameCounter: Object;
-    public namedFragments: Array<NamedNode>;
-    public namedNodes: Array<NamedNode>;
+export default class extends JsFunction {
     public node: ParsedNode;
-    public options: FragmentOptions;
-    public parent: Fragment | null;
-
+    public parent: JsCode;
+    
     /**
      * Constructor.
-     */
-    constructor(parsedSource, options: FragmentOptions) {
-        this.nameCounter = {};
-        this.namedFragments = [];
-        this.namedNodes = [];
-        this.node = parsedSource.template;
-        this.options = options;
-        this.parent = options.parent || null;
-    }
-
-    /**
-     * Define our fragment's if blocks.
      * 
-     * @return {JsCode}
+     * @param  {FragmentOptions} options 
      */
-    public defineIfBlocks(): JsCode {
-        const content = [];
-        const globalFunctions = [];
+    constructor(options: FragmentOptions) {
+        super(options);
 
-        this.getIfNodes().forEach(node => {
-            const ifDirective = getDirective(node, 'if');
-            const varName = this.getChildFragmentName(node);
-            const fragmentName = `create_${varName}`;
-
-            // define each of our if blocks locally
-            content.push(`var ${varName} = (${ifDirective.expression}) && ${fragmentName}(vm);`);
-
-            // and create a new fragment for each one
-            const fragmentSource = {
-                template: removeProcessedDirective(node, ifDirective),
-            }
-
-            const fragment = new Fragment(fragmentSource, {
-                name: fragmentName,
-                parent: this,
-            });
-
-            globalFunctions.push(fragment.toCode());
-        });
-
-        // and create the child fragments as global functions
-
-        return new JsCode({
-            content,
-            globalFunctions,
-        });
+        // set our fragment's node and signature
+        this.node = options.node;
+        this.parent = options.parent;
+        this.signature = ['vm'];
     }
 
     /**
-     * Define a javascript variable for each node this fragment manages.
+     * Build up our dom fragment.
      * 
-     * @return {JsVariable}
+     * @return void
      */
-    public getElementVariables() {
-        return new JsVariable({
-            define: this.getChildNodes().map(node => this.getName(node)),
-        });
-    }
+    public build() {
+        // create our lifecycle methods
+        const create = new CreateFunction(this);
+        const destroy = new DestroyFunction(this);
+        const hydrate = new HydrateFunction(this);
+        const mount = new MountFunction(this);
+        const unmount = new UnmountFunction(this);
+        const update = new UpdateFunction(this);
 
-    /**
-     * Get the name of a child fragment.
-     * 
-     * @param  {ParsedNode} node
-     * @return {string} 
-     */
-    public getChildFragmentName(node: ParsedNode): string {
-        // if we aren't the root fragment, defer to our parent
-        if (this.parent) {
-            return this.parent.getChildFragmentName(node);
-        }
-
-        // check if we've already named this fragment
-        const namedFragment = this.namedFragments.find(namedNode => namedNode.node === node);
-
-        if (namedFragment) {
-            return namedFragment.name;
-        }
-
-        // and if not, assign it a unique name
-        let varName = 'fragment';
-        
-        if (nodeHasDirective(node, 'if')) {
-            varName = 'if_block';
-        }
-
-        // if we've never named this fragment type before, use the varName
-        if (typeof this.nameCounter[varName] === 'undefined') {
-            this.nameCounter[varName] = 0;
-            this.namedFragments.push({ name: varName, node });
-
-            return varName;
-        }
-
-        // otherwise add an identifier to the varName and use that
-        const numberedVarName = `${varName}_${++this.nameCounter[varName]}`;
-        this.namedFragments.push({ name: numberedVarName, node });
-        
-        return numberedVarName;
-    }
-
-    /**
-     * Find the nodes with if directives on them owned by this fragment.
-     * 
-     * @return {Array<ParsedNode>}
-     */
-    public getIfNodes() {
-        const getIfNodes = (ifNodes: Array<ParsedNode>, node: ParsedNode) => {
-            node.children.forEach(child => {
-                if (nodeHasDirective(child, 'if')) {
-                    ifNodes.push(child);
-                } else {
-                    ifNodes.push(...getIfNodes([], child));
-                }
-            });
-
-            return ifNodes;
-        }
-
-        return getIfNodes([], this.node);
-    }
-
-    /**
-     * Get the variable name of a node.
-     * 
-     * @param  {ParsedNode} node
-     * @return {string}
-     */
-    public getName(node: ParsedNode): string {
-        // check if we've already named this node
-        const alreadyNamed = this.namedNodes.find(namedNode => namedNode.node === node);
-
-        if (alreadyNamed) {
-            return alreadyNamed.name;
-        }
-
-        // and if not, assign it a unique name
-        let varName = 'unknown';
-
-        if (node.type === 'ELEMENT') {
-            varName = node.tagName.toLowerCase();
-        } else {
-            varName = node.type.toLowerCase();
-        }
-
-        // if we've never named this node type before, use the varName
-        if (typeof this.nameCounter[varName] === 'undefined') {
-            this.nameCounter[varName] = 0;
-            this.namedNodes.push({ name: varName, node });
-
-            return varName;
-        }
-
-        // otherwise add an identifier to the varName and use that
-        const numberedVarName = `${varName}_${++this.nameCounter[varName]}`;
-        this.namedNodes.push({ name: numberedVarName, node });
-        
-        return numberedVarName;
-    }
-
-    /**
-     * Determine which descendent nodes belong to this fragment.
-     */
-    public getChildNodes() {
-        const getChildNodes = (childNodes, node: ParsedNode) => {
-            if (!nodeHasDirective(node, 'if')) {
-                childNodes.push(node);
-
-                if (node.hasDynamicChildren) {
-                    node.children.forEach(child => {
-                        childNodes.push(...getChildNodes([], child));
-                    });
-                }
-            }
-
-            return childNodes;
-        }
-
-        return getChildNodes([], this.node);
-    }
-
-    /**
-     * Convert our fragment to a constructor function.
-     * 
-     * @return JsFunction
-     */
-    public toCode(): JsFunction {
-        const content = [];
-
-        // define our various dom elements
-        content.push(this.getElementVariables(), null);
-
-        // define any if blocks our fragment has
-        content.push(this.defineIfBlocks(), null);
-
-        // return an object with fragment's lifecycle methods
-        content.push(new JsReturn({
+        // add a return statement containing our lifecycle methods
+        this.append(new JsReturn({
             value: new JsObject({
                 properties: {
-                    c: new CreateFn(this).toCode(),
-                    h: new HydrateFn(this).toCode(),
-                    m: new MountFn(this).toCode(),
-                },
+                    c: create,
+                    d: destroy,
+                    h: hydrate,
+                    m: mount,
+                    p: update,
+                    u: unmount,
+                }
             }),
         }));
 
-        return new JsFunction({
-            id: this.options.name,
-            name: this.options.name,
-            signature: ['vm'],
-            content,
-        });
+        // build our lifecycle methods
+        create.build();
+        destroy.build();
+        hydrate.build();
+        mount.build();
+        update.build();
+        unmount.build();
     }
 }
-
-export default Fragment;

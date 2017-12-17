@@ -27,6 +27,15 @@ export class JsReturn extends BaseCode {
         this.setValueParent();
         this.validateIds();
     }
+    
+    /**
+     * Get class name.
+     * 
+     * @return {string}
+     */
+    public getClassName(): string {
+        return 'JsReturn';
+    }
 
     /**
      * Get descendent code.

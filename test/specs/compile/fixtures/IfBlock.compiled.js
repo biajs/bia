@@ -1,64 +1,66 @@
 // bia v0.0.0
-function create_if_block(vm) {
-    var div;
+function insertNode(node, target, anchor) {
+    target.insertBefore(node, anchor);
+}
 
-    return {
-        c: function create() {
-            div = createElement('div');
-
-            div.textContent = 'bar';
-
-            vm.$el = div;
-        },
-        h: noop,
-        m: function mount(target) {
-            appendChild(target, div);
-        }
-    };
+function setText(el, text) {
+    el.textContent = text;
 }
 
 function createElement(tag) {
     return document.createElement(tag);
 }
 
-function appendChild(target, el) {
-    return target.appendChild(el);
-}
-function replaceNode(target, node) {
-    target.replaceWith(node);
-}
-
 function noop() {}
 
-function create_main_fragment(vm) {
-    var main;
-
-    var if_block = (foo) && create_if_block(vm);
+function create_if_block(vm) {
+    var span;
 
     return {
         c: function create() {
-            main = createElement('main');
-
-            if (if_block) if_block.c();
-
-            this.h();
-
-            vm.$el = main;
+            span = createElement('span');
+            setText(span, 'i should be visible');
+            
+            return span;
         },
+        d: noop,
         h: noop,
-        m: function mount(target) {
-            appendChild(target, main);
-            if (if_block) if_block.m(main);
-        }
+        m: function mount(target, anchor) {
+            insertNode(span, target, anchor);
+        },
+        p: noop,
+        u: noop
+    };
+}
+function create_main_fragment(vm) {
+    var div;
+
+    var if_block = (true) && create_if_block(vm);
+    
+    return {
+        c: function create() {
+            div = createElement('div');
+            if (if_block) if_block.c();
+            
+            return div;
+        },
+        d: noop,
+        h: noop,
+        m: function mount(target, anchor) {
+            insertNode(div, target, anchor);
+            if (if_block) if_block.m(div, null);
+        },
+        p: noop,
+        u: noop
     };
 }
 
 function IfBlock(options) {
     this.$fragment = create_main_fragment(this);
-
+    
     if (options.el) {
-        this.$fragment.c();
-        this.$fragment.m(options.el);
+        this.$el = this.$fragment.c();
+        this.$fragment.m(options.el, options.anchor || null);
     }
 }
 

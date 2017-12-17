@@ -1,13 +1,14 @@
 // bia v0.0.0
-function createElement(tag) {
-    return document.createElement(tag);
+function insertNode(node, target, anchor) {
+    target.insertBefore(node, anchor);
 }
 
-function appendChild(target, el) {
-    return target.appendChild(el);
+function setHtml(el, html) {
+    el.innerHTML = html;
 }
-function replaceNode(target, node) {
-    target.replaceWith(node);
+
+function createElement(tag) {
+    return document.createElement(tag);
 }
 
 function noop() {}
@@ -18,29 +19,26 @@ function create_main_fragment(vm) {
     return {
         c: function create() {
             div = createElement('div');
-
-            div.innerHTML = '';
-
-            this.h();
-
-            vm.$el = div;
+            setHtml(div, '');
+            
+            return div;
         },
-        h: function hydrate() {
-            div.dataset.foo = 'bar';
-            div.dataset.helloWorld = 'yar';
+        d: noop,
+        h: noop,
+        m: function mount(target, anchor) {
+            insertNode(div, target, anchor);
         },
-        m: function mount(target) {
-            appendChild(target, div);
-        }
+        p: noop,
+        u: noop
     };
 }
 
 function NodeWithDataAttributes(options) {
     this.$fragment = create_main_fragment(this);
-
+    
     if (options.el) {
-        this.$fragment.c();
-        this.$fragment.m(options.el);
+        this.$el = this.$fragment.c();
+        this.$fragment.m(options.el, options.anchor || null);
     }
 }
 

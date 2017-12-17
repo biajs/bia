@@ -9,6 +9,10 @@ describe('validation', () => {
     const parseFixture = (name, options) => {
         const source = fs.readFileSync(path.resolve(__dirname, 'fixtures', name + '.bia'), 'utf8');
 
+        // console.log();
+        // console.log(source);
+        // console.log();
+
         return parse(source, {
             filename: name + '.bia',
             name: name,
@@ -51,16 +55,32 @@ describe('validation', () => {
             );
         });
 
-        it('throws an error if there are non-conditional node between if and else blocks')
+        it('throws an error for if blocks with no condition');
 
-        it('throws an error if there are non-conditional nodes between if and else-if blocks');
+        it('throws an error for else-if blocks with no condition');
 
-        it('throws an error if there are non-conditional nodes between else-if and other else-if blocks');
+        it('throws an error for if blocks that also have else-if/else directives');
 
-        it('throws an error if there are non-conditional nodes between else-if and else blocks');
+        it('throws an error for else-if blocks that also have if/else directives');
 
-        it('throws an error if else-if blocks are not preceeded by an if or else-if block');
+        it('throws an error for else blocks that also have if/else-if directives');
 
-        it('throws an error if else blocks are not preceeded by an if or else-if block');
+        it('throws an error for multiple if directives on a single node');
+
+        it('throws an error for multiple else-if directives on a single node');
+
+        it('throws an error for multiple else directives on a single node');
+        
+        it('throws an error when else-if blocks are not preceeded by an if or else-if node', () => {
+            expect(() => parseFixture('InvalidNodeBeforeElseIf', {})).to.throw(
+                `Elements with "b-else" directives may only appear directly following elements with "b-if" or "b-else-if" directives.`
+            );
+        });
+
+        it('throws an error when else blocks are not preceeded by an if or else-if node', () => {
+            expect(() => parseFixture('InvalidNodeBeforeElse', {})).to.throw(
+                `Elements with "b-else" directives may only appear directly following elements with "b-if" or "b-else-if" directives.`
+            );
+        });
     });
 });

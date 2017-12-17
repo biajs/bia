@@ -37,6 +37,15 @@ export class JsVariable extends BaseCode {
             this.define = this.define.concat(options.define);
         }
     }
+    
+    /**
+     * Get class name.
+     * 
+     * @return {string}
+     */
+    public getClassName(): string {
+        return 'JsVariable';
+    }
 
     /**
      * Variable definitions have no descendent code.
