@@ -6,6 +6,7 @@ import {
     createElement,
     detachNode,
     insertNode,
+    setText,
 } from '../helpers/index';
 
 /**
@@ -37,6 +38,16 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
     // create the root element
     code.useHelper(createElement);
     fragment.create.append(`${el} = createElement("${tagName}");`);
+
+    // if the node has purely static text, append that to it
+    if (
+        !node.hasDynamicChildren 
+        && node.children.length === 1 
+        && node.children[0].type === 'TEXT'
+    ) {
+        code.useHelper(setText);
+        fragment.create.append(`setText(${el}, '${node.children[0].textContent}');`);
+    }
 
     // return the root element from the create function
     fragment.create.append(`return ${el};`);

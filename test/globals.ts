@@ -7,17 +7,6 @@ declare var render: Function;
 
 const baseCompile = require('../src/index').compile;
 
-// helper function to log code with a bit of spacing
-debug = (code) => {
-    console.log();
-    console.log('====================================================================');
-    console.log();
-    console.log(code);
-    console.log();
-    console.log('====================================================================');
-    console.log();
-}
-
 // helper function to compile a component
 compile = (p) => {
     const source = require('fs').readFileSync(p, 'utf8');
@@ -43,8 +32,19 @@ render = (file, instanceOptions = {}, compilerOptions = {}) => {
     return new Component(instanceOptions);
 }
 
+// // helper function to log code with a bit of spacing
+debug = (code) => {
+    console.log();
+    console.log('====================================================================');
+    console.log();
+    console.log(code);
+    console.log();
+    console.log('====================================================================');
+    console.log();
+}
+
 expect = require('chai').expect;
 
 beforeEach(() => {
     el = document.createElement('div');
-})
+});
