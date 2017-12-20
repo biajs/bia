@@ -1,6 +1,7 @@
 import { JsCode } from '../../code/index';
 import { JsFragment } from '../fragment/JsFragment';
 import { ParsedNode } from '../../../interfaces';
+import { escape } from '../../../utils/string';
 
 import { 
     createElement,
@@ -46,7 +47,7 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
         && node.children[0].type === 'TEXT'
     ) {
         code.useHelper(setText);
-        fragment.create.append(`setText(${el}, '${node.children[0].textContent}');`);
+        fragment.create.append(`setText(${el}, '${escape(node.children[0].textContent)}');`);
     }
 
     // return the root element from the create function

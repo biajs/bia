@@ -1,15 +1,15 @@
 import { expect } from 'chai';
 
 import { 
-    escapeJsString,
+    escape,
     indent,
 } from '../../../src/utils/string';
 
 describe('string utilities', () => {
-    it('escapeJavascriptString', () => {
-        expect(escapeJsString(`"`)).to.equal('\\\"');
-        expect(escapeJsString(`'`)).to.equal('\\\'');
-        expect(escapeJsString(`\n`)).to.equal('\\r\\n');
+    it('escape', () => {
+        expect(escape(`"`)).to.equal('\\\"');
+        expect(escape(`'`)).to.equal('\\\'');
+        expect(escape(`\n`)).to.equal('\\r\\n');
     });
 
     it('indent', () => {
