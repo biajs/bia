@@ -46,8 +46,17 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
         && node.children.length === 1 
         && node.children[0].type === 'TEXT'
     ) {
-        code.useHelper(setText);
-        fragment.create.append(`setText(${el}, '${escape(node.children[0].textContent)}');`);
+        // @todo: determine if it's worth using a helper here...
+        // code.useHelper(setText);
+        // fragment.create.append(`setText(${el}, '${escape(node.children[0].textContent)}');`);
+        fragment.create.append(`${el}.textContent = '${escape(node.children[0].textContent)}';`);
+    }
+
+    // if the element has purely static children, set the inner html
+    else if (
+        !node.hasDynamicChildren
+    ) {
+        fragment.create.append(`${el}.innerHTML = '${escape(node.innerHTML)}';`);
     }
 
     // return the root element from the create function
