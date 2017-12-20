@@ -1,44 +1,44 @@
 // bia v0.0.0
-function insertNode(node, target, anchor) {
-    target.insertBefore(node, anchor);
+
+function noop() {}
+
+function detachNode(node) {
+    node.parentNode.removeChild(node);
 }
 
-function setHtml(el, html) {
-    el.innerHTML = html;
+function insertNode(node, target, anchor) {
+    target.insertBefore(node, anchor);
 }
 
 function createElement(tag) {
     return document.createElement(tag);
 }
 
-function noop() {}
-
 function create_main_fragment(vm) {
     var div;
 
     return {
         c: function create() {
-            div = createElement('div');
-            setHtml(div, '');
-            
+            div = createElement("div");
             return div;
         },
         d: noop,
-        h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
         },
-        p: noop,
-        u: noop
+        u: function unmount() {
+            detachNode(div);
+        },
+        p: noop
     };
 }
 
 function NodeWithStaticClasses(options) {
-    this.$fragment = create_main_fragment(this);
+    const fragment = create_main_fragment(this);
     
     if (options.el) {
-        this.$el = this.$fragment.c();
-        this.$fragment.m(options.el, options.anchor || null);
+        this.$el = fragment.c();
+        fragment.m(options.el, options.anchor || null);
     }
 }
 

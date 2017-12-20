@@ -33,7 +33,7 @@ function create_main_fragment(vm) {
     };
 }
 
-function EmptyNode(options) {
+function EmptyElement(options) {
     const fragment = create_main_fragment(this);
     
     if (options.el) {
@@ -42,4 +42,4 @@ function EmptyNode(options) {
     }
 }
 
-export default EmptyNode;
+export default EmptyElement;
