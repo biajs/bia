@@ -1,4 +1,11 @@
 // bia v0.0.0
+
+function noop() {}
+
+function detachNode(node) {
+    node.parentNode.removeChild(node);
+}
+
 function insertNode(node, target, anchor) {
     target.insertBefore(node, anchor);
 }
@@ -11,35 +18,33 @@ function createElement(tag) {
     return document.createElement(tag);
 }
 
-function noop() {}
-
 function create_main_fragment(vm) {
     var div;
 
     return {
         c: function create() {
-            div = createElement('div');
-            setText(div, 'Foo\'s \"bar\"');
-            
+            div = createElement("div");
+            setText(div, 'hello world');
             return div;
         },
         d: noop,
-        h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
         },
-        p: noop,
-        u: noop
+        u: function unmount() {
+            detachNode(div);
+        },
+        p: noop
     };
 }
 
-function NodeWithQuotedText(options) {
-    this.$fragment = create_main_fragment(this);
+function Component(options) {
+    const fragment = create_main_fragment(this);
     
     if (options.el) {
-        this.$el = this.$fragment.c();
-        this.$fragment.m(options.el, options.anchor || null);
+        this.$el = fragment.c();
+        fragment.m(options.el, options.anchor || null);
     }
 }
 
-export default NodeWithQuotedText;
+export default Component;

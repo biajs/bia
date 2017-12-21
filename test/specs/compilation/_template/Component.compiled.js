@@ -10,10 +10,6 @@ function insertNode(node, target, anchor) {
     target.insertBefore(node, anchor);
 }
 
-function setText(el, text) {
-    el.textContent = text;
-}
-
 function createElement(tag) {
     return document.createElement(tag);
 }
@@ -24,7 +20,6 @@ function create_main_fragment(vm) {
     return {
         c: function create() {
             div = createElement("div");
-            setText(div, '{{ 2 + 2 }}');
             return div;
         },
         d: noop,
@@ -38,7 +33,7 @@ function create_main_fragment(vm) {
     };
 }
 
-function NodeWithTextExpression(options) {
+function Component(options) {
     const fragment = create_main_fragment(this);
     
     if (options.el) {
@@ -47,4 +42,4 @@ function NodeWithTextExpression(options) {
     }
 }
 
-export default NodeWithTextExpression;
+export default Component;

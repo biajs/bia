@@ -10,7 +10,7 @@ export function collapseNewlines(source: string): string {
  * @param  {string} source
  * @return {string}
  */
-export function escapeJsString(source: string): string {
+export function escape(source: string): string {
     return source
         .replace(/\n/g, '\\r\\n')     // new lines
         .replace(/'/g, '\\\'')        // single quotes

@@ -6,10 +6,8 @@ import { JsHelper } from '../../code/JsHelper';
  * @return {JsFunction}
  */
 export default new JsHelper({
-    id: 'setText',
-    name: 'setText',
-    signature: ['el', 'text'],
-    content: [
-        `el.textContent = text;`,
-    ],
+    id: 'noop',
+    name: 'noop',
+    signature: [],
+    content: [],
 });

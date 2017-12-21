@@ -1,77 +1,86 @@
-import Fragment from './fragment/fragment';
 import { JsCode, JsFunction, JsIf } from '../code/index';
-import { CompileOptions, ParsedSource } from '../../interfaces';
+import { CompileOptions, JsFragmentNode, ParsedNode, ParsedSource } from '../../interfaces';
+import { JsFragment } from './fragment/JsFragment';
+// import { noop as noopHelper } from '../../generators/dom/helpers/index';
 
-// @todo: read this value from package.json
-const version = '0.0.0';
+import {
+    processElement,
+} from './processors';
 
+/**
+ * Compile a component into code to be run in the browser.
+ * 
+ * @return {string}
+ */
 export default function(source: ParsedSource, options: CompileOptions) {
-    const code = new JsCode({ id: 'root' });
+    const code = new JsCode;
+    const fragments: Array<JsFragmentNode> = [];
 
-    // create our main fragment
-    const fragment = new Fragment({
-        name: 'create_main_fragment',
-        node: source.template,
-        parent: code,
-    });
+    // add the component constructor
+    code.prepend(constructorFn(source, options));
 
-    code.append(fragment);
-    code.append(null);
-
-    // build the dom fragment and return the source code
-    fragment.build();
-
-    // prepend noop, in the future this should be a helper
+    // process the template nodes
     code.prepend(null);
-    code.prepend(`function noop() {}`);
+    processNode(code, source.template, fragments, 'create_main_fragment');
 
-    // prepend any helpers we might have used
-    code.getHelpers().forEach(helper => {
+    // prepend necessary helpers
+    code.helpers.forEach(helper => {
         code.prepend(null);
         code.prepend(helper);
     });
 
-    // stick the compiler version at the top of the file
-    code.prepend(`// bia v${version}`);
+    // @todo: find a better way to register the no-op helper
+    code.prepend(null);
+    code.prepend(`function noop() {}`);
 
-    // create our main constructor function
-    code.append(getComponentConstructor(source, options));
-    code.append(null);
+    // prepend our version number
+    code.prepend(null);
+    code.prepend('// bia v0.0.0');
 
-    // add our export line
-    code.append(getComponentExport(source, options));
-
-    return String(code);
+    // finally, append our export
+    appendExportStatement(code, options);
+    
+    return code.toString();
 }
 
 /**
- * Component constructor function.
+ * Build up a component's constructor function.
  * 
  * @param  {ParsedSource}   source 
- * @param  {CompileOptions} options
+ * @param  {CompileOptions} options 
  * @return {JsFunction}
  */
-function getComponentConstructor(source: ParsedSource, options: CompileOptions): JsFunction {
+function constructorFn(source: ParsedSource, options: CompileOptions) {
     const constructor = new JsFunction({
         name: options.name,
         signature: ['options'],
     });
 
-    constructor.append(`this.$fragment = create_main_fragment(this);`);
+    // create our component's main fragment
+    constructor.append('const fragment = create_main_fragment(this);');
     constructor.append(null);
+
+    // mount to an element if one was provided
     constructor.append(new JsIf({
         condition: 'options.el',
         content: [
-            `this.$el = this.$fragment.c();`,
-            `this.$fragment.m(options.el, options.anchor || null);`,
+            `this.$el = fragment.c();`,
+            `fragment.m(options.el, options.anchor || null);`,
         ],
     }));
 
     return constructor;
 }
 
-function getComponentExport(source: ParsedSource, options: CompileOptions): JsCode {
-    const code = new JsCode;
+/**
+ * Append code to export the component.
+ * 
+ * @param  {ParsedSource}   source 
+ * @param  {CompileOptions} options 
+ * @return {JsFunction}
+ */
+function appendExportStatement(code: JsCode, options: CompileOptions) {
+    code.append(null);
 
     // function
     if (options.format === 'fn') {
@@ -82,6 +91,43 @@ function getComponentExport(source: ParsedSource, options: CompileOptions): JsCo
     else if (options.format === 'es') {
         code.append(`export default ${options.name};`);
     }
+}
 
-    return code;
+/**
+ * Get the fragment for a particular node, or create one.
+ * 
+ * @param  {JsCode}                 code 
+ * @param  {ParsedNode}             node 
+ * @param  {Array<JsFragmentNode>}  fragments
+ * @param  {String}                 name
+ * @return {JsFragment}
+ */
+function getFragment(code: JsCode, node: ParsedNode, fragments: Array<JsFragmentNode>, name: string) {
+    const existingFragment = fragments.find(obj => obj.node === node);
+
+    if (existingFragment) {
+        return existingFragment.fragment;
+    }
+
+    const fragment = new JsFragment;
+
+    fragment.name = code.getVariableName(fragment, name)
+    
+    return fragment;
+}
+
+/**
+ * Recursively processes parsed nodes into fragments.
+ * 
+ * @param  {JsCode}     code 
+ * @param  {ParsedNode} node 
+ * @param  {String}     name
+ * @return {void}
+ */
+function processNode(code: JsCode, node: ParsedNode, fragments: Array<JsFragmentNode>, name: string) {
+    const fragment = getFragment(code, node, fragments, name);
+
+    processElement(code, node, fragment);
+
+    code.prepend(fragment);
 }
