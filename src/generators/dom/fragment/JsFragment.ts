@@ -1,9 +1,9 @@
-import { CompileOptions, ParsedSource } from '../../../interfaces';
+import { CompileOptions, ParsedNode, ParsedSource } from '../../../interfaces';
 import { JsCode, JsFunction, JsReturn, JsObject } from '../../code/index';
 import { JsFunctionOptions } from '../../code/JsFunction';
 
 export interface JsFragmentOptions extends JsFunctionOptions {
-
+    rootNode: ParsedNode;
 }
 
 export class JsFragment extends JsFunction {
@@ -12,14 +12,17 @@ export class JsFragment extends JsFunction {
     public destroy: JsFunction;
     public mount: JsFunction;
     public returnObj: JsReturn;
+    public rootNode: ParsedNode;
     public unmount: JsFunction;
     public update: JsFunction;
 
     /**
      * Javascript function to manage a dom fragment.
      */
-    constructor(options: JsFragmentOptions = {}) {
+    constructor(options: JsFragmentOptions) {
         super(options);
+
+        this.rootNode = options.rootNode;
 
         this.signature = ['vm'];
 

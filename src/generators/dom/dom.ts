@@ -1,11 +1,8 @@
-import { JsCode, JsFunction, JsIf } from '../code/index';
+import processors from './processors/index';
 import { CompileOptions, JsFragmentNode, ParsedNode, ParsedSource } from '../../interfaces';
+import { JsCode, JsFunction, JsIf } from '../code/index';
 import { JsFragment } from './fragment/JsFragment';
 // import { noop as noopHelper } from '../../generators/dom/helpers/index';
-
-import {
-    processElement,
-} from './processors';
 
 /**
  * Compile a component into code to be run in the browser.
@@ -19,9 +16,15 @@ export default function(source: ParsedSource, options: CompileOptions) {
     // add the component constructor
     code.prepend(constructorFn(source, options));
 
-    // process the template nodes
+    // create our root fragment, which will recursively create child fragments
+    const mainFragment = createFragment(code, source.template, fragments, 'create_main_fragment');
+
+
+    processNode(code, source.template, fragments, mainFragment);
+
     code.prepend(null);
-    processNode(code, source.template, fragments, 'create_main_fragment');
+    code.prepend(mainFragment);
+    
 
     // prepend necessary helpers
     code.helpers.forEach(helper => {
@@ -94,25 +97,21 @@ function appendExportStatement(code: JsCode, options: CompileOptions) {
 }
 
 /**
- * Get the fragment for a particular node, or create one.
+ * Create a new fragment.
  * 
  * @param  {JsCode}                 code 
- * @param  {ParsedNode}             node 
+ * @param  {ParsedNode}             rootNode 
  * @param  {Array<JsFragmentNode>}  fragments
  * @param  {String}                 name
  * @return {JsFragment}
  */
-function getFragment(code: JsCode, node: ParsedNode, fragments: Array<JsFragmentNode>, name: string) {
-    const existingFragment = fragments.find(obj => obj.node === node);
+export function createFragment(code: JsCode, rootNode: ParsedNode, fragments: Array<JsFragmentNode>, name) {
+    const fragment = new JsFragment({ rootNode });
 
-    if (existingFragment) {
-        return existingFragment.fragment;
-    }
+    fragment.name = code.getVariableName(fragment, name);
 
-    const fragment = new JsFragment;
+    fragments.push({ fragment, node: rootNode });
 
-    fragment.name = code.getVariableName(fragment, name)
-    
     return fragment;
 }
 
@@ -124,10 +123,37 @@ function getFragment(code: JsCode, node: ParsedNode, fragments: Array<JsFragment
  * @param  {String}     name
  * @return {void}
  */
-function processNode(code: JsCode, node: ParsedNode, fragments: Array<JsFragmentNode>, name: string) {
-    const fragment = getFragment(code, node, fragments, name);
+export function processNode(code: JsCode, node: ParsedNode, fragments: Array<JsFragmentNode>, fragment: JsFragment) {
 
-    processElement(code, node, fragment);
+    // give any of the processors a chance to define a child fragment
+    let nodeFragment = fragment;
 
-    code.prepend(fragment);
+    processors.forEach(processor => {
+        // @ts-ignore
+        if (typeof processor.defineFragment === 'function') {
+            // @ts-ignore
+            nodeFragment = processor.defineFragment(code, node, fragments, fragment);
+        }
+    });
+
+    if (nodeFragment !== fragment) {
+        code.prepend(null);
+        code.prepend(nodeFragment);
+
+        // processNode(code, node, fragments, nodeFragment);
+
+        fragments.push({ node, fragment: nodeFragment });
+    }
+
+    // if nobody defined a child fragment, process the current node's element
+    processors.forEach(processor => {
+        if (typeof processor.processElement === 'function') {
+            processor.processElement(code, node, fragment);
+        }
+    });
+
+    // recursively process child nodes
+    node.children.forEach(child => {
+        processNode(code, child, fragments, fragment);
+    });
 }

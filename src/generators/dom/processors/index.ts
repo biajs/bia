@@ -1,5 +1,7 @@
-import processElement from './element';
+import * as elements from './element';
+import * as conditionals from './conditionals';
 
-export {
-    processElement,
-}
+export default [
+    conditionals,
+    elements,
+]
