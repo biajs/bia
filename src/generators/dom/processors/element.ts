@@ -60,8 +60,8 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
             fragment.create.append(`${el}.innerHTML = '${escape(node.innerHTML)}';`);
         }
     
-        // return the root element from the create function
-        fragment.create.append(`return ${el};`);
+        // // return the root element from the create function
+        // fragment.create.append(`return ${el};`);
     
         // mount the root element
         code.useHelper(insertNode);

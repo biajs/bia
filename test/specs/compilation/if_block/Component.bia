@@ -1,5 +1,7 @@
 <template>
     <div>
-        <span b-if="true">hello</span>
+        <span b-if="true">
+            hello
+        </span>
     </div>
 </template>

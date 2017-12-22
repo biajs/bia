@@ -7,6 +7,12 @@ export interface CompileOptions {
     name: string;
 };
 
+// processor to inject dom related code
+export interface DomProcessor {
+    defineFragment?: Function,
+    processElement?: Function,
+}
+
 // lifecycle methods of a dom fragment
 export interface FragmentLifecycle {
     constructor: JsFunction,

@@ -1,5 +1,5 @@
 import processors from './processors/index';
-import { CompileOptions, JsFragmentNode, ParsedNode, ParsedSource } from '../../interfaces';
+import { CompileOptions, DomProcessor, JsFragmentNode, ParsedNode, ParsedSource } from '../../interfaces';
 import { JsCode, JsFunction, JsIf } from '../code/index';
 import { JsFragment } from './fragment/JsFragment';
 // import { noop as noopHelper } from '../../generators/dom/helpers/index';
@@ -124,36 +124,30 @@ export function createFragment(code: JsCode, rootNode: ParsedNode, fragments: Ar
  * @return {void}
  */
 export function processNode(code: JsCode, node: ParsedNode, fragments: Array<JsFragmentNode>, fragment: JsFragment) {
-
-    // give any of the processors a chance to define a child fragment
-    let nodeFragment = fragment;
-
-    processors.forEach(processor => {
-        // @ts-ignore
-        if (typeof processor.defineFragment === 'function') {
-            // @ts-ignore
-            nodeFragment = processor.defineFragment(code, node, fragments, fragment);
-        }
-    });
-
-    if (nodeFragment !== fragment) {
-        code.prepend(null);
-        code.prepend(nodeFragment);
-
-        // processNode(code, node, fragments, nodeFragment);
-
-        fragments.push({ node, fragment: nodeFragment });
-    }
-
-    // if nobody defined a child fragment, process the current node's element
+    // pass the currenty node to each element processor
     processors.forEach(processor => {
         if (typeof processor.processElement === 'function') {
             processor.processElement(code, node, fragment);
         }
     });
 
-    // recursively process child nodes
-    node.children.forEach(child => {
-        processNode(code, child, fragments, fragment);
+    // give any of the processors a chance to define a child fragment
+    let childFragment;
+
+    processors.forEach((processor: DomProcessor) => {
+        if (typeof processor.defineFragment === 'function') {
+            childFragment = processor.defineFragment(code, node, fragments) || childFragment;
+        }
     });
+
+    // if we have a child fragment, prepend that to the output and process it
+    if (childFragment) {
+        code.prepend(null);
+        code.prepend(childFragment);
+        fragments.push({ node, fragment: childFragment });
+        processNode(code, node, fragments, childFragment);
+    } 
+    
+    // otherwise recursively process the nodes below the current one
+    else node.children.forEach(child => processNode(code, child, fragments, fragment));
 }
