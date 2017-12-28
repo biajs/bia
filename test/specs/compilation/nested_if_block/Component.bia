@@ -1,0 +1,10 @@
+<template>
+    <div>
+        <p b-if="true">
+            <span b-if="true">
+                <i>yes</i>
+                <u b-if="false">no</u>
+            </span>
+        </p>                    
+    </div>
+</template>
