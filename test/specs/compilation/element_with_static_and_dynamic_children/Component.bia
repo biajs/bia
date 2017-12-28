@@ -1,0 +1,6 @@
+<template>
+    <div>
+        <p>static</p>
+        <span b-if="true">dynamic</span>
+    </div>
+</template>

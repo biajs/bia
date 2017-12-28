@@ -80,10 +80,13 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
     }
 
     // if the element has purely static children, set the inner html
-    else if (
-        !node.hasDynamicChildren
-    ) {
+    else if (!node.hasDynamicChildren) {
         fragment.create.append(`${el}.innerHTML = '${escape(node.innerHTML)}';`);
+    }
+
+    // otherwise walk the children and create dom nodes for them
+    else {
+        fragment.create.append('// hmmm');
     }
 
     // mount the root element

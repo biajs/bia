@@ -25,7 +25,7 @@ import {
  */
 export function createChildFragments(code: JsCode, currentNode: ParsedNode, fragments: Array<JsFragmentNode>, fragment: JsFragment) {
     const directive = getDirective(currentNode, 'if');
-    const blockName = fragment.getVariableName(currentNode, 'if_block');
+    const blockName = code.getVariableName(currentNode, 'if_block');
 
     // define fragments for stand-alone if nodes
     if (directive) {
