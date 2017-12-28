@@ -46,7 +46,7 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
 
     // create the root element
     code.useHelper(createElement);
-    fragment.create.append(`${el} = createElement("${tagName}");`);
+    fragment.create.append(`${el} = createElement('${tagName}');`);
 
     // if the node has purely static text, append that to it
     if (
@@ -54,10 +54,8 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
         && node.children.length === 1 
         && node.children[0].type === 'TEXT'
     ) {
-        // @todo: determine if it's worth using a helper here...
-        // code.useHelper(setText);
-        // fragment.create.append(`setText(${el}, '${escape(node.children[0].textContent)}');`);
-        fragment.create.append(`${el}.textContent = '${escape(node.children[0].textContent)}';`);
+        code.useHelper(setText);
+        fragment.create.append(`setText(${el}, '${escape(node.children[0].textContent)}');`);
     }
 
     // if the element has purely static children, set the inner html
