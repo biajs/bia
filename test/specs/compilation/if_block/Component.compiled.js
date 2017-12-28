@@ -21,17 +21,18 @@ function createElement(tag) {
 function create_main_fragment(vm) {
     var div;
 
-    var if_block = (true) && create_if_block(vm);
+    var if_block_1 = (true) && create_if_block_1(vm);
     return {
         c: function create() {
             div = createElement('div');
-            if (if_block) if_block.c();
+            // hmmm
+            if (if_block_1) if_block_1.c();
             return div;
         },
         d: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
-            if (if_block) if_block.m(div, null);
+            if (if_block_1) if_block_1.m(div, null);
         },
         u: function unmount() {
             detachNode(div);
@@ -40,7 +41,7 @@ function create_main_fragment(vm) {
     };
 }
 
-function create_if_block(vm) {
+function create_if_block_1(vm) {
     var span;
 
     return {

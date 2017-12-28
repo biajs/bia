@@ -21,7 +21,7 @@ function createElement(tag) {
 function create_main_fragment(vm) {
     var div;
 
-    var if_block_3 = (dynamic) && create_if_block_3(vm);
+    var if_block_3 = (true) && create_if_block_3(vm);
     return {
         c: function create() {
             div = createElement('div');
@@ -42,26 +42,26 @@ function create_main_fragment(vm) {
 }
 
 function create_if_block_3(vm) {
-    var div;
+    var span;
 
     return {
         c: function create() {
-            div = createElement('div');
-            setText(div, 'dynamic');
-            return div;
+            span = createElement('span');
+            setText(span, 'dynamic');
+            return span;
         },
         d: noop,
         m: function mount(target, anchor) {
-            insertNode(div, target, anchor);
+            insertNode(span, target, anchor);
         },
         u: function unmount() {
-            detachNode(div);
+            detachNode(span);
         },
         p: noop
     };
 }
 
-function DynamicChildren(options) {
+function Component(options) {
     const fragment = create_main_fragment(this);
     
     if (options.el) {
@@ -70,4 +70,4 @@ function DynamicChildren(options) {
     }
 }
 
-export default DynamicChildren;
+export default Component;

@@ -38,7 +38,7 @@ function create_main_fragment(vm) {
     };
 }
 
-function component(options) {
+function Component(options) {
     const fragment = create_main_fragment(this);
     
     if (options.el) {
@@ -47,4 +47,4 @@ function component(options) {
     }
 }
 
-export default component;
+export default Component;
