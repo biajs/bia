@@ -135,8 +135,8 @@ export function processNode(code: JsCode, node: ParsedNode, fragments: Array<JsF
     let childFragment;
 
     processors.forEach((processor: DomProcessor) => {
-        if (typeof processor.defineFragment === 'function') {
-            childFragment = processor.defineFragment(code, node, fragments) || childFragment;
+        if (typeof processor.createChildFragments === 'function') {
+            childFragment = processor.createChildFragments(code, node, fragments) || childFragment;
         }
     });
 

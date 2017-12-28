@@ -1,8 +1,15 @@
 import { JsCode } from '../../code/index';
 import { JsFragment } from '../fragment/JsFragment';
-import { ParsedNode } from '../../../interfaces';
+import { DomProcessor, JsFragmentNode, ParsedNode } from '../../../interfaces';
+
+//
+// utils
+//
 import { escape } from '../../../utils/string';
 
+//
+// helpers
+//
 import { 
     createElement,
     detachNode,
@@ -11,32 +18,46 @@ import {
 } from '../helpers/index';
 
 /**
- * Process dom elements.
+ * Create child fragments.
  * 
- * @param  {JsCode}     code 
- * @param  {ParsedNode} node
- * @param  {JsFragment} fragment 
- * @return {void}
+ * @param  {JsCode}                 code
+ * @param  {ParsedNode}             currentNode
+ * @param  {Array<JsFragmentNode>}  fragments 
  */
-export function process(code: JsCode, node: ParsedNode, fragment: JsFragment): void {
-    if (fragment.rootNode === node) {
-        manageRootElement(code, node, fragment); // <- should this be it's own processor?
-    }
-}
+export function createChildFragments(code: JsCode, currentNode: ParsedNode, fragments: Array<JsFragmentNode>) {
+    //
+};
 
-export function postProcess(code: JsCode, node: ParsedNode, fragment: JsFragment): void {
+/**
+ * Process the current node.
+ * 
+ * @param  {JsCode}                 code
+ * @param  {ParsedNode}             currentNode
+ * @param  {Array<JsFragmentNode>}  fragments 
+ */
+export function process(code: JsCode, node: ParsedNode, fragment: JsFragment) {
+    // manage the lifecycle of a fragment's root element
+    if (fragment.rootNode === node) {
+        manageRootElement(code, node, fragment);
+    }
+};
+
+/**
+ * Process the current node after all child processors are complete.
+ * 
+ * @param  {JsCode}                 code
+ * @param  {ParsedNode}             currentNode
+ * @param  {Array<JsFragmentNode>}  fragments 
+ */
+export function postProcess(code: JsCode, node: ParsedNode, fragment: JsFragment) {
     if (fragment.rootNode === node) {
         returnRootElement(code, node, fragment);
     }
-}
+};
 
-/**
- * Manage the root element of a fragment.
- * 
- * @param  {JsCode}     code 
- * @param  {ParsedNode} node 
- * @param  {JsFragment} fragment 
- */
+//
+// manage the root element of a fragment
+// 
 function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment) {
     const tagName = node.tagName.toLowerCase();
     const el = fragment.getVariableName(node, tagName);
@@ -74,7 +95,10 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
     fragment.unmount.append(`detachNode(${el});`);
 }
 
-function returnRootElement(code, node, fragment) {
+//
+// return the root element from a fragment's create method
+//
+function returnRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment) {
     const tagName = node.tagName.toLowerCase();
     const el = fragment.getVariableName(node, tagName);
 

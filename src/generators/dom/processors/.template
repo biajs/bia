@@ -1,0 +1,48 @@
+import { JsCode } from '../../code/index';
+import { JsFragment } from '../fragment/JsFragment';
+import { DomProcessor, JsFragmentNode, ParsedNode } from '../../../interfaces';
+
+//
+// utils
+//
+import { escape } from '../../../utils/string';
+
+//
+// helpers
+//
+import { 
+    //
+} from '../helpers/index';
+
+/**
+ * Create child fragments.
+ * 
+ * @param  {JsCode}                 code
+ * @param  {ParsedNode}             currentNode
+ * @param  {Array<JsFragmentNode>}  fragments 
+ */
+export function createChildFragments(code: JsCode, currentNode: ParsedNode, fragments: Array<JsFragmentNode>) {
+    //
+};
+
+/**
+ * Process the current node.
+ * 
+ * @param  {JsCode}                 code
+ * @param  {ParsedNode}             currentNode
+ * @param  {Array<JsFragmentNode>}  fragments 
+ */
+export function process(code: JsCode, node: ParsedNode, fragment: JsFragment) {
+    //
+};
+
+/**
+ * Process the current node after all child processors are complete.
+ * 
+ * @param  {JsCode}                 code
+ * @param  {ParsedNode}             currentNode
+ * @param  {Array<JsFragmentNode>}  fragments 
+ */
+export function postProcess(code: JsCode, node: ParsedNode, fragment: JsFragment) {
+    //
+};

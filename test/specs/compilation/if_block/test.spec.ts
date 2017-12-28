@@ -5,6 +5,6 @@ describe.only('if block', () => {
         const { code } = compile(file);
         // // const vm = render(file, { el });
 
-        // console.log (code);
+        console.log (code);
     });
 });
