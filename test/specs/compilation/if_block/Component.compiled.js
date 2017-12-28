@@ -2,6 +2,10 @@
 
 function noop() {}
 
+function setText(el, text) {
+    el.textContent = text;
+}
+
 function detachNode(node) {
     node.parentNode.removeChild(node);
 }
@@ -17,17 +21,40 @@ function createElement(tag) {
 function create_main_fragment(vm) {
     var div;
 
+    var if_block = (true) && create_if_block(vm);
     return {
         c: function create() {
-            div = createElement("div");
+            div = createElement('div');
+            if (if_block) if_block.c();
             return div;
         },
         d: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
+            if (if_block) if_block.m(div, null);
         },
         u: function unmount() {
             detachNode(div);
+        },
+        p: noop
+    };
+}
+
+function create_if_block(vm) {
+    var span;
+
+    return {
+        c: function create() {
+            span = createElement('span');
+            setText(span, 'hello');
+            return span;
+        },
+        d: noop,
+        m: function mount(target, anchor) {
+            insertNode(span, target, anchor);
+        },
+        u: function unmount() {
+            detachNode(span);
         },
         p: noop
     };

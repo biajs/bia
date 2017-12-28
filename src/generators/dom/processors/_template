@@ -32,7 +32,7 @@ export function createChildFragments(code: JsCode, currentNode: ParsedNode, frag
  * @param  {ParsedNode}             currentNode
  * @param  {Array<JsFragmentNode>}  fragments 
  */
-export function process(code: JsCode, node: ParsedNode, fragment: JsFragment) {
+export function process(code: JsCode, currentNode: ParsedNode, fragment: JsFragment) {
     //
 };
 
@@ -43,6 +43,6 @@ export function process(code: JsCode, node: ParsedNode, fragment: JsFragment) {
  * @param  {ParsedNode}             currentNode
  * @param  {Array<JsFragmentNode>}  fragments 
  */
-export function postProcess(code: JsCode, node: ParsedNode, fragment: JsFragment) {
+export function postProcess(code: JsCode, currentNode: ParsedNode, fragment: JsFragment) {
     //
 };

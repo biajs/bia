@@ -1,5 +1,5 @@
 <template>
     <div>
-        testing "quoted" 'text'...
+        one "two" 'three'
     </div>
 </template>

@@ -19,7 +19,7 @@ function create_main_fragment(vm) {
 
     return {
         c: function create() {
-            div = createElement("div");
+            div = createElement('div');
             return div;
         },
         d: noop,

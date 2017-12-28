@@ -23,8 +23,8 @@ function create_main_fragment(vm) {
 
     return {
         c: function create() {
-            div = createElement("div");
-            setText(div, 'hello world');
+            div = createElement('div');
+            setText(div, '\r\n        one \"two\" \'three\'\r\n    ');
             return div;
         },
         d: noop,

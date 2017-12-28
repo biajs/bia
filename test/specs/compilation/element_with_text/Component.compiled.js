@@ -10,6 +10,10 @@ function insertNode(node, target, anchor) {
     target.insertBefore(node, anchor);
 }
 
+function setText(el, text) {
+    el.textContent = text;
+}
+
 function createElement(tag) {
     return document.createElement(tag);
 }
@@ -19,7 +23,8 @@ function create_main_fragment(vm) {
 
     return {
         c: function create() {
-            div = createElement("div");
+            div = createElement('div');
+            setText(div, 'hello world');
             return div;
         },
         d: noop,
@@ -33,7 +38,7 @@ function create_main_fragment(vm) {
     };
 }
 
-function Component(options) {
+function component(options) {
     const fragment = create_main_fragment(this);
     
     if (options.el) {
@@ -42,4 +47,4 @@ function Component(options) {
     }
 }
 
-export default Component;
+export default component;

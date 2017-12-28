@@ -1,12 +1,8 @@
 declare var compile: Function;
 declare var component: Function;
-// declare var debug: Function;
-// declare var el: Object;
+declare var div: Function;
 declare var expect: Function;
 declare var render: Function;
-
-// expose chai expect globally
-global.expect = require('chai').expect;
 
 // helper function to compile a component
 global.compile = (p) => {
@@ -25,6 +21,12 @@ global.component = (p) => {
 
     return new Function(code)();
 }
+
+// helper function to create an empty div
+global.div = () => document.createElement('div');
+
+// expose chai expect globally
+global.expect = require('chai').expect;
 
 // helper function to render components
 global.render = (file, instanceOptions = {}, compilerOptions = {}) => {
