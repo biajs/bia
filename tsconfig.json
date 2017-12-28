@@ -1,14 +1,17 @@
 {
     "compilerOptions": {
-      "baseUrl": ".",
-      "lib": [
-        "dom",
-        "es7"
-      ],
-      "paths": {
-        "*": [
-          "*"
-        ]
-      }
-    }
-  }
+        "baseUrl": ".",
+        "lib": [
+            "dom",
+            "es7"
+        ],
+        "paths": {
+            "*": [
+              "*"
+            ]
+        }
+    },
+    "files": [
+        "global.d.ts"
+    ]
+}

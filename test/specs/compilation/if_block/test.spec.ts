@@ -3,8 +3,8 @@ describe.only('if block', () => {
 
     it('renders', () => {
         const { code } = compile(file);
-        // const vm = render(file, { el });
+        // // const vm = render(file, { el });
 
-        console.log (code);
+        // console.log (code);
     });
 });
