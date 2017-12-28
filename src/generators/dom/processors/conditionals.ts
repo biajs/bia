@@ -44,7 +44,7 @@ export function defineFragment(code: JsCode, node: ParsedNode, fragments: Array<
  * @param  {JsFragment} fragment 
  * @return {void}
  */
-export function processElement(code: JsCode, node: ParsedNode, fragment: JsFragment): void {
+export function process(code: JsCode, node: ParsedNode, fragment: JsFragment): void {
     // @todo: handle conditionals on the fragment root
     // @todo: handle if blocks that have sibling else-if/else nodes
     const directive = getDirective(node, 'if');

@@ -10,7 +10,8 @@ export interface CompileOptions {
 // processor to inject dom related code
 export interface DomProcessor {
     defineFragment?: Function,
-    processElement?: Function,
+    process?: Function,
+    postProcess?: Function,
 }
 
 // lifecycle methods of a dom fragment

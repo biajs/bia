@@ -125,9 +125,9 @@ export function createFragment(code: JsCode, rootNode: ParsedNode, fragments: Ar
  */
 export function processNode(code: JsCode, node: ParsedNode, fragments: Array<JsFragmentNode>, fragment: JsFragment) {
     // pass the currenty node to each element processor
-    processors.forEach(processor => {
-        if (typeof processor.processElement === 'function') {
-            processor.processElement(code, node, fragment);
+    processors.forEach((processor: DomProcessor) => {
+        if (typeof processor.process === 'function') {
+            processor.process(code, node, fragment);
         }
     });
 
@@ -146,8 +146,15 @@ export function processNode(code: JsCode, node: ParsedNode, fragments: Array<JsF
         code.prepend(childFragment);
         fragments.push({ node, fragment: childFragment });
         processNode(code, node, fragments, childFragment);
-    } 
-    
-    // otherwise recursively process the nodes below the current one
-    else node.children.forEach(child => processNode(code, child, fragments, fragment));
+    } else {
+        // otherwise recursively process the nodes below the current one
+        node.children.forEach(child => processNode(code, child, fragments, fragment));
+    }
+
+    // call any post-processors that exist
+    processors.forEach((processor: DomProcessor) => {
+        if (typeof processor.postProcess === 'function') {
+            processor.postProcess(code, node, fragment);
+        }
+    });
 }
