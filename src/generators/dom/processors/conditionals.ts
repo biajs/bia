@@ -69,7 +69,7 @@ export function postProcess(code: JsCode, currentNode: ParsedNode, fragment: JsF
 // create if blocks that have no other branches
 //
 function createStandAloneIfBlock(code: JsCode, currentNode: ParsedNode, fragment: JsFragment, directive: NodeDirective): void {
-    const blockName = fragment.getVariableName(currentNode, 'if_block');
+    const blockName = code.getVariableName(currentNode, 'if_block');
     const createBlockName = `create_${blockName}`;
     const parentEl = fragment.getVariableName(currentNode.parent);
 
