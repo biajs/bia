@@ -11,7 +11,10 @@ import {
     hasConditionalDirective, 
     hasOnlyStaticText,
     isElementNode, 
-    nodeHasProcessingFlag,
+    isTextNode,
+    hasProcessingFlag,
+    setProcessingFlag,
+    walkNodeTree,
 } from '../../../utils/parsed_node';
 
 //
@@ -33,16 +36,16 @@ import {
  * @param  {Array<JsFragmentNode>}  fragments 
  */
 export function process(code: JsCode, currentNode: ParsedNode, fragment: JsFragment) {
-    // manage the lifecycle of a fragment's root element
+    // root element
     if (currentNode === fragment.rootNode) {
         manageRootElement(code, currentNode, fragment);
     }
 
-    // otherwise create static elements
+    // static elements
     else if (
         isElementNode(currentNode) && 
         !hasConditionalDirective(currentNode) &&
-        !nodeHasProcessingFlag(currentNode, 'wasCreatedByInnerHTML')
+        !hasProcessingFlag(currentNode, 'wasCreatedByInnerHTML')
     ) {
         manageStaticElement(code, currentNode, fragment);
     }
@@ -80,19 +83,17 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
     if (hasOnlyStaticText(node)) {
         code.useHelper(setText);
         fragment.create.append(`setText(${el}, '${escape(node.children[0].textContent)}');`);
+
+        // set a flag to prevent other processors from creating a text node
+        setProcessingFlag(node.children[0], 'wasCreatedBySetText');
     }
 
-    // if the element has purely static children, set the inner html
+    // if the element has purely static children, set the inner
     else if (!node.hasDynamicChildren) {
         fragment.create.append(`${el}.innerHTML = '${escape(node.innerHTML)}';`);
 
-        // set a flag on all child nodes so we don't process them again
-        const setFlag = (n) => {
-            n.processingData.wasCreatedByInnerHTML = true;
-            n.children.forEach(setFlag);
-        }
-
-        setFlag(node);
+        // set a flag on the tree to prevent other processors from creating elements
+        walkNodeTree(node, n => setProcessingFlag(n, 'wasCreatedByInnerHTML'));
     }
 
     // mount the root element
@@ -122,6 +123,17 @@ function manageStaticElement(code: JsCode, node: ParsedNode, fragment: JsFragmen
     if (hasOnlyStaticText(node)) {
         code.useHelper(setText);
         fragment.create.append(`setText(${varName}, '${escape(node.children[0].textContent)}');`);
+
+        // set a flag on the text node so we don't re-process it
+        setProcessingFlag(node.children[0], 'wasCreatedBySetText');
+    }
+
+    // set purely static inner html if that's all we have
+    else if (!node.hasDynamicChildren) {
+        fragment.create.append(`${varName}.innerHTML = '${escape(node.innerHTML)}';`);
+
+        // set a flag on all descendent nodes so we don't re-process them
+        walkNodeTree(node, n => setProcessingFlag(n, 'wasCreatedByInnerHTML'));
     }
 
     // mount

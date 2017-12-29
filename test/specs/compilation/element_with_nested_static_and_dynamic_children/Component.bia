@@ -1,0 +1,10 @@
+<template>
+    <div>
+        <span b-if="true">dynamic</span>
+        static text
+        <div>
+            nested static text
+            <p>nested static element</p>
+        </div>
+    </div>
+</template>

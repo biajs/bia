@@ -38,14 +38,14 @@ export function hasOnlyStaticText(node: ParsedNode): boolean {
         && node.children[0].type === 'TEXT';
 }
 
+// determine if a node has a processing flag
+export function hasProcessingFlag(node: ParsedNode, flag: string): boolean {
+    return node.processingData[flag] === true;
+}
+
 // determine if a node has a particular directive
 export function nodeHasDirective(node: ParsedNode, directive: string): boolean {
     return isElementNode(node) && node.directives.some(d => d.name === directive);
-}
-
-// determine if a node has a processing flag
-export function nodeHasProcessingFlag(node: ParsedNode, flag: string): boolean {
-    return typeof node.processingData[flag] !== 'undefined';
 }
 
 // determine if a node will require hydration or not
@@ -58,4 +58,15 @@ export function removeProcessedDirective(node: ParsedNode, directive: NodeDirect
     node.directives = node.directives.filter(nodeDirective => nodeDirective !== directive);
 
     return node;
+}
+
+// set a processing flag on a node
+export function setProcessingFlag(node: ParsedNode, flag: string): void {
+    node.processingData[flag] = true;
+}
+
+// recursively process a node and it's children
+export function walkNodeTree(node: ParsedNode, fn: Function): void {
+    const p = n => { fn(n); n.children.forEach(p) }    
+    p(node);
 }
