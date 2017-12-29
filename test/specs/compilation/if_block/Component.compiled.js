@@ -25,7 +25,6 @@ function create_main_fragment(vm) {
     return {
         c: function create() {
             div = createElement('div');
-            // hmmm
             if (if_block_1) if_block_1.c();
             return div;
         },

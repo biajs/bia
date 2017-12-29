@@ -2,6 +2,10 @@
 
 function noop() {}
 
+function appendNode(node, target) {
+    target.appendChild(node);
+}
+
 function setText(el, text) {
     el.textContent = text;
 }
@@ -19,19 +23,21 @@ function createElement(tag) {
 }
 
 function create_main_fragment(vm) {
-    var div;
+    var div, div_1;
 
     var if_block_3 = (dynamic) && create_if_block_3(vm);
     return {
         c: function create() {
             div = createElement('div');
-            // hmmm
+            div_1 = createElement('div');
+            setText(div_1, 'static');
             if (if_block_3) if_block_3.c();
             return div;
         },
         d: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
+            appendNode(div_1, div);
             if (if_block_3) if_block_3.m(div, null);
         },
         u: function unmount() {

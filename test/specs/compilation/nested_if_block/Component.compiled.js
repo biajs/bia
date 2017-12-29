@@ -25,7 +25,6 @@ function create_main_fragment(vm) {
     return {
         c: function create() {
             div = createElement('div');
-            // hmmm
             if (if_block_1) if_block_1.c();
             return div;
         },
@@ -89,7 +88,6 @@ function create_if_block_2(vm) {
     return {
         c: function create() {
             span = createElement('span');
-            // hmmm
             if (if_block_3) if_block_3.c();
             if (if_block_5) if_block_5.c();
             return span;
@@ -114,7 +112,6 @@ function create_if_block_1(vm) {
     return {
         c: function create() {
             p = createElement('p');
-            // hmmm
             if (if_block_2) if_block_2.c();
             return p;
         },
