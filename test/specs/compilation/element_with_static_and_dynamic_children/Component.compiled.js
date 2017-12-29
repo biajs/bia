@@ -37,16 +37,17 @@ function create_main_fragment(vm) {
             return div;
         },
         d: noop,
+        h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
             appendNode(p, div);
             if (if_block_3) if_block_3.m(div, null);
             appendNode(p_1, div);
         },
+        p: noop,
         u: function unmount() {
             detachNode(div);
-        },
-        p: noop
+        }
     };
 }
 
@@ -60,13 +61,14 @@ function create_if_block_3(vm) {
             return span;
         },
         d: noop,
+        h: noop,
         m: function mount(target, anchor) {
             insertNode(span, target, anchor);
         },
+        p: noop,
         u: function unmount() {
             detachNode(span);
-        },
-        p: noop
+        }
     };
 }
 

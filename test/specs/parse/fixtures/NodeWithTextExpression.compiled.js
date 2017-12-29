@@ -28,13 +28,14 @@ function create_main_fragment(vm) {
             return div;
         },
         d: noop,
+        h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
         },
+        p: noop,
         u: function unmount() {
             detachNode(div);
-        },
-        p: noop
+        }
     };
 }
 

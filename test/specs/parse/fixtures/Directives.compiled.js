@@ -59,6 +59,7 @@ function create_main_fragment(vm) {
             return div;
         },
         d: noop,
+        h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
             appendNode(span, div);
@@ -76,10 +77,10 @@ function create_main_fragment(vm) {
             appendNode(span_12, div);
             appendNode(span_13, div);
         },
+        p: noop,
         u: function unmount() {
             detachNode(div);
-        },
-        p: noop
+        }
     };
 }
 

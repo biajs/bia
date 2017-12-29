@@ -29,14 +29,15 @@ function create_main_fragment(vm) {
             return div;
         },
         d: noop,
+        h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
             if (if_block_1) if_block_1.m(div, null);
         },
+        p: noop,
         u: function unmount() {
             detachNode(div);
-        },
-        p: noop
+        }
     };
 }
 
@@ -50,13 +51,14 @@ function create_if_block_5(vm) {
             return u;
         },
         d: noop,
+        h: noop,
         m: function mount(target, anchor) {
             insertNode(u, target, anchor);
         },
+        p: noop,
         u: function unmount() {
             detachNode(u);
-        },
-        p: noop
+        }
     };
 }
 
@@ -70,13 +72,14 @@ function create_if_block_3(vm) {
             return i;
         },
         d: noop,
+        h: noop,
         m: function mount(target, anchor) {
             insertNode(i, target, anchor);
         },
+        p: noop,
         u: function unmount() {
             detachNode(i);
-        },
-        p: noop
+        }
     };
 }
 
@@ -93,15 +96,16 @@ function create_if_block_2(vm) {
             return span;
         },
         d: noop,
+        h: noop,
         m: function mount(target, anchor) {
             insertNode(span, target, anchor);
             if (if_block_3) if_block_3.m(span, null);
             if (if_block_5) if_block_5.m(span, null);
         },
+        p: noop,
         u: function unmount() {
             detachNode(span);
-        },
-        p: noop
+        }
     };
 }
 
@@ -116,14 +120,15 @@ function create_if_block_1(vm) {
             return p;
         },
         d: noop,
+        h: noop,
         m: function mount(target, anchor) {
             insertNode(p, target, anchor);
             if (if_block_2) if_block_2.m(p, null);
         },
+        p: noop,
         u: function unmount() {
             detachNode(p);
-        },
-        p: noop
+        }
     };
 }
 

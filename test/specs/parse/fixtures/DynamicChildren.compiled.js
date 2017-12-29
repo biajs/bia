@@ -32,18 +32,22 @@ function create_main_fragment(vm) {
             div_1 = createElement('div');
             setText(div_1, 'static');
             if (if_block_3) if_block_3.c();
+            this.h();
             return div;
         },
         d: noop,
+        h: function hydrate() {
+            div_1.className = 'static';
+        },
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
             appendNode(div_1, div);
             if (if_block_3) if_block_3.m(div, null);
         },
+        p: noop,
         u: function unmount() {
             detachNode(div);
-        },
-        p: noop
+        }
     };
 }
 
@@ -57,13 +61,14 @@ function create_if_block_3(vm) {
             return div;
         },
         d: noop,
+        h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
         },
+        p: noop,
         u: function unmount() {
             detachNode(div);
-        },
-        p: noop
+        }
     };
 }
 

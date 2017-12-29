@@ -2,6 +2,10 @@
 
 function noop() {}
 
+function appendNode(node, target) {
+    target.appendChild(node);
+}
+
 function detachNode(node) {
     node.parentNode.removeChild(node);
 }
@@ -15,22 +19,50 @@ function createElement(tag) {
 }
 
 function create_main_fragment(vm) {
-    var div;
+    var div, span;
 
+    var if_block_1 = (false) && create_if_block_1(vm);
     return {
         c: function create() {
             div = createElement('div');
-            div.innerHTML = '';
+            if (if_block_1) if_block_1.c();
+            span = createElement('span');
+            this.h();
             return div;
         },
         d: noop,
+        h: function hydrate() {
+            span.className = 'foo bar';
+        },
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
+            if (if_block_1) if_block_1.m(div, null);
+            appendNode(span, div);
         },
+        p: noop,
         u: function unmount() {
             detachNode(div);
+        }
+    };
+}
+
+function create_if_block_1(vm) {
+    var p;
+
+    return {
+        c: function create() {
+            p = createElement('p');
+            return p;
         },
-        p: noop
+        d: noop,
+        h: noop,
+        m: function mount(target, anchor) {
+            insertNode(p, target, anchor);
+        },
+        p: noop,
+        u: function unmount() {
+            detachNode(p);
+        }
     };
 }
 

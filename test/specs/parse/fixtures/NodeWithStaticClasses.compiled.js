@@ -20,17 +20,20 @@ function create_main_fragment(vm) {
     return {
         c: function create() {
             div = createElement('div');
-            div.innerHTML = '';
+            this.h();
             return div;
         },
         d: noop,
+        h: function hydrate() {
+            div.className = 'foo bar';
+        },
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
         },
+        p: noop,
         u: function unmount() {
             detachNode(div);
-        },
-        p: noop
+        }
     };
 }
 
