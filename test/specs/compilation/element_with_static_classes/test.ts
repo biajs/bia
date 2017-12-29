@@ -6,6 +6,6 @@ export default function(file) {
         // console.log(code);
 
         const vm = render(file, { el: div() });
-        expect(vm.$el.outerHTML).to.equal('<div><span class="foo bar"></span></div>');
+        expect(vm.$el.outerHTML).to.equal('<div><p class="bar"></p><p>\n            <span class="foo"></span>\n        </p></div>');
     });
 }
