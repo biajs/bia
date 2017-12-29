@@ -1,1 +1,1 @@
-test/test.js --require ts-node/register --reporter test/istanbul.reporter.js
+test/test.js --require ts-node/register
