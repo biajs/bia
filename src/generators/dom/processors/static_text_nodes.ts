@@ -1,28 +1,17 @@
 import { JsCode } from '../../code/index';
 import { JsFragment } from '../fragment/JsFragment';
-import { DomProcessor, JsFragmentNode, ParsedNode } from '../../../interfaces';
+import { ParsedNode } from '../../../interfaces';
 
 //
 // utils
 //
 import { escape } from '../../../utils/string';
-
-import { 
-    hasConditionalDirective, 
-    hasOnlyStaticText,
-    isElementNode, 
-    isTextNode,
-    hasProcessingFlag,
-    walkNodeTree,
-} from '../../../utils/parsed_node';
+import { isTextNode, hasProcessingFlag } from '../../../utils/parsed_node';
 
 //
 // helpers
 //
-import { 
-    appendNode,
-    createText,
-} from '../helpers/index';
+import { appendNode, createText } from '../helpers/index';
 
 //
 // process static text nodes

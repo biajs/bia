@@ -1,0 +1,6 @@
+<template>
+    <div>
+        <p b-if="false"></p>
+        <span class="foo bar"></span>
+    </div>
+</template>

@@ -10,6 +10,7 @@ export class JsFragment extends JsFunction {
     public code: JsCode;
     public create: JsFunction;
     public destroy: JsFunction;
+    public hydrate: JsFunction;
     public mount: JsFunction;
     public returnObj: JsReturn;
     public rootNode: ParsedNode;
@@ -32,6 +33,8 @@ export class JsFragment extends JsFunction {
         
         this.destroy = new JsFunction({ name: 'destroy' });
 
+        this.hydrate = new JsFunction({ name: 'hydrate' });
+
         this.mount = new JsFunction({ 
             name: 'mount',
             signature: ['target', 'anchor'],
@@ -46,9 +49,10 @@ export class JsFragment extends JsFunction {
                 properties: {
                     c: this.create,
                     d: this.destroy,
+                    h: this.hydrate,
                     m: this.mount,
-                    u: this.unmount,
                     p: this.update,
+                    u: this.unmount,
                 },
             }),
         });

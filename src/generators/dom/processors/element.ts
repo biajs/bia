@@ -28,13 +28,9 @@ import {
     setText,
 } from '../helpers/index';
 
-/**
- * Process the current node.
- * 
- * @param  {JsCode}                 code
- * @param  {ParsedNode}             currentNode
- * @param  {Array<JsFragmentNode>}  fragments 
- */
+//
+// process dom elements
+//
 export function process(code: JsCode, currentNode: ParsedNode, fragment: JsFragment) {
     // root element
     if (currentNode === fragment.rootNode) {
@@ -51,19 +47,25 @@ export function process(code: JsCode, currentNode: ParsedNode, fragment: JsFragm
     }
 };
 
-/**
- * Process the current node after all child processors are complete.
- * 
- * @param  {JsCode}                 code
- * @param  {ParsedNode}             currentNode
- * @param  {Array<JsFragmentNode>}  fragments 
- */
+//
+// post-process dom elements
+//
 export function postProcess(code: JsCode, currentNode: ParsedNode, fragment: JsFragment) {
-    // return the root element from our create function
+    // hydrate the fragment if neccessary, and return the root element
     if (currentNode === fragment.rootNode) {
+        hydrateFragment(code, currentNode, fragment);
         returnRootElement(code, currentNode, fragment);
     }
 };
+
+//
+// add a call to hydrate the current fragment
+//
+function hydrateFragment(code: JsCode, node: ParsedNode, fragment: JsFragment) {
+    if (!fragment.hydrate.isEmpty()) {
+        fragment.create.append('this.h();');
+    }
+}
 
 //
 // manage the root element of a fragment
@@ -89,7 +91,7 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
     }
 
     // if the element has purely static children, set the inner
-    else if (!node.hasDynamicChildren) {
+    else if (!node.hasDynamicChildren && node.innerHTML.length > 0) {
         fragment.create.append(`${el}.innerHTML = '${escape(node.innerHTML)}';`);
 
         // set a flag on the tree to prevent other processors from creating elements
@@ -129,7 +131,7 @@ function manageStaticElement(code: JsCode, node: ParsedNode, fragment: JsFragmen
     }
 
     // set purely static inner html if that's all we have
-    else if (!node.hasDynamicChildren) {
+    else if (!node.hasDynamicChildren && node.innerHTML.length > 0) {
         fragment.create.append(`${varName}.innerHTML = '${escape(node.innerHTML)}';`);
 
         // set a flag on all descendent nodes so we don't re-process them
