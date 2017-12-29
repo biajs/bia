@@ -7,26 +7,23 @@ import { DomProcessor, JsFragmentNode, ParsedNode } from '../../../interfaces';
 //
 import { escape } from '../../../utils/string';
 
+import { 
+    hasConditionalDirective, 
+    hasOnlyStaticText,
+    isElementNode, 
+    nodeHasProcessingFlag,
+} from '../../../utils/parsed_node';
+
 //
 // helpers
 //
 import { 
+    appendNode,
     createElement,
     detachNode,
     insertNode,
     setText,
 } from '../helpers/index';
-
-/**
- * Create child fragments.
- * 
- * @param  {JsCode}                 code
- * @param  {ParsedNode}             currentNode
- * @param  {Array<JsFragmentNode>}  fragments 
- */
-export function createChildFragments(code: JsCode, currentNode: ParsedNode, fragments: Array<JsFragmentNode>) {
-    //
-};
 
 /**
  * Process the current node.
@@ -35,10 +32,19 @@ export function createChildFragments(code: JsCode, currentNode: ParsedNode, frag
  * @param  {ParsedNode}             currentNode
  * @param  {Array<JsFragmentNode>}  fragments 
  */
-export function process(code: JsCode, node: ParsedNode, fragment: JsFragment) {
+export function process(code: JsCode, currentNode: ParsedNode, fragment: JsFragment) {
     // manage the lifecycle of a fragment's root element
-    if (fragment.rootNode === node) {
-        manageRootElement(code, node, fragment);
+    if (currentNode === fragment.rootNode) {
+        manageRootElement(code, currentNode, fragment);
+    }
+
+    // otherwise create static elements
+    else if (
+        isElementNode(currentNode) && 
+        !hasConditionalDirective(currentNode) &&
+        !nodeHasProcessingFlag(currentNode, 'wasCreatedByInnerHTML')
+    ) {
+        manageStaticElement(code, currentNode, fragment);
     }
 };
 
@@ -49,9 +55,10 @@ export function process(code: JsCode, node: ParsedNode, fragment: JsFragment) {
  * @param  {ParsedNode}             currentNode
  * @param  {Array<JsFragmentNode>}  fragments 
  */
-export function postProcess(code: JsCode, node: ParsedNode, fragment: JsFragment) {
-    if (fragment.rootNode === node) {
-        returnRootElement(code, node, fragment);
+export function postProcess(code: JsCode, currentNode: ParsedNode, fragment: JsFragment) {
+    // return the root element from our create function
+    if (currentNode === fragment.rootNode) {
+        returnRootElement(code, currentNode, fragment);
     }
 };
 
@@ -70,11 +77,7 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
     fragment.create.append(`${el} = createElement('${tagName}');`);
 
     // if the node has purely static text, append that to it
-    if (
-        !node.hasDynamicChildren 
-        && node.children.length === 1 
-        && node.children[0].type === 'TEXT'
-    ) {
+    if (hasOnlyStaticText(node)) {
         code.useHelper(setText);
         fragment.create.append(`setText(${el}, '${escape(node.children[0].textContent)}');`);
     }
@@ -82,11 +85,14 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
     // if the element has purely static children, set the inner html
     else if (!node.hasDynamicChildren) {
         fragment.create.append(`${el}.innerHTML = '${escape(node.innerHTML)}';`);
-    }
 
-    // otherwise walk the children and create dom nodes for them
-    else {
-        fragment.create.append('// hmmm');
+        // set a flag on all child nodes so we don't process them again
+        const setFlag = (n) => {
+            n.processingData.wasCreatedByInnerHTML = true;
+            n.children.forEach(setFlag);
+        }
+
+        setFlag(node);
     }
 
     // mount the root element
@@ -96,6 +102,31 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
     // unmount the root element
     code.useHelper(detachNode);
     fragment.unmount.append(`detachNode(${el});`);
+}
+
+//
+// manage static elements
+//
+function manageStaticElement(code: JsCode, node: ParsedNode, fragment: JsFragment) {
+    const tagName = node.tagName.toLowerCase();
+    const varName = fragment.getVariableName(node, tagName);
+    const parentVarName = fragment.getVariableName(node.parent);
+
+    fragment.define(varName);
+
+    // create the root element
+    code.useHelper(createElement);
+    fragment.create.append(`${varName} = createElement('${tagName}');`);
+
+    // attach purely static text if that's all we have
+    if (hasOnlyStaticText(node)) {
+        code.useHelper(setText);
+        fragment.create.append(`setText(${varName}, '${escape(node.children[0].textContent)}');`);
+    }
+
+    // mount
+    code.useHelper(appendNode);
+    fragment.mount.append(`appendNode(${varName}, ${parentVarName});`)
 }
 
 //

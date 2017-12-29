@@ -125,6 +125,7 @@ export function createFragment(code: JsCode, rootNode: ParsedNode, fragments: Ar
  */
 export function processNode(code: JsCode, node: ParsedNode, fragments: Array<JsFragmentNode>, fragment: JsFragment) {
     // pass the currenty node to each element processor
+    // @ts-ignore
     processors.forEach((processor: DomProcessor) => {
         if (typeof processor.process === 'function') {
             processor.process(code, node, fragment);
@@ -134,6 +135,7 @@ export function processNode(code: JsCode, node: ParsedNode, fragments: Array<JsF
     // give any of the processors a chance to define a child fragment
     let childFragment;
 
+    // @ts-ignore
     processors.forEach((processor: DomProcessor) => {
         if (typeof processor.createChildFragments === 'function') {
             childFragment = processor.createChildFragments(code, node, fragments, fragment) || childFragment;
@@ -152,6 +154,7 @@ export function processNode(code: JsCode, node: ParsedNode, fragments: Array<JsF
     }
 
     // call any post-processors that exist
+    // @ts-ignore
     processors.forEach((processor: DomProcessor) => {
         if (typeof processor.postProcess === 'function') {
             processor.postProcess(code, node, fragment);

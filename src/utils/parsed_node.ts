@@ -24,9 +24,28 @@ export function getNextElementNode(node: ParsedNode) {
     }
 }
 
+// determine if a node has a conditional
+export function hasConditionalDirective(node: ParsedNode): boolean {
+    return nodeHasDirective(node, 'if')
+        || nodeHasDirective(node, 'else-if')
+        || nodeHasDirective(node, 'else');
+}
+
+// determine if a node only contains static text
+export function hasOnlyStaticText(node: ParsedNode): boolean {
+    return !node.hasDynamicChildren 
+        && node.children.length === 1 
+        && node.children[0].type === 'TEXT';
+}
+
 // determine if a node has a particular directive
 export function nodeHasDirective(node: ParsedNode, directive: string): boolean {
     return isElementNode(node) && node.directives.some(d => d.name === directive);
+}
+
+// determine if a node has a processing flag
+export function nodeHasProcessingFlag(node: ParsedNode, flag: string): boolean {
+    return typeof node.processingData[flag] !== 'undefined';
 }
 
 // determine if a node will require hydration or not

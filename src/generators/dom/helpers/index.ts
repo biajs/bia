@@ -1,4 +1,4 @@
-// import appendNode from './append_node';
+import appendNode from './append_node';
 import createElement from './create_element';
 // import createText from './create_text';
 import detachNode from './detach_node';
@@ -8,7 +8,7 @@ import noop from './noop';
 import setText from './set_text';
 
 export {
-    // appendNode,
+    appendNode,
     createElement,
     detachNode,
     // createText,

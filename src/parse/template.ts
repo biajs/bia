@@ -42,6 +42,7 @@ export function createDomTree(el: HTMLElement, parent: ParsedNode | null = null)
         hasDynamicChildren: checkForDynamicChildren(el, nodeType),
         innerHTML: getInnerHTML(el),
         parent: parent,
+        processingData: {},
         staticClasses: getStaticClasses(el),
         staticStyles: getStaticStyles(el),
         tagName: getTagName(el),

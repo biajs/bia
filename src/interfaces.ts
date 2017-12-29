@@ -65,6 +65,7 @@ export interface ParsedNode {
     hasDynamicChildren: boolean;
     innerHTML: string;
     parent: ParsedNode | null,
+    processingData: Object;
     staticClasses: Array<string>;
     staticStyles: Object;
     tagName: string | null;
