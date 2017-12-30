@@ -2,6 +2,10 @@
 
 function noop() {}
 
+function setStyle(el, key, value) {
+    el.style.setProperty(key, value);
+}
+
 function detachNode(node) {
     node.parentNode.removeChild(node);
 }
@@ -20,10 +24,14 @@ function create_main_fragment(vm) {
     return {
         c: function create() {
             div = createElement('div');
+            this.h();
             return div;
         },
         d: noop,
-        h: noop,
+        h: function hydrate() {
+            setStyle(div, 'color', 'red');
+            setStyle(div, 'font-size', '20px');
+        },
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
         },
