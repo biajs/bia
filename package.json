@@ -49,8 +49,12 @@
       ".ts",
       ".tsx"
     ],
-    "include": [
-      "src"
+    "exclude": [
+      "**/*.d.ts",
+      "build",
+      "dist",
+      "rollup.config.js",
+      "test"
     ],
     "reporter": [
       "html"
