@@ -49,11 +49,8 @@
       ".ts",
       ".tsx"
     ],
-    "exclude": [
-      "build",
-      "dist",
-      "test",
-      "**/*.d.ts"
+    "include": [
+      "src"
     ],
     "reporter": [
       "html"
