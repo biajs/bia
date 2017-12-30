@@ -128,5 +128,11 @@ describe('JsObject', () => {
         expect(someMethod.parent).to.equal(obj);
     });
 
-    it('casts complex objects to a string');
+    it('throws an error when getting a property that doesn\'t exist', () => {
+        const obj = new JsObject({
+            properties: {},
+        });
+
+        expect(() => obj.getProperty('foo')).to.throw();
+    });
 });
