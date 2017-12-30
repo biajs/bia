@@ -50,6 +50,9 @@
       ".tsx"
     ],
     "exclude": [
+      "build",
+      "dist",
+      "test",
       "**/*.d.ts"
     ],
     "reporter": [
