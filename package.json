@@ -6,7 +6,8 @@
   "scripts": {
     "build": "rollup -c",
     "compile-fixtures": "ts-node build/compile_fixtures.ts",
-    "test": "mocha",
+    "coverage": "nyc report --reporter=lcov > coverage.lcov && codecov -t c44f788d-4245-4ca7-9634-777c51af060a",
+    "test": "nyc mocha",
     "test-watch": "mocha --watch test/**/*.spec.ts --watch-extensions ts"
   },
   "repository": {
@@ -26,10 +27,12 @@
     "chai": "^4.1.2",
     "chai-subset": "^1.6.0",
     "chalk": "^2.3.0",
+    "codecov": "^3.0.0",
     "istanbul": "^0.4.5",
     "jsdom": "^11.4.0",
     "mocha": "^4.0.1",
     "mocha-ts": "^0.0.0",
+    "nyc": "^11.4.1",
     "pascal-case": "^2.0.1",
     "rollup": "^0.51.8",
     "rollup-plugin-commonjs": "^8.2.6",
@@ -37,6 +40,7 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-typescript": "^0.8.1",
     "snake-case": "^2.1.0",
+    "source-map-support": "^0.5.0",
     "ts-node": "^3.3.0",
     "typescript": "^2.6.1"
   },
