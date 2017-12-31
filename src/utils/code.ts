@@ -1,7 +1,18 @@
 import { ParsedNode } from '../interfaces';
 import { isElementNode, isTextNode } from './parsed_node';
+import { JsCode } from '../generators/code/index';
 import { BaseCode } from '../generators/code/BaseCode';
+import { JsConditional } from '../generators/dom/functions/JsConditional';
 const falafel = require('falafel');
+
+// find the conditional for a particular node
+export function findConditionalWithNode(code: JsCode, node: ParsedNode): JsConditional|undefined {
+    // @ts-ignore
+    return code.content.find((line) => {
+        // @ts-ignore
+        return isCodeInstance(line) && line.getClassName() === 'JsConditional' && line.hasBranch(node);
+    });
+}
 
 // determine if an object is a code instance
 export function isCodeInstance(obj) {

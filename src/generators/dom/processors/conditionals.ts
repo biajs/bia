@@ -3,12 +3,17 @@ import { JsCode } from '../../code/index';
 import { JsConditional } from '../functions/JsConditional';
 import { JsFragment } from '../functions/JsFragment';
 import { createFragment } from '../dom';
-import { isCodeInstance, namespaceIdentifiers } from '../../../utils/code';
 
 //
 // utils
 //
 import { escape } from '../../../utils/string';
+
+import { 
+    isCodeInstance, 
+    namespaceIdentifiers,
+    findConditionalWithNode,
+} from '../../../utils/code';
 
 import { 
     getDirective, 
@@ -88,6 +93,13 @@ export function process(code: JsCode, currentNode: ParsedNode, fragment: JsFragm
         }
     }
 
+    // b-else-if
+    else if (nodeHasDirective(currentNode, 'else-if')) {
+        const directive = getDirective(currentNode, 'else-if');
+
+        createElseIfBranch(code, currentNode, fragment, directive);
+    }
+
     // b-else
     else if (nodeHasDirective(currentNode, 'else')) {
         const directive = getDirective(currentNode, 'else');
@@ -137,20 +149,31 @@ function createFirstLogicalBranch(code: JsCode, currentNode: ParsedNode, fragmen
     fragment.mount.append(`${ifName}.m(${parentEl}, null);`)
 }
 
+// 
+// create the middle parts of a multi-part branch
+//
+function createElseIfBranch(code: JsCode, currentNode: ParsedNode, fragment: JsFragment, directive: NodeDirective): void {
+    // find the previous element node
+    const prev = getPreviousElementNode(currentNode);
+    const conditional = findConditionalWithNode(code, prev);
+
+    // append the else-if branch
+    if (conditional) {
+        const name = code.getVariableName(currentNode, 'else_if_block');
+        conditional.addIf(currentNode, `create_${name}`);
+    }
+}
+
 function createElseBranch(code: JsCode, currentNode: ParsedNode, fragment: JsFragment, directive: NodeDirective): void {
     // find the previous element node
     const prev = getPreviousElementNode(currentNode);
+    const conditional = findConditionalWithNode(code, prev);
 
-    // find the selector in our code
-    // @ts-ignore
-    const conditional: JsConditional = code.content.find((line) => {
-        // @ts-ignore
-        return isCodeInstance(line) && line.getClassName() === 'JsConditional' && line.hasBranch(prev);
-    });
-
-    // append else branch
-    const name = code.getVariableName(currentNode, 'else_block');
-    conditional.addElse(currentNode, `create_${name}`);
+    // append the else branch
+    if (conditional) {
+        const name = code.getVariableName(currentNode, 'else_block');
+        conditional.addElse(currentNode, `create_${name}`);
+    }
 }
 
 //
