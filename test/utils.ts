@@ -1,3 +1,4 @@
+import { ParsedNode } from '../src/interfaces';
 
 // helper function to compile a component
 export const compile = (p) => {
@@ -8,6 +9,28 @@ export const compile = (p) => {
         name: 'Component',
         format: 'fn',
     });
+}
+
+// helper function to create parsed nodes
+export const createParsedNode = (opts = {}): ParsedNode => {
+    // @ts-ignore
+    return {
+        attributes: {},
+        children: [],
+        dataAttributes: {},
+        directives: [],
+        hasDynamicChildren: false,
+        innerHTML: '',
+        parent: null,
+        processingData: {},
+        staticClasses: [],
+        staticStyles: {},
+        tagName: 'DIV',
+        textContent: '',
+        textInterpolations: [],
+        type: 'ELEMENT',
+        ...opts,
+    }
 }
 
 // helper function to create a component constructor

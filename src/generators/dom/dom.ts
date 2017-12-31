@@ -1,7 +1,7 @@
 import processors from './processors/index';
 import { CompileOptions, DomProcessor, JsFragmentNode, ParsedNode, ParsedSource } from '../../interfaces';
 import { JsCode, JsFunction, JsIf } from '../code/index';
-import { JsFragment } from './fragment/JsFragment';
+import { JsFragment } from './functions/JsFragment';
 // import { noop as noopHelper } from '../../generators/dom/helpers/index';
 
 /**

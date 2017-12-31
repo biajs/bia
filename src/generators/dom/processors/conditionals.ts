@@ -1,13 +1,22 @@
 import { DomProcessor, NodeDirective, JsFragmentNode, ParsedNode } from '../../../interfaces';
 import { JsCode } from '../../code/index';
-import { JsFragment } from '../fragment/JsFragment';
+import { JsConditional } from '../functions/JsConditional';
+import { JsFragment } from '../functions/JsFragment';
 import { createFragment } from '../dom';
+import { isCodeInstance, namespaceIdentifiers } from '../../../utils/code';
 
 //
 // utils
 //
 import { escape } from '../../../utils/string';
-import { getDirective, nodeHasDirective, removeProcessedDirective } from '../../../utils/parsed_node';
+
+import { 
+    getDirective, 
+    getNextElementNode, 
+    getPreviousElementNode,
+    nodeHasDirective, 
+    removeProcessedDirective,
+} from '../../../utils/parsed_node';
 
 //
 // helpers
@@ -24,17 +33,32 @@ import {
  * @param  {Array<JsFragmentNode>}  fragments 
  */
 export function createChildFragments(code: JsCode, currentNode: ParsedNode, fragments: Array<JsFragmentNode>, fragment: JsFragment) {
-    const directive = getDirective(currentNode, 'if');
-    const blockName = code.getVariableName(currentNode, 'if_block');
-
-    // define fragments for stand-alone if nodes
-    if (directive) {
+    // b-if
+    if (nodeHasDirective(currentNode, 'if')) {
+        const directive = getDirective(currentNode, 'if');
+        const blockName = code.getVariableName(currentNode, 'if_block');
         removeProcessedDirective(currentNode, directive);
 
         return createFragment(code, currentNode, fragments, `create_${blockName}`);
     }
 
-    return;
+    // b-else-if
+    else if (nodeHasDirective(currentNode, 'else-if')) {
+        const directive = getDirective(currentNode, 'else-if');
+        const blockName = code.getVariableName(currentNode, 'else_if_block');
+        removeProcessedDirective(currentNode, directive);
+
+        return createFragment(code, currentNode, fragments, `create_${blockName}`);
+    }
+
+    // b-else
+    else if (nodeHasDirective(currentNode, 'else')) {
+        const directive = getDirective(currentNode, 'else');
+        const blockName = code.getVariableName(currentNode, 'else_block');
+        removeProcessedDirective(currentNode, directive);
+
+        return createFragment(code, currentNode, fragments, `create_${blockName}`);
+    }
 };
 
 /**
@@ -45,12 +69,30 @@ export function createChildFragments(code: JsCode, currentNode: ParsedNode, frag
  * @param  {Array<JsFragmentNode>}  fragments 
  */
 export function process(code: JsCode, currentNode: ParsedNode, fragment: JsFragment) {
-    // @todo: handle conditionals on the fragment root
-    // @todo: handle if blocks that have sibling else-if/else nodes
-    const directive = getDirective(currentNode, 'if');
+    
+    // b-if
+    if (nodeHasDirective(currentNode, 'if')) {
+        const directive = getDirective(currentNode, 'if');
+        const next = getNextElementNode(currentNode);
 
-    if (directive) {
-        createStandAloneIfBlock(code, currentNode, fragment, directive);
+        // if the next element node has an else-if / else directive
+        // we need to create a block selector to determine which
+        // fragment should be used when this node is mounted.
+        if (next && (nodeHasDirective(next, 'else-if') || nodeHasDirective(next, 'else'))) {
+            createFirstLogicalBranch(code, currentNode, fragment, directive);
+        }
+
+        // otherwise create a stand-alone if block.
+        else {
+            createStandAloneIfBlock(code, currentNode, fragment, directive);
+        }
+    }
+
+    // b-else
+    else if (nodeHasDirective(currentNode, 'else')) {
+        const directive = getDirective(currentNode, 'else');
+
+        createElseBranch(code, currentNode, fragment, directive);
     }
 };
 
@@ -64,6 +106,52 @@ export function process(code: JsCode, currentNode: ParsedNode, fragment: JsFragm
 export function postProcess(code: JsCode, currentNode: ParsedNode, fragment: JsFragment) {
     //
 };
+
+//
+// create the first part of a multi-part if branch
+//
+function createFirstLogicalBranch(code: JsCode, currentNode: ParsedNode, fragment: JsFragment, directive: NodeDirective): void {
+    // create a new block selector for the logical branches
+    const selector = new JsConditional({ rootCode: code });
+    const name = code.getVariableName(currentNode, 'if_block');
+
+    // @todo: using insertBefore might be a better option here...
+    code.append(null);
+    code.append(selector);
+
+    // and append our initial if branch
+    selector.addIf(currentNode, `create_${name}`);
+
+    // define the block within our fragment
+    const blockName = fragment.getVariableName(selector, 'current_block_type');
+    const ifName = fragment.getVariableName(currentNode, 'if_block');    
+    const parentEl = fragment.getVariableName(currentNode.parent);
+
+    fragment.code.append(`var ${blockName} = ${selector.name}(vm);`);
+    fragment.code.append(`var ${ifName} = ${blockName}(vm);`)
+
+    // create
+    fragment.create.append(`${ifName}.c();`);
+
+    // mount the if block to our parent
+    fragment.mount.append(`${ifName}.m(${parentEl}, null);`)
+}
+
+function createElseBranch(code: JsCode, currentNode: ParsedNode, fragment: JsFragment, directive: NodeDirective): void {
+    // find the previous element node
+    const prev = getPreviousElementNode(currentNode);
+
+    // find the selector in our code
+    // @ts-ignore
+    const conditional: JsConditional = code.content.find((line) => {
+        // @ts-ignore
+        return isCodeInstance(line) && line.getClassName() === 'JsConditional' && line.hasBranch(prev);
+    });
+
+    // append else branch
+    const name = code.getVariableName(currentNode, 'else_block');
+    conditional.addElse(currentNode, `create_${name}`);
+}
 
 //
 // create if blocks that have no other branches

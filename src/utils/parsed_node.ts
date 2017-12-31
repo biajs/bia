@@ -24,6 +24,15 @@ export function getNextElementNode(node: ParsedNode) {
     }
 }
 
+// find the previous element node
+export function getPreviousElementNode(node: ParsedNode) {
+    if (node.parent) {
+        const index = node.parent.children.indexOf(node);
+
+        return node.parent.children[index - 1];
+    }
+}
+
 // determine if a node has a conditional
 export function hasConditionalDirective(node: ParsedNode): boolean {
     return nodeHasDirective(node, 'if')
