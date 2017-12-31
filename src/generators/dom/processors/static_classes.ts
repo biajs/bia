@@ -1,5 +1,5 @@
 import { JsCode } from '../../code/index';
-import { JsFragment } from '../fragment/JsFragment';
+import { JsFragment } from '../functions/JsFragment';
 import { ParsedNode } from '../../../interfaces';
 
 //
