@@ -27,8 +27,7 @@ export function process(code: JsCode, currentNode: ParsedNode, fragment: JsFragm
         const varName = fragment.getVariableName(currentNode);
 
         code.useHelper(toggleVisibility);
+
         fragment.hydrate.append(`toggleVisibility(${varName}, ${namespaceIdentifiers(directive.expression)});`);
-        // fragment.hydrate.append(`if (${namespaceIdentifiers(directive.expression)}) removeStyle(${varName}, 'display');`);
-        // fragment.hydrate.append(`else setStyle(${varName}, 'display', 'none');`);
     }
 };
