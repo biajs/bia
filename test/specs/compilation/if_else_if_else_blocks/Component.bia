@@ -1,0 +1,7 @@
+<template>
+    <div>
+        <p b-if="false">1</p>
+        <p b-else-if="true">2</p>
+        <p b-else>3</p>
+    </div>
+</template>

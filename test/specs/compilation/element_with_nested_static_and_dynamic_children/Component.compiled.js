@@ -29,11 +29,11 @@ function createElement(tag) {
 function create_main_fragment(vm) {
     var div, text, div_1;
 
-    var if_block_1 = (true) && create_if_block_1(vm);
+    var if_block = (true) && create_if_block(vm);
     return {
         c: function create() {
             div = createElement('div');
-            if (if_block_1) if_block_1.c();
+            if (if_block) if_block.c();
             text = createText('\r\n        static text\r\n        ');
             div_1 = createElement('div');
             div_1.innerHTML = '\r\n            nested static text\r\n            <p>nested static element</p>\r\n        ';
@@ -43,7 +43,7 @@ function create_main_fragment(vm) {
         h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
-            if (if_block_1) if_block_1.m(div, null);
+            if (if_block) if_block.m(div, null);
             appendNode(text, div);
             appendNode(div_1, div);
         },
@@ -54,7 +54,7 @@ function create_main_fragment(vm) {
     };
 }
 
-function create_if_block_1(vm) {
+function create_if_block(vm) {
     var span;
 
     return {

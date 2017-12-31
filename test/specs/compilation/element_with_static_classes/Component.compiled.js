@@ -21,12 +21,12 @@ function createElement(tag) {
 function create_main_fragment(vm) {
     var div, p;
 
-    var if_block_2 = (true) && create_if_block_2(vm);
+    var if_block = (true) && create_if_block(vm);
     return {
         c: function create() {
             div = createElement('div');
             p = createElement('p');
-            if (if_block_2) if_block_2.c();
+            if (if_block) if_block.c();
             this.h();
             return div;
         },
@@ -37,7 +37,7 @@ function create_main_fragment(vm) {
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
             appendNode(p, div);
-            if (if_block_2) if_block_2.m(div, null);
+            if (if_block) if_block.m(div, null);
         },
         p: noop,
         u: function unmount() {
@@ -46,7 +46,7 @@ function create_main_fragment(vm) {
     };
 }
 
-function create_if_block_2(vm) {
+function create_if_block(vm) {
     var p;
 
     return {

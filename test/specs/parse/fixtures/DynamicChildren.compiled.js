@@ -25,13 +25,13 @@ function createElement(tag) {
 function create_main_fragment(vm) {
     var div, div_1;
 
-    var if_block_3 = (dynamic) && create_if_block_3(vm);
+    var if_block = (dynamic) && create_if_block(vm);
     return {
         c: function create() {
             div = createElement('div');
             div_1 = createElement('div');
             setText(div_1, 'static');
-            if (if_block_3) if_block_3.c();
+            if (if_block) if_block.c();
             this.h();
             return div;
         },
@@ -42,7 +42,7 @@ function create_main_fragment(vm) {
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
             appendNode(div_1, div);
-            if (if_block_3) if_block_3.m(div, null);
+            if (if_block) if_block.m(div, null);
         },
         p: noop,
         u: function unmount() {
@@ -51,7 +51,7 @@ function create_main_fragment(vm) {
     };
 }
 
-function create_if_block_3(vm) {
+function create_if_block(vm) {
     var div;
 
     return {
