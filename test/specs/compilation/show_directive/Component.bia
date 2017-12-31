@@ -1,0 +1,6 @@
+<template>
+    <div>
+        <p b-show="false">hidden</p>
+        <span b-show="true">visible</span>
+    </div>
+</template>
