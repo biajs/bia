@@ -2,7 +2,13 @@ import processors from './processors/index';
 import { CompileOptions, DomProcessor, JsFragmentNode, ParsedNode, ParsedSource } from '../../interfaces';
 import { JsCode, JsFunction, JsIf } from '../code/index';
 import { JsFragment } from './functions/JsFragment';
-// import { noop as noopHelper } from '../../generators/dom/helpers/index';
+
+//
+// helpers
+//
+import {
+    init,
+} from './helpers/index';
 
 /**
  * Compile a component into code to be run in the browser.
@@ -27,6 +33,8 @@ export default function(source: ParsedSource, options: CompileOptions) {
     
 
     // prepend necessary helpers
+    code.useHelper(init);
+
     code.helpers.forEach(helper => {
         code.prepend(null);
         code.prepend(helper);
@@ -60,6 +68,7 @@ function constructorFn(source: ParsedSource, options: CompileOptions) {
     });
 
     // create our component's main fragment
+    constructor.append(`init(this, options);`);
     constructor.append('const fragment = create_main_fragment(this);');
     constructor.append(null);
 
