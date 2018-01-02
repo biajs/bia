@@ -8,8 +8,6 @@ describe('compilation', () => {
     dirs.forEach(dir => {
         const testDir = `${currentPath}/${dir}`;
         
-        if (dir === '_template') return;
-        
         require(`${testDir}/test`).default(`${testDir}/Component.bia`);
     });
 });

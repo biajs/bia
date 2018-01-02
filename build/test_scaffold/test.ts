@@ -1,7 +1,7 @@
 import { compile, div, expect, render } from '../../../utils';
 
 export default function(file) {
-    it.only('_template', () => {
+    it.only('_NAME_', () => {
         const { code } = compile(file);
         console.log(code);
 
