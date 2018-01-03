@@ -11,5 +11,7 @@ export default new JsHelper({
     signature: ['vm', 'options'],
     content: [
         `vm.$options = options;`,
+        null,
+        `// foo`,
     ],
 });

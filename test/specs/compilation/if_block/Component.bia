@@ -1,5 +1,6 @@
 <template>
     <div>
-        <span b-if="true">hello</span>
+        <span b-if="foo">foo</span>
+        <span b-if="bar">bar</span>
     </div>
 </template>

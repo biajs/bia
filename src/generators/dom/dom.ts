@@ -7,6 +7,8 @@ import { JsFragment } from './functions/JsFragment';
 // helpers
 //
 import {
+    Dep,
+    Watcher,
     init,
 } from './helpers/index';
 
@@ -25,12 +27,17 @@ export default function(source: ParsedSource, options: CompileOptions) {
     // create our root fragment, which will recursively create child fragments
     const mainFragment = createFragment(code, source.template, fragments, 'create_main_fragment');
 
-
     processNode(code, source.template, fragments, mainFragment);
 
     code.prepend(null);
     code.prepend(mainFragment);
     
+    // set up the correct reactivity system
+    useObserver(code, options);
+
+    // @todo: find a better way to register the no-op helper
+    code.prepend(null);
+    code.prepend(`function noop() {}`);
 
     // prepend necessary helpers
     code.useHelper(init);
@@ -39,10 +46,6 @@ export default function(source: ParsedSource, options: CompileOptions) {
         code.prepend(null);
         code.prepend(helper);
     });
-
-    // @todo: find a better way to register the no-op helper
-    code.prepend(null);
-    code.prepend(`function noop() {}`);
 
     // prepend our version number
     code.prepend(null);
@@ -67,8 +70,10 @@ function constructorFn(source: ParsedSource, options: CompileOptions) {
         signature: ['options'],
     });
 
-    // create our component's main fragment
+    // initialize the component
     constructor.append(`init(this, options);`);
+
+    // create our component's main fragment
     constructor.append('const fragment = create_main_fragment(this);');
     constructor.append(null);
 
@@ -169,4 +174,16 @@ export function processNode(code: JsCode, node: ParsedNode, fragments: Array<JsF
             processor.postProcess(code, node, fragment);
         }
     });
+}
+
+/**
+ * Use observer helpers
+ * 
+ * @param  {JsCode}         code
+ * @param  {CompileOptions} options 
+ * @return {void}
+ */
+function useObserver(code: JsCode, options: CompileOptions): void {
+    code.useHelper(Dep);
+    code.useHelper(Watcher);
 }

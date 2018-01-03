@@ -9,6 +9,7 @@ import removeStyle from './remove_style';
 import setStyle from  './set_style';
 import setText from './set_text';
 import toggleVisibility from './toggle_visibility';
+import { Dep, Watcher } from './observer';
 
 export {
     appendNode,
@@ -22,4 +23,8 @@ export {
     setStyle,
     setText,
     toggleVisibility,
+
+    // observer helpers
+    Dep,
+    Watcher,
 };
