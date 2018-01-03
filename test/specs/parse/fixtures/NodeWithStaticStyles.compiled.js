@@ -1,6 +1,65 @@
 // bia v0.0.0
 
-function noop() {}
+function init(vm, options) {
+    vm.$options = options;
+    
+    // foo
+}
+
+function Watcher(getter, cb) {
+    this.getter = getter;
+    this.cb = cb;
+    this.value = this.get();
+    this.cb(this.value, null);
+}
+
+Watcher.prototype.addDep = function (dep) {
+    dep.addSub(this);
+};
+
+Watcher.prototype.get = function () {
+    pushTarget(this);
+    var value = this.getter();
+    popTarget();
+    return value;
+};
+
+Watcher.prototype.update = function () {
+    const value = this.get();
+    const oldValue = this.value;
+    this.value = value;
+    this.cb(value, oldValue);
+};
+
+function Dep() {
+    this.subs = new Set();
+}
+
+Dep.prototype.addSub = function () {
+    this.subs.add(sub);
+};
+
+Dep.prototype.depend = function () {
+    if (Dep.target) {
+        Dep.target.addDep(this);
+    }
+};
+
+Dep.prototype.notify = function () {
+    this.subs.forEach(sub => sub.update());
+};
+
+Dep.target = null;
+var targetStack = [];
+
+function pushTarget(_target) {
+    if (Dep.target) targetStack.push(Dep.target);
+    Dep.target = _target
+}
+
+function popTarget() {
+    Dep.target = targetStack.pop();
+}
 
 function setStyle(el, key, value) {
     el.style.setProperty(key, value);
@@ -17,6 +76,8 @@ function insertNode(node, target, anchor) {
 function createElement(tag) {
     return document.createElement(tag);
 }
+
+function noop() {}
 
 function create_main_fragment(vm) {
     var div;
@@ -43,6 +104,7 @@ function create_main_fragment(vm) {
 }
 
 function NodeWithStaticStyles(options) {
+    init(this, options);
     const fragment = create_main_fragment(this);
     
     if (options.el) {
