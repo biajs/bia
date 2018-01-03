@@ -1,4 +1,5 @@
 import { BaseCode } from './BaseCode';
+import { JsAssignment } from './JsAssignment';
 import { JsCode } from './JsCode';
 import { JsFunction } from './JsFunction';
 import { JsHelper } from './JsHelper';
@@ -10,6 +11,7 @@ import { JsVariable } from './JsVariable';
 
 export {
     BaseCode,
+    JsAssignment,
     JsCode,
     JsFunction,
     JsHelper,
