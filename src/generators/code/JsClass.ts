@@ -14,16 +14,20 @@ export interface JsClassMethods {
 }
 
 export interface JsClassOptions extends BaseCodeOptions {
-    name: string;
+    content?: Array<BaseCode|string|null>,
     methods?: JsClassMethods;
+    name: string;
+    signature?: Array<string>;
 };
 
 /**
  * Javascript class.
  */
 export class JsClass extends BaseCode {
-    public name: string;
+    public content: Array<BaseCode|string|null>;
     public methods: JsClassMethods;
+    public name: string;
+    public signature: Array<string>;
 
     /**
      * Constructor.
@@ -31,8 +35,10 @@ export class JsClass extends BaseCode {
     constructor(options: JsClassOptions) {
         super(options);
 
-        this.name = options.name;
+        this.content = options.content || [];
         this.methods = options.methods || {};
+        this.name = options.name;
+        this.signature = options.signature || [];
     }
     
     /**
@@ -50,7 +56,25 @@ export class JsClass extends BaseCode {
      * @return  {Array}
      */
     public getDescendents() {
-        return [];
+        const descendents: Array<BaseCode> = [];
+
+        // find descendents from the constructor
+        this.content.forEach(line => {
+            if (line instanceof BaseCode) {
+                descendents.push(line);
+            }
+        });
+
+        // find descendents from our class methods
+        Object.keys(this.methods).forEach(name => {
+            this.methods[name].content.forEach(line => {
+                if (line instanceof BaseCode) {
+                    descendents.push(line);
+                }
+            });
+        });
+        
+        return descendents;
     }
 
     /**
@@ -61,6 +85,14 @@ export class JsClass extends BaseCode {
     public toString(): string {
         let output = `class ${this.name ? this.name + ' ' : ''}{`;
 
+        // attach constructor
+        if (this.content.length > 0) {
+            const content = this.content.join('\n');
+            const signature = this.signature.join(', ');
+            output += `\n${indent(`constructor(${signature}) {\n${indent(content)}\n}`)}`;
+        }
+
+        // attach methods
         Object.keys(this.methods).forEach((name: string) => {
             let method = ``;
             const content = this.methods[name].content.join('\n');
