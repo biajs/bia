@@ -1,64 +1,43 @@
 // bia v0.0.0
 
+function on(eventName, handler) {
+    var handlers = this._handlers[eventName] || (this._handlers[eventName] = []);
+    
+    handlers.push(handler);
+    
+    return {
+        cancel: function () {
+            var index = handlers.indexOf(handler);
+            if (~index) handlers.splice(index, 1);
+        }
+    };
+}
+
 function init(vm, options) {
     vm.$options = options;
     
-    // foo
+    vm._handlers = {};
 }
 
-function Watcher(getter, cb) {
-    this.getter = getter;
-    this.cb = cb;
-    this.value = this.get();
-    this.cb(this.value, null);
-}
-
-Watcher.prototype.addDep = function (dep) {
-    dep.addSub(this);
-};
-
-Watcher.prototype.get = function () {
-    pushTarget(this);
-    var value = this.getter();
-    popTarget();
-    return value;
-};
-
-Watcher.prototype.update = function () {
-    const value = this.get();
-    const oldValue = this.value;
-    this.value = value;
-    this.cb(value, oldValue);
-};
-
-function Dep() {
-    this.subs = new Set();
-}
-
-Dep.prototype.addSub = function () {
-    this.subs.add(sub);
-};
-
-Dep.prototype.depend = function () {
-    if (Dep.target) {
-        Dep.target.addDep(this);
+function emit(eventName, payload) {
+    var handlers = eventName in this._handlers && this._handlers[eventName].slice();
+    
+    if (handlers) {
+        for (var i = 0, len = handlers.length; i < len; i++) {
+            handlers[i].call(this, payload);
+        }
     }
-};
-
-Dep.prototype.notify = function () {
-    this.subs.forEach(sub => sub.update());
-};
-
-Dep.target = null;
-var targetStack = [];
-
-function pushTarget(_target) {
-    if (Dep.target) targetStack.push(Dep.target);
-    Dep.target = _target
 }
 
-function popTarget() {
-    Dep.target = targetStack.pop();
+function assign(target) {
+    var k, source, i = 1, len = arguments.length;
+    
+    for (; i < len; i++) {
+        source = arguments[i];
+        for (k in source) target[k] = source[k];
+    }
+    
+    return target;
 }
 
 function detachNode(node) {
@@ -109,5 +88,10 @@ function NodeWithText(options) {
         fragment.m(options.el, options.anchor || null);
     }
 }
+
+assign(NodeWithText.prototype, {
+    $emit: emit,
+    $on: on,
+});
 
 export default NodeWithText;
