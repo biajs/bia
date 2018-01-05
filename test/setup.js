@@ -3,7 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const chai = require('chai');
 const chaiSubset = require('chai-subset');
+const sinonChai = require('sinon-chai');
 
+chai.use(sinonChai);
 chai.use(chaiSubset);
 
 // simulate a global browser environment

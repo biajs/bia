@@ -12,6 +12,6 @@ export default new JsHelper({
     content: [
         `vm.$options = options;`,
         null,
-        `// foo`,
+        `vm._handlers = {};`,
     ],
 });

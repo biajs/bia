@@ -2,14 +2,16 @@ import processors from './processors/index';
 import { CompileOptions, DomProcessor, JsFragmentNode, ParsedNode, ParsedSource } from '../../interfaces';
 import { JsCode, JsFunction, JsIf } from '../code/index';
 import { JsFragment } from './functions/JsFragment';
+import { indent } from '../../utils/string';
 
 //
 // helpers
 //
 import {
-    Dep,
-    Watcher,
+    assign,
+    emit,
     init,
+    on,
 } from './helpers/index';
 
 /**
@@ -31,16 +33,16 @@ export default function(source: ParsedSource, options: CompileOptions) {
 
     code.prepend(null);
     code.prepend(mainFragment);
-    
-    // set up the correct reactivity system
-    useObserver(code, options);
 
     // @todo: find a better way to register the no-op helper
     code.prepend(null);
     code.prepend(`function noop() {}`);
 
     // prepend necessary helpers
+    code.useHelper(assign);
+    code.useHelper(emit);
     code.useHelper(init);
+    code.useHelper(on);
 
     code.helpers.forEach(helper => {
         code.prepend(null);
@@ -50,6 +52,9 @@ export default function(source: ParsedSource, options: CompileOptions) {
     // prepend our version number
     code.prepend(null);
     code.prepend('// bia v0.0.0');
+
+    // assign our vm methods
+    assignComponentMethods(code, options);
 
     // finally, append our export
     appendExportStatement(code, options);
@@ -94,9 +99,9 @@ function constructorFn(source: ParsedSource, options: CompileOptions) {
  * 
  * @param  {ParsedSource}   source 
  * @param  {CompileOptions} options 
- * @return {JsFunction}
+ * @return {void}
  */
-function appendExportStatement(code: JsCode, options: CompileOptions) {
+function appendExportStatement(code: JsCode, options: CompileOptions): void {
     code.append(null);
 
     // function
@@ -108,6 +113,22 @@ function appendExportStatement(code: JsCode, options: CompileOptions) {
     else if (options.format === 'es') {
         code.append(`export default ${options.name};`);
     }
+}
+
+/**
+ * Assign component methods.
+ * 
+ * @param  {ParsedSource}   source 
+ * @param  {CompileOptions} options 
+ * @return {void}
+ */
+function assignComponentMethods(code: JsCode, options: CompileOptions): void {
+    // @todo: clean this up, maybe with a JsFunctionCall class?
+    code.append(null);
+    code.append(`assign(${options.name}.prototype, {`);
+    code.append(indent('$emit: emit,'));
+    code.append(indent('$on: on,'));
+    code.append(`});`);
 }
 
 /**
@@ -174,16 +195,4 @@ export function processNode(code: JsCode, node: ParsedNode, fragments: Array<JsF
             processor.postProcess(code, node, fragment);
         }
     });
-}
-
-/**
- * Use observer helpers
- * 
- * @param  {JsCode}         code
- * @param  {CompileOptions} options 
- * @return {void}
- */
-function useObserver(code: JsCode, options: CompileOptions): void {
-    code.useHelper(Dep);
-    code.useHelper(Watcher);
 }
