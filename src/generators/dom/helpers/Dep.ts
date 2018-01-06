@@ -42,7 +42,7 @@ export default new JsCode({
 
         // the current target watcher being evaluated. this is globally unique 
         // because there could be only one watcher being evaluated at any time.
-        `Dep.target = null`,
+        `Dep.target = null;`,
         null,
         `var targetStack = [];`,
         null,

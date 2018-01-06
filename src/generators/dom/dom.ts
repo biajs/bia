@@ -11,6 +11,7 @@ import {
     Dep,
     Watcher,
     assign,
+    defineReactive,
     emit,
     init,
     on,
@@ -45,6 +46,7 @@ export default function(source: ParsedSource, options: CompileOptions) {
     code.useHelper(Watcher);
     code.useHelper(Dep);
     code.useHelper(assign);
+    code.useHelper(defineReactive);
     code.useHelper(emit);
     code.useHelper(init);
     code.useHelper(on);
@@ -61,9 +63,6 @@ export default function(source: ParsedSource, options: CompileOptions) {
 
     // assign our vm methods
     assignComponentMethods(code, options);
-
-    // make our component reactive
-    appendReactivity(code, options);
 
     // finally, append our export
     appendExportStatement(code, options);
@@ -86,6 +85,9 @@ function constructorFn(source: ParsedSource, options: CompileOptions) {
 
     // initialize the component
     constructor.append(`init(this, options);`);
+    constructor.append(`this.$state = assign({}, options.data);`);
+    constructor.append(`walk(this.$state);`);
+    constructor.append(null);
 
     // create our component's main fragment
     constructor.append('const fragment = create_main_fragment(this);');
