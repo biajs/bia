@@ -34,6 +34,24 @@ function emit(eventName, payload) {
     }
 }
 
+function defineReactive(obj, key, val) {
+    if (val && typeof val === 'object') walk(val);
+    
+    var dep = new Dep;
+    Object.defineProperty(obj, key, {
+        enumerable: true,
+        configurable: true,
+        get: function () {
+            dep.depend();
+            return val;
+        },
+        set: function (newVal) {
+            val = newVal;
+            dep.notify();
+        },
+    });
+}
+
 function assign(target) {
     var k, source, i = 1, len = arguments.length;
     
@@ -62,7 +80,7 @@ Dep.prototype.notify = function () {
     this.subs.forEach(sub => sub.update());
 }
 
-Dep.target = null
+Dep.target = null;
 
 var targetStack = [];
 
@@ -185,6 +203,9 @@ function create_main_fragment(vm) {
 
 function Directives(options) {
     init(this, options);
+    this.$state = assign({}, options.data);
+    walk(this.$state);
+    
     const fragment = create_main_fragment(this);
     
     if (options.el) {
