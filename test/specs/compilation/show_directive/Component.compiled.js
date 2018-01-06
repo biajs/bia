@@ -1,5 +1,10 @@
 // bia v0.0.0
 
+function walk(obj) {
+    var i = 0, keys = Object.keys(obj), len = keys.length;
+    for (;i < len; i++) defineReactive(obj, keys[i], obj[keys[i]]);
+}
+
 function on(eventName, handler) {
     var handlers = this._handlers[eventName] || (this._handlers[eventName] = []);
     
@@ -38,6 +43,60 @@ function assign(target) {
     }
     
     return target;
+}
+
+function Dep() {
+    // @todo: refactor this to something that will work below ie11
+    this.subs = new Set();
+}
+
+Dep.prototype.addSub = function (sub) {
+    this.subs.add(sub);
+}
+
+Dep.prototype.depend = function () {
+    if (Dep.target) Dep.target.addDep(this);
+}
+
+Dep.prototype.notify = function () {
+    this.subs.forEach(sub => sub.update());
+}
+
+Dep.target = null
+
+var targetStack = [];
+
+function pushTarget(_target) {
+    if (Dep.target) targetStack.push(Dep.target);
+    Dep.target = _target;
+}
+
+function popTarget() {
+    Dep.target = targetStack.pop();
+}
+
+function Watcher(getter, cb) {
+    this.getter = getter;
+    this.cb = cb;
+    this.value = this.get();
+    this.cb(this.value, null)
+}
+
+Watcher.prototype.get = function () {
+    pushTarget(this);
+    var value = this.getter();
+    popTarget();
+    return value;
+}
+
+Watcher.prototype.addDep = function (dep) {
+    dep.addSub(this);
+}
+
+Watcher.prototype.update = function () {
+    var value = this.get(), oldValue = this.value;
+    this.value = value;
+    this.cb(value, oldValue);
 }
 
 function toggleVisibility(el, isVisible) {
