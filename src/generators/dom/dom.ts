@@ -8,10 +8,13 @@ import { indent } from '../../utils/string';
 // helpers
 //
 import {
+    Dep,
+    Watcher,
     assign,
     emit,
     init,
     on,
+    walk,
 } from './helpers/index';
 
 /**
@@ -39,10 +42,13 @@ export default function(source: ParsedSource, options: CompileOptions) {
     code.prepend(`function noop() {}`);
 
     // prepend necessary helpers
+    code.useHelper(Watcher);
+    code.useHelper(Dep);
     code.useHelper(assign);
     code.useHelper(emit);
     code.useHelper(init);
     code.useHelper(on);
+    code.useHelper(walk);
 
     code.helpers.forEach(helper => {
         code.prepend(null);
@@ -55,6 +61,9 @@ export default function(source: ParsedSource, options: CompileOptions) {
 
     // assign our vm methods
     assignComponentMethods(code, options);
+
+    // make our component reactive
+    appendReactivity(code, options);
 
     // finally, append our export
     appendExportStatement(code, options);
@@ -113,6 +122,17 @@ function appendExportStatement(code: JsCode, options: CompileOptions): void {
     else if (options.format === 'es') {
         code.append(`export default ${options.name};`);
     }
+}
+
+/**
+ * Append reactivity code
+ * 
+ * @param  {ParsedSource}   source 
+ * @param  {CompileOptions} options 
+ * @return {void}
+ */
+function appendReactivity(code: JsCode, options: CompileOptions): void {
+
 }
 
 /**

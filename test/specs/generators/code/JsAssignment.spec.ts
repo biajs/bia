@@ -19,7 +19,7 @@ describe('JsAssignment', () => {
             right: value,
         });
 
-        expect(String(assignment)).to.equal(`foo = function () {\n    //\n};`);
+        expect(String(assignment)).to.equal(`foo = function () {\n    //\n}`);
     });
 
     it('tracks the assignment as descendent code', () => {

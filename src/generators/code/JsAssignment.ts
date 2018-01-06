@@ -52,6 +52,8 @@ export class JsAssignment extends BaseCode {
      * @return  {string}
      */
     public toString(): string {
-        return `${this.left} = ${this.right};`;
+        const isFunction = this.right instanceof BaseCode && this.right.getClassName() === 'JsFunction';
+
+        return `${ this.left } = ${ this.right }${ isFunction ? '' : ';' }`;
     }
 }

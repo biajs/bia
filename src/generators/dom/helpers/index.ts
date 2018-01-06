@@ -1,3 +1,5 @@
+import Dep from './Dep';
+import Watcher from './watcher';
 import appendNode from './append_node';
 import assign from './assign';
 import createElement from './create_element';
@@ -12,8 +14,14 @@ import removeStyle from './remove_style';
 import setStyle from  './set_style';
 import setText from './set_text';
 import toggleVisibility from './toggle_visibility';
+import walk from './walk';
 
 export {
+    // classes
+    Dep,
+    Watcher,
+
+    // functions
     appendNode,
     assign,
     createElement,
@@ -28,4 +36,5 @@ export {
     setStyle,
     setText,
     toggleVisibility,
+    walk,
 };
