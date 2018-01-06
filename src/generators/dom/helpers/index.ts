@@ -1,5 +1,5 @@
 import Dep from './Dep';
-import Watcher from './watcher';
+import Watcher from './Watcher';
 import appendNode from './append_node';
 import assign from './assign';
 import createElement from './create_element';
