@@ -1,7 +1,7 @@
 import { compile, div, expect, render } from '../../../utils';
 
 export default function(file) {
-    it.only('component_options', () => {
+    it.skip('component_options', () => {
         // const { code } = compile(file);
         // console.log(code);
 
