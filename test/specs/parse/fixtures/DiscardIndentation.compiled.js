@@ -1,8 +1,32 @@
 // bia v0.0.0
 
-function walk(obj) {
-    var i = 0, keys = Object.keys(obj), len = keys.length;
-    for (;i < len; i++) defineReactive(obj, keys[i], obj[keys[i]]);
+var changedState = {}, isUpdating = false;
+
+function setChangedState(namespace) {
+    var key, i = 0, len = namespace.length, obj = changedState;
+    isUpdating = true;
+    for (; i < len; i++) {
+        key = namespace[i];
+        if (typeof obj[key] === 'undefined') obj[key] = {};
+        obj = obj[key];
+    }
+}
+
+function proxy(target, source) {
+    var i = 0, keys = Object.keys(source), len = keys.length;
+    for (; i < len; i++) {
+        var key = keys[i];
+        Object.defineProperty(target, key, {
+            enumerable: true,
+            configurable: true,
+            get: function() {
+                return source[key];
+            },
+            set: function(val) {
+                source[key] = val;
+            },
+        });
+    }
 }
 
 function on(eventName, handler) {
@@ -18,10 +42,30 @@ function on(eventName, handler) {
     };
 }
 
+function observe(obj, namespace, onUpdate) {
+    var keys = Object.keys(obj);
+    
+    for (var i = 0, len = keys.length; i < len; i++) {
+        var key = keys[i];
+        defineReactive(obj, key, obj[key], namespace.concat(key), onUpdate);
+    }
+}
+
+function nextTick(cb) {
+    Promise.resolve().then(cb);
+}
+
 function init(vm, options) {
     vm.$options = options;
     
     vm._handlers = {};
+}
+
+function executePendingUpdates(onUpdate) {
+    if (!isUpdating) return;
+    isUpdating = false;
+    onUpdate(changedState);
+    changedState = {};
 }
 
 function emit(eventName, payload) {
@@ -34,20 +78,19 @@ function emit(eventName, payload) {
     }
 }
 
-function defineReactive(obj, key, val) {
-    if (val && typeof val === 'object') walk(val);
+function defineReactive(obj, key, val, namespace, onUpdate) {
+    if (val && typeof val === 'object') observe(val, namespace, onUpdate);
     
-    var dep = new Dep;
     Object.defineProperty(obj, key, {
         enumerable: true,
         configurable: true,
         get: function () {
-            dep.depend();
             return val;
         },
         set: function (newVal) {
             val = newVal;
-            dep.notify();
+            setChangedState(namespace);
+            nextTick(executePendingUpdates.bind(null, onUpdate));
         },
     });
 }
@@ -61,60 +104,6 @@ function assign(target) {
     }
     
     return target;
-}
-
-function Dep() {
-    // @todo: refactor this to something that will work below ie11
-    this.subs = new Set();
-}
-
-Dep.prototype.addSub = function (sub) {
-    this.subs.add(sub);
-}
-
-Dep.prototype.depend = function () {
-    if (Dep.target) Dep.target.addDep(this);
-}
-
-Dep.prototype.notify = function () {
-    this.subs.forEach(sub => sub.update());
-}
-
-Dep.target = null;
-
-var targetStack = [];
-
-function pushTarget(_target) {
-    if (Dep.target) targetStack.push(Dep.target);
-    Dep.target = _target;
-}
-
-function popTarget() {
-    Dep.target = targetStack.pop();
-}
-
-function Watcher(getter, cb) {
-    this.getter = getter;
-    this.cb = cb;
-    this.value = this.get();
-    this.cb(this.value, null)
-}
-
-Watcher.prototype.get = function () {
-    pushTarget(this);
-    var value = this.getter();
-    popTarget();
-    return value;
-}
-
-Watcher.prototype.addDep = function (dep) {
-    dep.addSub(this);
-}
-
-Watcher.prototype.update = function () {
-    var value = this.get(), oldValue = this.value;
-    this.value = value;
-    this.cb(value, oldValue);
 }
 
 function detachNode(node) {
@@ -155,9 +144,12 @@ function create_main_fragment(vm) {
 function DiscardIndentation(options) {
     init(this, options);
     this.$state = assign({}, options.data);
-    walk(this.$state);
+    
+    proxy(this, this.$state);
     
     const fragment = create_main_fragment(this);
+    
+    observe(this.$state, [], fragment.p);
     
     if (options.el) {
         this.$el = fragment.c();
