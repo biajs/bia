@@ -9,23 +9,22 @@ import { indent } from '../../../utils/string';
 export default new JsHelper({
     id: 'defineReactive',
     name: 'defineReactive',
-    signature: ['obj', 'key', 'val'],
+    signature: ['obj', 'key', 'val', 'namespace', 'onUpdate'],
     content: [
-        `if (val && typeof val === 'object') walk(val);`,
+        `if (val && typeof val === 'object') observe(val, namespace, onUpdate);`,
         null,
-        `var dep = new Dep;`,
 
         // @todo: make a code object to make this kind of this easier
         `Object.defineProperty(obj, key, {`,
         indent(`enumerable: true,`),
         indent(`configurable: true,`),
         indent(`get: function () {`),
-        indent(indent(`dep.depend();`)),
         indent(indent(`return val;`)),
         indent(`},`),
         indent(`set: function (newVal) {`),
         indent(indent(`val = newVal;`)),
-        indent(indent(`dep.notify();`)),
+        indent(indent(`setChangedState(namespace);`)),
+        indent(indent(`nextTick(executePendingUpdates.bind(null, onUpdate));`)),
         indent(`},`),
         `});`,
     ],

@@ -8,14 +8,16 @@ import { indent } from '../../utils/string';
 // helpers
 //
 import {
-    Dep,
-    Watcher,
     assign,
     defineReactive,
     emit,
+    executePendingUpdates,
     init,
+    nextTick,
+    observe,
     on,
-    walk,
+    proxy,
+    setChangedState,
 } from './helpers/index';
 
 /**
@@ -43,21 +45,27 @@ export default function(source: ParsedSource, options: CompileOptions) {
     code.prepend(`function noop() {}`);
 
     // prepend necessary helpers
-    code.useHelper(Watcher);
-    code.useHelper(Dep);
     code.useHelper(assign);
     code.useHelper(defineReactive);
     code.useHelper(emit);
+    code.useHelper(executePendingUpdates);
     code.useHelper(init);
+    code.useHelper(nextTick);
+    code.useHelper(observe);
     code.useHelper(on);
-    code.useHelper(walk);
+    code.useHelper(proxy);
+    code.useHelper(setChangedState);
 
     code.helpers.forEach(helper => {
         code.prepend(null);
         code.prepend(helper);
     });
 
-    // prepend our version number
+    // prepend our component's changedState and isUpdating variables
+    code.prepend(null);
+    code.prepend(`var changedState = {}, isUpdating = false;`);
+
+    // prepend the compiler version for easier debugging
     code.prepend(null);
     code.prepend('// bia v0.0.0');
 
@@ -86,11 +94,18 @@ function constructorFn(source: ParsedSource, options: CompileOptions) {
     // initialize the component
     constructor.append(`init(this, options);`);
     constructor.append(`this.$state = assign({}, options.data);`);
-    constructor.append(`walk(this.$state);`);
+    constructor.append(null);
+
+    // proxy our state onto the vm instance
+    constructor.append(`proxy(this, this.$state);`);
     constructor.append(null);
 
     // create our component's main fragment
     constructor.append('const fragment = create_main_fragment(this);');
+    constructor.append(null);
+
+    // observe our state, and when anything changes update the fragment
+    constructor.append(`observe(this.$state, [], fragment.p);`);
     constructor.append(null);
 
     // mount to an element if one was provided

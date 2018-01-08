@@ -185,7 +185,7 @@ function createStandAloneIfBlock(code: JsCode, currentNode: ParsedNode, fragment
     const parentEl = fragment.getVariableName(currentNode.parent);
 
     // define our if block if we need it
-    fragment.code.append(`var ${blockName} = (${directive.expression}) && ${createBlockName}(vm);`);
+    fragment.code.append(`var ${blockName} = (${namespaceIdentifiers(directive.expression)}) && ${createBlockName}(vm);`);
 
     // inject the condition into our create hook
     fragment.create.append(`if (${blockName}) ${blockName}.c();`);
