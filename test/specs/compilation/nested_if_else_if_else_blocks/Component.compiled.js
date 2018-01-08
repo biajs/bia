@@ -304,7 +304,19 @@ function create_if_block(vm) {
             if (if_block_1) if_block_1.m(div, null);
             if_block.m(div, null);
         },
-        p: noop,
+        p: function update() {
+            if (false) {
+                if (!if_block_1) {
+                    if_block_1 = create_if_block_1(vm);
+                    if_block_1.c();
+                    if_block_1.m(div, null);
+                }
+            } else if (if_block_1) {
+                if_block_1.u();
+                if_block_1.d();
+                if_block_1 = null;
+            }
+        },
         u: function unmount() {
             detachNode(div);
         }

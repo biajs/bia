@@ -149,7 +149,19 @@ function create_main_fragment(vm) {
             appendNode(p, div);
             if (if_block) if_block.m(div, null);
         },
-        p: noop,
+        p: function update() {
+            if (true) {
+                if (!if_block) {
+                    if_block = create_if_block(vm);
+                    if_block.c();
+                    if_block.m(div, null);
+                }
+            } else if (if_block) {
+                if_block.u();
+                if_block.d();
+                if_block = null;
+            }
+        },
         u: function unmount() {
             detachNode(div);
         }

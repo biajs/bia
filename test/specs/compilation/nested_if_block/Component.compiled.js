@@ -140,7 +140,19 @@ function create_main_fragment(vm) {
             insertNode(div, target, anchor);
             if (if_block) if_block.m(div, null);
         },
-        p: noop,
+        p: function update() {
+            if (true) {
+                if (!if_block) {
+                    if_block = create_if_block(vm);
+                    if_block.c();
+                    if_block.m(div, null);
+                }
+            } else if (if_block) {
+                if_block.u();
+                if_block.d();
+                if_block = null;
+            }
+        },
         u: function unmount() {
             detachNode(div);
         }
@@ -208,7 +220,30 @@ function create_if_block_1(vm) {
             if (if_block_2) if_block_2.m(span, null);
             if (if_block_3) if_block_3.m(span, null);
         },
-        p: noop,
+        p: function update() {
+            if (true) {
+                if (!if_block_2) {
+                    if_block_2 = create_if_block_2(vm);
+                    if_block_2.c();
+                    if_block_2.m(span, null);
+                }
+            } else if (if_block_2) {
+                if_block_2.u();
+                if_block_2.d();
+                if_block_2 = null;
+            }
+            if (false) {
+                if (!if_block_3) {
+                    if_block_3 = create_if_block_3(vm);
+                    if_block_3.c();
+                    if_block_3.m(span, null);
+                }
+            } else if (if_block_3) {
+                if_block_3.u();
+                if_block_3.d();
+                if_block_3 = null;
+            }
+        },
         u: function unmount() {
             detachNode(span);
         }
@@ -231,7 +266,19 @@ function create_if_block(vm) {
             insertNode(p, target, anchor);
             if (if_block_1) if_block_1.m(p, null);
         },
-        p: noop,
+        p: function update() {
+            if (true) {
+                if (!if_block_1) {
+                    if_block_1 = create_if_block_1(vm);
+                    if_block_1.c();
+                    if_block_1.m(p, null);
+                }
+            } else if (if_block_1) {
+                if_block_1.u();
+                if_block_1.d();
+                if_block_1 = null;
+            }
+        },
         u: function unmount() {
             detachNode(p);
         }
