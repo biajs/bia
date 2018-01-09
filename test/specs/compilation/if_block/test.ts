@@ -16,10 +16,9 @@ export default function(file) {
 
         vm.foo = false;
 
-        // @todo: implement a nextTick function
-        setTimeout(() => {
+        vm.$nextTick(() => {
             expect(vm.$el.outerHTML).to.equal('<div></div>');
             done();
-        }, 10);
+        });
     });
 }
