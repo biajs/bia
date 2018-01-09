@@ -1,6 +1,6 @@
 // bia v0.0.0
 
-var changedState = {}, isUpdating = false;
+var changedState = {}, isUpdating = false, queue = [];
 
 function setChangedState(namespace) {
     var key, i = 0, len = namespace.length, obj = changedState;
@@ -51,8 +51,8 @@ function observe(obj, namespace, onUpdate) {
     }
 }
 
-function nextTick(cb) {
-    Promise.resolve().then(cb);
+function nextTick(fn) {
+    queue.push(fn);
 }
 
 function init(vm, options) {
@@ -63,9 +63,12 @@ function init(vm, options) {
 
 function executePendingUpdates(onUpdate) {
     if (!isUpdating) return;
-    isUpdating = false;
     onUpdate(changedState);
     changedState = {};
+    isUpdating = false;
+    let fns = queue, i = 0, len = fns.length;
+    queue = [];
+    for (;i < len; i++) fns[i]();
 }
 
 function emit(eventName, payload) {
@@ -90,7 +93,7 @@ function defineReactive(obj, key, val, namespace, onUpdate) {
         set: function (newVal) {
             val = newVal;
             setChangedState(namespace);
-            nextTick(executePendingUpdates.bind(null, onUpdate));
+            Promise.resolve().then(executePendingUpdates.bind(null, onUpdate));
         },
     });
 }
@@ -158,6 +161,7 @@ function NodeWithDirective(options) {
 
 assign(NodeWithDirective.prototype, {
     $emit: emit,
+    $nextTick: nextTick,
     $on: on,
 });
 

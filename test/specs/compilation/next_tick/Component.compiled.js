@@ -109,16 +109,16 @@ function assign(target) {
     return target;
 }
 
+function setText(el, text) {
+    el.textContent = text;
+}
+
 function detachNode(node) {
     node.parentNode.removeChild(node);
 }
 
 function insertNode(node, target, anchor) {
     target.insertBefore(node, anchor);
-}
-
-function setText(el, text) {
-    el.textContent = text;
 }
 
 function createElement(tag) {
@@ -130,25 +130,60 @@ function noop() {}
 function create_main_fragment(vm) {
     var div;
 
+    var if_block = (vm.foo) && create_if_block(vm);
     return {
         c: function create() {
             div = createElement('div');
-            setText(div, 'Hello world');
+            if (if_block) if_block.c();
             return div;
         },
         d: noop,
         h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
+            if (if_block) if_block.m(div, null);
         },
-        p: noop,
+        p: function update() {
+            if (vm.foo) {
+                if (!if_block) {
+                    if_block = create_if_block(vm);
+                    if_block.c();
+                    if_block.m(div, null);
+                }
+            } else if (if_block) {
+                if_block.u();
+                if_block.d();
+                if_block = null;
+            }
+        },
         u: function unmount() {
             detachNode(div);
         }
     };
 }
 
-function NodeWithText(options) {
+function create_if_block(vm) {
+    var p;
+
+    return {
+        c: function create() {
+            p = createElement('p');
+            setText(p, 'hello');
+            return p;
+        },
+        d: noop,
+        h: noop,
+        m: function mount(target, anchor) {
+            insertNode(p, target, anchor);
+        },
+        p: noop,
+        u: function unmount() {
+            detachNode(p);
+        }
+    };
+}
+
+function Component(options) {
     init(this, options);
     this.$state = assign({}, options.data);
     
@@ -164,10 +199,10 @@ function NodeWithText(options) {
     }
 }
 
-assign(NodeWithText.prototype, {
+assign(Component.prototype, {
     $emit: emit,
     $nextTick: nextTick,
     $on: on,
 });
 
-export default NodeWithText;
+export default Component;
