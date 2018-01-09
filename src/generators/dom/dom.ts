@@ -63,7 +63,7 @@ export default function(source: ParsedSource, options: CompileOptions) {
 
     // prepend our component's changedState and isUpdating variables
     code.prepend(null);
-    code.prepend(`var changedState = {}, isUpdating = false;`);
+    code.prepend(`var changedState = {}, isUpdating = false, queue = [];`);
 
     // prepend the compiler version for easier debugging
     code.prepend(null);
@@ -142,17 +142,6 @@ function appendExportStatement(code: JsCode, options: CompileOptions): void {
 }
 
 /**
- * Append reactivity code
- * 
- * @param  {ParsedSource}   source 
- * @param  {CompileOptions} options 
- * @return {void}
- */
-function appendReactivity(code: JsCode, options: CompileOptions): void {
-
-}
-
-/**
  * Assign component methods.
  * 
  * @param  {ParsedSource}   source 
@@ -164,6 +153,7 @@ function assignComponentMethods(code: JsCode, options: CompileOptions): void {
     code.append(null);
     code.append(`assign(${options.name}.prototype, {`);
     code.append(indent('$emit: emit,'));
+    code.append(indent('$nextTick: nextTick,'));
     code.append(indent('$on: on,'));
     code.append(`});`);
 }

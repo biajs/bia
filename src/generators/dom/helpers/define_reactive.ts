@@ -24,7 +24,7 @@ export default new JsHelper({
         indent(`set: function (newVal) {`),
         indent(indent(`val = newVal;`)),
         indent(indent(`setChangedState(namespace);`)),
-        indent(indent(`nextTick(executePendingUpdates.bind(null, onUpdate));`)),
+        indent(indent(`Promise.resolve().then(executePendingUpdates.bind(null, onUpdate));`)),
         indent(`},`),
         `});`,
     ],

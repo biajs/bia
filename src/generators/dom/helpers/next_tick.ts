@@ -8,8 +8,8 @@ import { JsHelper } from '../../code/JsHelper';
 export default new JsHelper({
     id: 'nextTick',
     name: 'nextTick',
-    signature: ['cb'],
+    signature: ['fn'],
     content: [
-        `Promise.resolve().then(cb);`,
+        `queue.push(fn);`,
     ],
 });
