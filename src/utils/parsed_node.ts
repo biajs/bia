@@ -40,6 +40,11 @@ export function hasConditionalDirective(node: ParsedNode): boolean {
         || nodeHasDirective(node, 'else');
 }
 
+// determine if a node has a loop
+export function hasLoopDirective(node: ParsedNode): boolean {
+    return nodeHasDirective(node, 'for');
+}
+
 // determine if a node only contains static text
 export function hasOnlyStaticText(node: ParsedNode): boolean {
     return !node.hasDynamicChildren 

@@ -165,10 +165,17 @@ function assignComponentMethods(code: JsCode, options: CompileOptions): void {
  * @param  {ParsedNode}             rootNode 
  * @param  {Array<JsFragmentNode>}  fragments
  * @param  {String}                 name
+ * @param  {Array<string>}          scope
  * @return {JsFragment}
  */
-export function createFragment(code: JsCode, rootNode: ParsedNode, fragments: Array<JsFragmentNode>, name) {
-    const fragment = new JsFragment({ rootNode });
+export function createFragment(
+    code: JsCode, 
+    rootNode: ParsedNode, 
+    fragments: Array<JsFragmentNode>, 
+    name: string,
+    scope: Array<string> = [],
+) {
+    const fragment = new JsFragment({ rootNode, scope });
 
     fragment.name = code.getVariableName(fragment, name);
 

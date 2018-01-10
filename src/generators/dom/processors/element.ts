@@ -9,10 +9,11 @@ import { escape } from '../../../utils/string';
 
 import { 
     hasConditionalDirective, 
+    hasLoopDirective,
     hasOnlyStaticText,
+    hasProcessingFlag,
     isElementNode, 
     isTextNode,
-    hasProcessingFlag,
     setProcessingFlag,
     walkNodeTree,
 } from '../../../utils/parsed_node';
@@ -40,6 +41,7 @@ export function process(code: JsCode, currentNode: ParsedNode, fragment: JsFragm
     // static elements
     else if (
         isElementNode(currentNode) && 
+        !hasLoopDirective(currentNode) &&
         !hasConditionalDirective(currentNode) &&
         !hasProcessingFlag(currentNode, 'wasCreatedByInnerHTML')
     ) {

@@ -1,7 +1,5 @@
 <template>
     <div>
-        <span b-for="foo in bar">
-            foo
-        </span>
+        <span b-for="foo in bar">{{ foo }}</span>
     </div>
 </template>

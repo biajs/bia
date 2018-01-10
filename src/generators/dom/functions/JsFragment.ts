@@ -4,6 +4,7 @@ import { JsFunctionOptions } from '../../code/JsFunction';
 
 export interface JsFragmentOptions extends JsFunctionOptions {
     rootNode: ParsedNode;
+    scope?: Array<string>;
 }
 
 export class JsFragment extends JsFunction {
@@ -14,6 +15,7 @@ export class JsFragment extends JsFunction {
     public mount: JsFunction;
     public returnObj: JsReturn;
     public rootNode: ParsedNode;
+    public scope: Array<string>;
     public unmount: JsFunction;
     public update: JsFunction;
 
@@ -24,6 +26,8 @@ export class JsFragment extends JsFunction {
         super(options);
 
         this.rootNode = options.rootNode;
+
+        this.scope = options.scope || [];
 
         this.signature = ['vm'];
 
@@ -60,5 +64,24 @@ export class JsFragment extends JsFunction {
         this.append(this.code);
         
         this.append(this.returnObj);
+    }
+
+    /**
+     * Cast fragment to a string.
+     * 
+     * @return {string}
+     */
+    public toString(): string {
+        // keep track of our signature without scoped vars
+        const unscopedSignature = this.signature.slice(0);
+
+        // append our scoped vars to the signature and cast to a string
+        this.signature = this.signature.concat(this.scope);
+        const source = super.toString();
+
+        // reset the signature array to exclude scoped vars, and return the source
+        this.signature = unscopedSignature;
+
+        return source;
     }
 }

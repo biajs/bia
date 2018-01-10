@@ -20,9 +20,9 @@ export function isCodeInstance(obj) {
 }
 
 // attach a namespace to free variables in a bit of source code
-export function namespaceIdentifiers(src: string, namespace: string = 'vm') {
+export function namespaceIdentifiers(src: string, namespace: string = 'vm', ignore: Array<string> = []) {
     return String(falafel(src, (node) => {
-        if (node.type === 'Identifier') {
+        if (node.type === 'Identifier' && ignore.indexOf(node.source()) === -1) {
             node.update(`${namespace}.${node.source()}`);
         }
     }));
