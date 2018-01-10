@@ -33,5 +33,8 @@ describe('code utilities', () => {
         expect(namespaceIdentifiers('true')).to.equal('true');
         expect(namespaceIdentifiers('false')).to.equal('false');
         expect(namespaceIdentifiers('"hello"')).to.equal('"hello"');
+
+        // exclude specific vars
+        expect(namespaceIdentifiers('foo && bar && baz', 'vm', ['bar'])).to.equal('vm.foo && bar && vm.baz');
     });
 });
