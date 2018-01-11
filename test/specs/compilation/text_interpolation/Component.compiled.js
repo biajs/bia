@@ -107,6 +107,14 @@ function assign(target) {
     return target;
 }
 
+function appendNode(node, target) {
+    target.appendChild(node);
+}
+
+function createText(text) {
+    return document.createTextNode(text);
+}
+
 function detachNode(node) {
     node.parentNode.removeChild(node);
 }
@@ -122,18 +130,23 @@ function createElement(tag) {
 function noop() {}
 
 function create_main_fragment(vm) {
-    var div;
+    var div, text, text_1, text_2;
 
     return {
         c: function create() {
             div = createElement('div');
-            div.innerHTML = '<span></span>';
+            text = createText(vm.one);
+            text_1 = createText(' static ');
+            text_2 = createText(vm.two);
             return div;
         },
         d: noop,
         h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
+            appendNode(text, div);
+            appendNode(text_1, div);
+            appendNode(text_2, div);
         },
         p: noop,
         u: function unmount() {
@@ -142,7 +155,7 @@ function create_main_fragment(vm) {
     };
 }
 
-function NodeWithChild(options) {
+function Component(options) {
     init(this, options);
     this.$state = assign({}, options.data);
     
@@ -158,10 +171,10 @@ function NodeWithChild(options) {
     }
 }
 
-assign(NodeWithChild.prototype, {
+assign(Component.prototype, {
     $emit: emit,
     $nextTick: nextTick,
     $on: on,
 });
 
-export default NodeWithChild;
+export default Component;

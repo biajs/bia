@@ -13,9 +13,7 @@ function setChangedState(namespace) {
 }
 
 function proxy(target, source) {
-    var i = 0, keys = Object.keys(source), len = keys.length;
-    for (; i < len; i++) {
-        var key = keys[i];
+    Object.keys(source).forEach(function (key) {
         Object.defineProperty(target, key, {
             enumerable: true,
             configurable: true,
@@ -26,7 +24,7 @@ function proxy(target, source) {
                 source[key] = val;
             },
         });
-    }
+    });
 }
 
 function on(eventName, handler) {
@@ -109,10 +107,6 @@ function assign(target) {
     return target;
 }
 
-function setStyle(el, key, value) {
-    el.style.setProperty(key, value);
-}
-
 function detachNode(node) {
     node.parentNode.removeChild(node);
 }
@@ -133,14 +127,11 @@ function create_main_fragment(vm) {
     return {
         c: function create() {
             div = createElement('div');
-            this.h();
+            div.innerHTML = '';
             return div;
         },
         d: noop,
-        h: function hydrate() {
-            setStyle(div, 'color', 'red');
-            setStyle(div, 'font-size', '20px');
-        },
+        h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
         },

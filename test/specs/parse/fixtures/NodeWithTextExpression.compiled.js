@@ -13,9 +13,7 @@ function setChangedState(namespace) {
 }
 
 function proxy(target, source) {
-    var i = 0, keys = Object.keys(source), len = keys.length;
-    for (; i < len; i++) {
-        var key = keys[i];
+    Object.keys(source).forEach(function (key) {
         Object.defineProperty(target, key, {
             enumerable: true,
             configurable: true,
@@ -26,7 +24,7 @@ function proxy(target, source) {
                 source[key] = val;
             },
         });
-    }
+    });
 }
 
 function on(eventName, handler) {
@@ -109,16 +107,20 @@ function assign(target) {
     return target;
 }
 
+function appendNode(node, target) {
+    target.appendChild(node);
+}
+
+function createText(text) {
+    return document.createTextNode(text);
+}
+
 function detachNode(node) {
     node.parentNode.removeChild(node);
 }
 
 function insertNode(node, target, anchor) {
     target.insertBefore(node, anchor);
-}
-
-function setText(el, text) {
-    el.textContent = text;
 }
 
 function createElement(tag) {
@@ -128,18 +130,19 @@ function createElement(tag) {
 function noop() {}
 
 function create_main_fragment(vm) {
-    var div;
+    var div, text;
 
     return {
         c: function create() {
             div = createElement('div');
-            setText(div, '{{ 2 + 2 }}');
+            text = createText(2 + 2);
             return div;
         },
         d: noop,
         h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
+            appendNode(text, div);
         },
         p: noop,
         u: function unmount() {

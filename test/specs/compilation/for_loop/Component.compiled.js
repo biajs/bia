@@ -13,9 +13,7 @@ function setChangedState(namespace) {
 }
 
 function proxy(target, source) {
-    var i = 0, keys = Object.keys(source), len = keys.length;
-    for (; i < len; i++) {
-        var key = keys[i];
+    Object.keys(source).forEach(function (key) {
         Object.defineProperty(target, key, {
             enumerable: true,
             configurable: true,
@@ -26,7 +24,7 @@ function proxy(target, source) {
                 source[key] = val;
             },
         });
-    }
+    });
 }
 
 function on(eventName, handler) {
@@ -109,8 +107,12 @@ function assign(target) {
     return target;
 }
 
-function setText(el, text) {
-    el.textContent = text;
+function appendNode(node, target) {
+    target.appendChild(node);
+}
+
+function createText(text) {
+    return document.createTextNode(text);
 }
 
 function detachNode(node) {
@@ -154,18 +156,19 @@ function create_main_fragment(vm) {
 }
 
 function create_for_block(vm, bar, foo) {
-    var span;
+    var span, text;
 
     return {
         c: function create() {
             span = createElement('span');
-            setText(span, '{{ foo }}');
+            text = createText(foo);
             return span;
         },
         d: noop,
         h: noop,
         m: function mount(target, anchor) {
             insertNode(span, target, anchor);
+            appendNode(text, span);
         },
         p: noop,
         u: function unmount() {
