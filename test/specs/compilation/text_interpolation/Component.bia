@@ -1,0 +1,3 @@
+<template>
+    <div>{{ one }} static {{ two }}</div>
+</template>

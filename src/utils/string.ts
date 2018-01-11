@@ -27,3 +27,8 @@ export function escape(source: string): string {
 export function indent(source: string, depth: number = 1): string {
     return source.split('\n').map(line => indentationString + line).join('\n');
 }
+
+// split a text with interpolations
+export function splitTextInterpolations(source: string): Array<string> {
+    return source.split(/({{\s*[\w\.]+\s*}})/g).filter(str => str.length);
+}

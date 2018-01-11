@@ -10,6 +10,7 @@ import { escape } from '../../../utils/string';
 import { 
     hasConditionalDirective, 
     hasLoopDirective,
+    hasOnlyStaticContent,
     hasOnlyStaticText,
     hasProcessingFlag,
     isElementNode, 
@@ -93,7 +94,7 @@ function manageRootElement(code: JsCode, node: ParsedNode, fragment: JsFragment)
     }
 
     // if the element has purely static children, set the inner
-    else if (!node.hasDynamicChildren && node.innerHTML.length > 0) {
+    else if (hasOnlyStaticContent(node)) {
         fragment.create.append(`${el}.innerHTML = '${escape(node.innerHTML)}';`);
 
         // set a flag on the tree to prevent other processors from creating elements
@@ -133,7 +134,7 @@ function manageStaticElement(code: JsCode, node: ParsedNode, fragment: JsFragmen
     }
 
     // set purely static inner html if that's all we have
-    else if (!node.hasDynamicChildren && node.innerHTML.length > 0) {
+    else if (hasOnlyStaticContent(node)) {
         fragment.create.append(`${varName}.innerHTML = '${escape(node.innerHTML)}';`);
 
         // set a flag on all descendent nodes so we don't re-process them

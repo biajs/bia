@@ -45,9 +45,17 @@ export function hasLoopDirective(node: ParsedNode): boolean {
     return nodeHasDirective(node, 'for');
 }
 
+// determine if a node is completely static
+export function hasOnlyStaticContent(node: ParsedNode): boolean {
+    return !node.hasDynamicChildren
+        && node.textInterpolations.length === 0
+        && (!node.innerHTML || node.innerHTML.length > 0)
+}
+
 // determine if a node only contains static text
 export function hasOnlyStaticText(node: ParsedNode): boolean {
     return !node.hasDynamicChildren 
+        && node.textInterpolations.length === 0
         && node.children.length === 1 
         && node.children[0].type === 'TEXT';
 }
@@ -55,6 +63,11 @@ export function hasOnlyStaticText(node: ParsedNode): boolean {
 // determine if a node has a processing flag
 export function hasProcessingFlag(node: ParsedNode, flag: string): boolean {
     return node.processingData[flag] === true;
+}
+
+// determine if a node has text interpolations
+export function hasTextInterpolations(node: ParsedNode): boolean {
+    return node.textInterpolations.length > 0;
 }
 
 // determine if a node has a particular directive
