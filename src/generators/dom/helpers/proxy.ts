@@ -11,9 +11,7 @@ export default new JsHelper({
     name: 'proxy',
     signature: ['target', 'source'],
     content: [
-        `var i = 0, keys = Object.keys(source), len = keys.length;`,
-        `for (; i < len; i++) {`,
-        indent(`var key = keys[i];`),
+        `Object.keys(source).forEach(function (key) {`,
         indent(`Object.defineProperty(target, key, {`),
         indent(indent(`enumerable: true,`)),
         indent(indent(`configurable: true,`)),
@@ -24,6 +22,6 @@ export default new JsHelper({
         indent(indent(indent(`source[key] = val;`))),
         indent(indent(`},`)),
         indent(`});`),
-        `}`,
+        `});`,
     ],
 });
