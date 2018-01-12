@@ -12,7 +12,6 @@ export default function(file) {
             },
         });
 
-        // @todo: make assertion that each text node is correct
         expect(vm.$el.querySelectorAll('li').length).to.equal(3);
         expect(vm.$el.querySelector('li:nth-child(1)').textContent.trim()).to.equal('name: Jim');
         expect(vm.$el.querySelector('li:nth-child(2)').textContent.trim()).to.equal('name: Mary');
