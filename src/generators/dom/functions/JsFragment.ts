@@ -46,7 +46,10 @@ export class JsFragment extends JsFunction {
 
         this.unmount = new JsFunction({ name: 'unmount' });
 
-        this.update = new JsFunction({ name: 'update' });
+        this.update = new JsFunction({ 
+            name: 'update',
+            signature: ['changed'],
+        });
 
         this.returnObj = new JsReturn({
             value: new JsObject({

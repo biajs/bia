@@ -11,7 +11,7 @@ import { escape } from '../../../utils/string';
 
 import { 
     isCodeInstance, 
-    namespaceIdentifiers,
+    namespaceRootIdentifiers,
     findConditionalWithNode,
 } from '../../../utils/code';
 
@@ -174,7 +174,7 @@ function createElseBranch(code: JsCode, currentNode: ParsedNode, fragment: JsFra
 //
 function createStandAloneIfBlock(code: JsCode, currentNode: ParsedNode, fragment: JsFragment, directive: NodeDirective): void {
     const blockName = code.getVariableName(currentNode, 'if_block');
-    const condition = namespaceIdentifiers(directive.expression);
+    const condition = namespaceRootIdentifiers(directive.expression);
     const createBlockName = `create_${blockName}`;
     const parentEl = fragment.getVariableName(currentNode.parent);
 

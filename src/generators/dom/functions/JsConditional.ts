@@ -2,7 +2,7 @@ import { JsCode, JsFunction, JsIf } from '../../code/index';
 import { JsFunctionOptions } from '../../code/JsFunction';
 import { ParsedNode } from '../../../interfaces';
 import { getDirective } from '../../../utils/parsed_node';
-import { namespaceIdentifiers } from '../../../utils/code';
+import { namespaceRootIdentifiers } from '../../../utils/code';
 
 export interface JsConditionalOption extends JsFunctionOptions {
     rootCode: JsCode,
@@ -37,7 +37,7 @@ export class JsConditional extends JsFunction {
         
         const { expression } = getDirective(node, 'if') || getDirective(node, 'else-if');
 
-        this.append(`if (${namespaceIdentifiers(expression)}) return ${fragmentName};`);
+        this.append(`if (${namespaceRootIdentifiers(expression)}) return ${fragmentName};`);
     }
 
     /**

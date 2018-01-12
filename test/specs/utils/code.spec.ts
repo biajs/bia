@@ -3,7 +3,8 @@ import { createDomTree } from '../../../src/parse/template';
 import { expect } from 'chai';
 
 import { 
-    namespaceIdentifiers,
+    findRootIdentifiers,
+    namespaceRootIdentifiers,
 } from '../../../src/utils/code';
 
 describe('code utilities', () => {
@@ -20,21 +21,25 @@ describe('code utilities', () => {
     //     return createDomTree(el).children[0];
     // }
 
-    it('namespaceIdentifiers', () => {
+    it('findRootIdentifiers', () => {
+        expect(findRootIdentifiers('one && foo.bar.baz')).to.deep.equal(['one', 'foo']);
+    });
+
+    it('namespaceRootIdentifiers', () => {
         // free variables should be prefixed
-        expect(namespaceIdentifiers('foo')).to.equal('vm.foo');
+        expect(namespaceRootIdentifiers('foo')).to.equal('vm.foo');
 
         // nested vars should also be prefixed
-        expect(namespaceIdentifiers('foo && [bar]')).to.equal('vm.foo && [vm.bar]');
+        expect(namespaceRootIdentifiers('foo && [bar]')).to.equal('vm.foo && [vm.bar]');
 
         // primitives and js objects shouldn't be touched
-        expect(namespaceIdentifiers('123')).to.equal('123');
-        expect(namespaceIdentifiers('null')).to.equal('null');
-        expect(namespaceIdentifiers('true')).to.equal('true');
-        expect(namespaceIdentifiers('false')).to.equal('false');
-        expect(namespaceIdentifiers('"hello"')).to.equal('"hello"');
+        expect(namespaceRootIdentifiers('123')).to.equal('123');
+        expect(namespaceRootIdentifiers('null')).to.equal('null');
+        expect(namespaceRootIdentifiers('true')).to.equal('true');
+        expect(namespaceRootIdentifiers('false')).to.equal('false');
+        expect(namespaceRootIdentifiers('"hello"')).to.equal('"hello"');
 
         // exclude specific vars
-        expect(namespaceIdentifiers('foo && bar && baz', 'vm', ['bar'])).to.equal('vm.foo && bar && vm.baz');
+        expect(namespaceRootIdentifiers('foo && bar && baz', 'vm', ['bar'])).to.equal('vm.foo && bar && vm.baz');
     });
 });

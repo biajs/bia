@@ -14,16 +14,37 @@ export function findConditionalWithNode(code: JsCode, node: ParsedNode): JsCondi
     });
 }
 
+// find root identifiers in source code
+export function findRootIdentifiers(src: string) {
+    const rootIdentifiers = [];
+
+    walkRootIdentifiers(src, (node) => rootIdentifiers.push(node.name));
+
+    return rootIdentifiers;
+}
+
 // determine if an object is a code instance
 export function isCodeInstance(obj) {
     return obj instanceof BaseCode;
 }
 
-// attach a namespace to free variables in a bit of source code
-export function namespaceIdentifiers(src: string, namespace: string = 'vm', ignore: Array<string> = []) {
-    return String(falafel(src, (node) => {
-        if (node.type === 'Identifier' && ignore.indexOf(node.source()) === -1) {
+// attach a namespace to root identifiers in source code
+export function namespaceRootIdentifiers(src: string, namespace: string = 'vm', ignore: Array<string> = []) {
+    return String(walkRootIdentifiers(src, (node) => {
+        if (ignore.indexOf(node.source()) === -1) {
             node.update(`${namespace}.${node.source()}`);
         }
     }));
+}
+
+// walk over the root identifiers in source code
+export function walkRootIdentifiers(src: string, fn: Function) {
+    const isIdentifier = n => n.type === 'Identifier';
+    const isObjectProp = n => n.parent.type === 'MemberExpression' && n.parent.property === n;
+
+    return falafel(src, (node) => {
+        if (isIdentifier(node) && !isObjectProp(node)) {
+            fn(node);
+        }
+    });
 }

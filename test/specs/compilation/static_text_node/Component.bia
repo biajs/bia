@@ -1,0 +1,12 @@
+<!-- 
+    ignore the conditional node. it exists to force our text
+    to be instantiated as it's own dom node, rather than 
+    just setting via setText fn on the root element.
+-->
+
+<template>
+    <div>
+        hello world
+        <div b-if="false"></div>
+    </div>
+</template>

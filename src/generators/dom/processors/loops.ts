@@ -7,7 +7,7 @@ import { createFragment } from '../dom';
 // utils
 //
 import {
-    namespaceIdentifiers,
+    namespaceRootIdentifiers,
 } from '../../../utils/code';
 
 import { 
@@ -69,7 +69,7 @@ export function process(code: JsCode, currentNode: ParsedNode, fragment: JsFragm
 
     // parse the loop expression
     const parsedExpression = parseLoopExpression(directive);
-    const namespacedSource = namespaceIdentifiers(parsedExpression.source);
+    const namespacedSource = namespaceRootIdentifiers(parsedExpression.source);
     const fragmentSignature = ['vm', ...fragment.scope, namespacedSource, `${namespacedSource}[i]`];
 
     if (parsedExpression.index) {

@@ -5,7 +5,7 @@ import { DomProcessor, JsFragmentNode, ParsedNode } from '../../../interfaces';
 //
 // utils
 //
-import { namespaceIdentifiers } from '../../../utils/code';
+import { namespaceRootIdentifiers } from '../../../utils/code';
 import { getDirective, nodeHasDirective } from '../../../utils/parsed_node';
 
 //
@@ -28,6 +28,6 @@ export function process(code: JsCode, currentNode: ParsedNode, fragment: JsFragm
 
         code.useHelper(toggleVisibility);
 
-        fragment.hydrate.append(`toggleVisibility(${varName}, ${namespaceIdentifiers(directive.expression)});`);
+        fragment.hydrate.append(`toggleVisibility(${varName}, ${namespaceRootIdentifiers(directive.expression)});`);
     }
 };
