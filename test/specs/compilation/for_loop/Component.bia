@@ -1,5 +1,7 @@
 <template>
-    <div>
-        <span b-for="foo in bar">{{ foo }}</span>
-    </div>
+    <ul>
+        <li b-for="name in people">
+            name: {{ name }}
+        </li>
+    </ul>
 </template>
