@@ -130,56 +130,56 @@ function createElement(tag) {
 function noop() {}
 
 function create_main_fragment(vm) {
-    var div;
+    var ul;
 
     var for_block = [];
-    for (var i = 0, len = vm.bar.length; i < len; i++) {
-        for_block[i] = create_for_block(vm, vm.bar, vm.bar[i]);
+    for (var i = 0, len = vm.people.length; i < len; i++) {
+        for_block[i] = create_for_block(vm, vm.people, vm.people[i]);
     }
     return {
         c: function create() {
-            div = createElement('div');
+            ul = createElement('ul');
             for (var i = 0, len = for_block.length; i < len; i++) for_block[i].c();
-            return div;
+            return ul;
         },
         d: noop,
         h: noop,
         m: function mount(target, anchor) {
-            insertNode(div, target, anchor);
-            for (var i = 0, len = for_block.length; i < len; i++) for_block[i].m(div, null);
+            insertNode(ul, target, anchor);
+            for (var i = 0, len = for_block.length; i < len; i++) for_block[i].m(ul, null);
         },
         p: noop,
         u: function unmount() {
-            detachNode(div);
+            detachNode(ul);
         }
     };
 }
 
-function create_for_block(vm, bar, foo) {
-    var span, text;
+function create_for_block(vm, people, name) {
+    var li, text;
 
     function text_content() {
-        return foo;
+        return '\r\n            name: ' + name + '\r\n        ';
     }
     return {
         c: function create() {
-            span = createElement('span');
+            li = createElement('li');
             text = createText(text_content());
-            return span;
+            return li;
         },
         d: noop,
         h: noop,
         m: function mount(target, anchor) {
-            insertNode(span, target, anchor);
-            appendNode(text, span);
+            insertNode(li, target, anchor);
+            appendNode(text, li);
         },
         p: function update(changed) {
-            if (foo) {
+            if (name) {
                 text.data = text_content();
             }
         },
         u: function unmount() {
-            detachNode(span);
+            detachNode(li);
         }
     };
 }
