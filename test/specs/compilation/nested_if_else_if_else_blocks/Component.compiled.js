@@ -284,7 +284,7 @@ function create_if_block_1(vm) {
 }
 
 function create_if_block(vm) {
-    var div, text;
+    var div;
 
     var if_block_1 = (false) && create_if_block_1(vm);
     var current_block_type = select_block_type_1(vm);
@@ -305,7 +305,7 @@ function create_if_block(vm) {
             if (if_block_1) if_block_1.m(div, null);
             if_block.m(div, null);
         },
-        p: function update() {
+        p: function update(changed) {
             if (false) {
                 if (!if_block_1) {
                     if_block_1 = create_if_block_1(vm);

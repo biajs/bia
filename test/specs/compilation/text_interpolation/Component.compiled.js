@@ -130,14 +130,15 @@ function createElement(tag) {
 function noop() {}
 
 function create_main_fragment(vm) {
-    var div, text, text_1, text_2;
+    var div, text;
 
+    function text_content() {
+        return vm.one + ' static ' + vm.two.three;
+    }
     return {
         c: function create() {
             div = createElement('div');
-            text = createText(vm.one);
-            text_1 = createText(' static ');
-            text_2 = createText(vm.two);
+            text = createText(text_content());
             return div;
         },
         d: noop,
@@ -145,10 +146,12 @@ function create_main_fragment(vm) {
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
             appendNode(text, div);
-            appendNode(text_1, div);
-            appendNode(text_2, div);
         },
-        p: noop,
+        p: function update(changed) {
+            if (changed.one || (changed.two && changed.two.three)) {
+                text.data = text_content();
+            }
+        },
         u: function unmount() {
             detachNode(div);
         }

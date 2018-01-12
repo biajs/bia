@@ -134,7 +134,7 @@ function createElement(tag) {
 function noop() {}
 
 function create_main_fragment(vm) {
-    var div, text, div_1;
+    var div, div_1;
 
     var if_block = (true) && create_if_block(vm);
     return {
@@ -154,7 +154,7 @@ function create_main_fragment(vm) {
             appendNode(text, div);
             appendNode(div_1, div);
         },
-        p: function update() {
+        p: function update(changed) {
             if (true) {
                 if (!if_block) {
                     if_block = create_if_block(vm);

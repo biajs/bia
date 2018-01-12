@@ -158,10 +158,13 @@ function create_main_fragment(vm) {
 function create_for_block(vm, bar, foo) {
     var span, text;
 
+    function text_content() {
+        return foo;
+    }
     return {
         c: function create() {
             span = createElement('span');
-            text = createText(foo);
+            text = createText(text_content());
             return span;
         },
         d: noop,
@@ -170,7 +173,11 @@ function create_for_block(vm, bar, foo) {
             insertNode(span, target, anchor);
             appendNode(text, span);
         },
-        p: noop,
+        p: function update(changed) {
+            if (foo) {
+                text.data = text_content();
+            }
+        },
         u: function unmount() {
             detachNode(span);
         }

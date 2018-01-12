@@ -132,10 +132,13 @@ function noop() {}
 function create_main_fragment(vm) {
     var div, text;
 
+    function text_content() {
+        return 2 + 2;
+    }
     return {
         c: function create() {
             div = createElement('div');
-            text = createText(2 + 2);
+            text = createText(text_content());
             return div;
         },
         d: noop,
@@ -144,7 +147,11 @@ function create_main_fragment(vm) {
             insertNode(div, target, anchor);
             appendNode(text, div);
         },
-        p: noop,
+        p: function update(changed) {
+            if (2 + 2) {
+                text.data = text_content();
+            }
+        },
         u: function unmount() {
             detachNode(div);
         }

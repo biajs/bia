@@ -141,7 +141,7 @@ function create_main_fragment(vm) {
             insertNode(div, target, anchor);
             if (if_block) if_block.m(div, null);
         },
-        p: function update() {
+        p: function update(changed) {
             if (vm.foo) {
                 if (!if_block) {
                     if_block = create_if_block(vm);

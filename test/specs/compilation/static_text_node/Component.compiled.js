@@ -111,8 +111,8 @@ function appendNode(node, target) {
     target.appendChild(node);
 }
 
-function setText(el, text) {
-    el.textContent = text;
+function createText(text) {
+    return document.createTextNode(text);
 }
 
 function detachNode(node) {
@@ -130,29 +130,25 @@ function createElement(tag) {
 function noop() {}
 
 function create_main_fragment(vm) {
-    var div, div_1;
+    var div;
 
-    var if_block = (vm.dynamic) && create_if_block(vm);
+    var if_block = (false) && create_if_block(vm);
     return {
         c: function create() {
             div = createElement('div');
-            div_1 = createElement('div');
-            setText(div_1, 'static');
+            text = createText('\r\n        hello world\r\n        ');
             if (if_block) if_block.c();
-            this.h();
             return div;
         },
         d: noop,
-        h: function hydrate() {
-            div_1.className = 'static';
-        },
+        h: noop,
         m: function mount(target, anchor) {
             insertNode(div, target, anchor);
-            appendNode(div_1, div);
+            appendNode(text, div);
             if (if_block) if_block.m(div, null);
         },
         p: function update(changed) {
-            if (vm.dynamic) {
+            if (false) {
                 if (!if_block) {
                     if_block = create_if_block(vm);
                     if_block.c();
@@ -176,7 +172,7 @@ function create_if_block(vm) {
     return {
         c: function create() {
             div = createElement('div');
-            setText(div, 'dynamic');
+            div.innerHTML = '';
             return div;
         },
         d: noop,
@@ -191,7 +187,7 @@ function create_if_block(vm) {
     };
 }
 
-function DynamicChildren(options) {
+function Component(options) {
     init(this, options);
     this.$state = assign({}, options.data);
     
@@ -207,10 +203,10 @@ function DynamicChildren(options) {
     }
 }
 
-assign(DynamicChildren.prototype, {
+assign(Component.prototype, {
     $emit: emit,
     $nextTick: nextTick,
     $on: on,
 });
 
-export default DynamicChildren;
+export default Component;
