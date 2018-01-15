@@ -1,7 +1,7 @@
 import { JsCode } from '../../../../src/generators/code';
 import { expect } from 'chai';
 
-describe('JsCode', () => {
+describe.skip('JsCode', () => {
     it('can be cast to a string', () => {
         const code = new JsCode({
             content: [

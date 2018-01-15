@@ -1,7 +1,7 @@
 import { JsCode, JsIf } from '../../../../src/generators/code/index';
 import { expect } from 'chai';
 
-describe('JsIf', () => {
+describe.skip('JsIf', () => {
     it('can be cast to a string', () => {
         const code = new JsIf({
             condition: 'foo === bar',

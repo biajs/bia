@@ -1,7 +1,7 @@
 import { JsClass, JsCode, JsFunction } from '../../../../src/generators/code';
 import { expect } from 'chai';
 
-describe('JsClass', () => {
+describe.skip('JsClass', () => {
     it('can have a constructor', () => {
         const Foo = new JsClass({ 
             name: 'Foo',

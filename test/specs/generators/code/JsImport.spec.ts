@@ -1,7 +1,7 @@
 import { JsImport } from '../../../../src/generators/code';
 import { expect } from 'chai';
 
-describe('JsImport', () => {
+describe.skip('JsImport', () => {
     it('can import a default object', () => {
         const code = new JsImport({
             name: 'foo',

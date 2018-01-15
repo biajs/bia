@@ -1,7 +1,7 @@
 import { JsFunction } from '../../../../src/generators/code';
 import { expect } from 'chai';
 
-describe('JsFunction', () => {
+describe.skip('JsFunction', () => {
     it('can be constructed without a name or signature', () => {
         const fn = new JsFunction;
 

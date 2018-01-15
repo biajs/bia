@@ -1,7 +1,7 @@
 import { JsFunction, JsObject } from '../../../../src/generators/code';
 import { expect } from 'chai';
 
-describe('JsObject', () => {
+describe.skip('JsObject', () => {
     it('treats properties as descendent code', () => {
         const obj = new JsObject({
             id: 'foo',
