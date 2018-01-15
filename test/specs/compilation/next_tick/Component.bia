@@ -1,5 +1,0 @@
-<template>
-    <div>
-        <p b-if="foo">hello</p>
-    </div>
-</template>
