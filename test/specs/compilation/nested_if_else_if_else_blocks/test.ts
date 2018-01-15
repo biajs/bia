@@ -1,7 +1,7 @@
 import { compile, div, expect, render } from '../../../utils';
 
 export default function(file) {
-    it('nested_if_else_if_else_blocks', () => {
+    it.skip('nested_if_else_if_else_blocks', () => {
         // const { code } = compile(file);
         // console.log(code);
 

@@ -1,7 +1,7 @@
 import { compile, div, expect, render } from '../../../utils';
 
 export default function(file) {
-    it('element_with_quoted_text', () => {
+    it.skip('element_with_quoted_text', () => {
         // const { code } = compile(file);
         // console.log(code);
 

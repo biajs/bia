@@ -1,7 +1,7 @@
 import { compile, div, expect, render } from '../../../utils';
 
 export default function(file) {
-    it('show_directive', () => {
+    it.skip('show_directive', () => {
         // const { code } = compile(file);
         // console.log(code);
 

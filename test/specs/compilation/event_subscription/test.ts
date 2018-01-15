@@ -2,7 +2,7 @@ import { compile, div, expect, render } from '../../../utils';
 const sinon = require('sinon');
 
 export default function(file) {
-    it('event_subscription', () => {
+    it.skip('event_subscription', () => {
         // const { code } = compile(file);
         // console.log(code);
 
