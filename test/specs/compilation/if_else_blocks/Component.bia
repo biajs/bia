@@ -1,6 +1,0 @@
-<template>
-    <div>
-        <p b-if="false">if branch</p>
-        <span b-else>else branch</span>
-    </div>
-</template>

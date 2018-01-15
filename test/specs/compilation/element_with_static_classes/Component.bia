@@ -1,8 +1,0 @@
-<template>
-    <div>
-        <p class="bar"></p>
-        <p b-if="true">
-            <span class="foo"></span>
-        </p>
-    </div>
-</template>

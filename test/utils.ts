@@ -43,7 +43,11 @@ export const div = () => document.createElement('div');
 export const expect = require('chai').expect;
 
 // helper function to render components
-export const render = (source, opts: any = {}, compilerOpts: any = {}) => {
+export const render = (source = null, opts: any = {}, compilerOpts: any = {}) => {
+    if (!source) {
+        source = `<template><div></div></template>`;
+    }
+
     const Component = create(source, {
         filename: 'Component.bia',
         format: 'fn',

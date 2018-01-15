@@ -1,7 +1,0 @@
-<template>
-    <ul>
-        <li b-for="name in people">
-            name: {{ name }}
-        </li>
-    </ul>
-</template>
