@@ -5,6 +5,7 @@ describe('compilation', function() {
     const glob = require('glob');
     const path = require('path');
 
+    // require in all of our compilation tests
     glob.sync(path.resolve(__dirname, './*.ts')).forEach(file => {
         if (!file.endsWith('.spec.ts')) require(file);
     });

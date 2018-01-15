@@ -1,11 +1,18 @@
-import { compile, div, expect, render } from '../../../utils';
+import { code, expect, render } from '../../utils';
 
-export default function(file) {
-    it.only('_NAME_', () => {
-        const { code } = compile(file);
-        console.log(code);
+describe.only('_NAME_', () => {
+    it('_NAME_', function() {
+        const vm = code(`
+            <template>
+                <div></div>
+            </template>
+        `, {
+            data: {
 
-        // const vm = render(file, { el: div() });
+            },
+        });
+        
+        console.log(vm);
         // console.log(vm.$el.outerHTML);
     });
-}
+});

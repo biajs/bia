@@ -1,7 +1,7 @@
 import { code, expect, render } from '../../utils';
 
-describe('component options', () => {
-    it('component_options', function() {
+describe('component_options', () => {
+    it('keeps a reference to data passed in through to constructor', function() {
         const vm = render(`
             <template>
                 <div></div>
