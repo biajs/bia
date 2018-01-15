@@ -1,16 +1,14 @@
 import { ParsedNode } from '../src/interfaces';
+import { create, compile } from '../src/index';
 
-// helper function to compile a component
-export const compile = (p) => {
-    const source = require('fs').readFileSync(p, 'utf8');
-
-    console.log('source', source);
-
-    return require('../dist/bia').compile(source, {
+// helper function to compile components
+export const code = (source, compilerOpts: any = {}) => {
+    return compile(source, {
         filename: 'Component.bia',
         name: 'Component',
         format: 'fn',
-    });
+        ...compilerOpts,
+    }).code;
 }
 
 // helper function to create parsed nodes
@@ -35,13 +33,6 @@ export const createParsedNode = (opts = {}): ParsedNode => {
     }
 }
 
-// helper function to create a component constructor
-export const component = (p) => {
-    const { code } = compile(p);
-
-    return new Function(code)();
-}
-
 // helper function to create an empty div
 export const div = () => document.createElement('div');
 
@@ -49,8 +40,17 @@ export const div = () => document.createElement('div');
 export const expect = require('chai').expect;
 
 // helper function to render components
-export const render = (file, instanceOptions = {}, compilerOptions = {}) => {
-    const Component = component(file);
+export const render = (source, opts: any = {}, compilerOpts: any = {}) => {
+    const Component = create(source, {
+        filename: 'Component.bia',
+        name: 'Component',
+        format: 'fn',
+        ...compilerOpts,
+    });
 
-    return new Component(instanceOptions);
+    if (typeof opts.el === 'undefined') {
+        opts.el = div();
+    }
+
+    return new Component(opts);
 }
