@@ -8,16 +8,17 @@ import generateCode from './generators/dom/dom';
  * @param {Object} options
  */
 export function compile(source: string, options: any) {
-    try {
-        const parsedSource = parse(source, options);
-        const code = generateCode(parsedSource, options);
+    console.log ('compiling...');
+    // try {
+    //     const parsedSource = parse(source, options);
+    //     const code = generateCode(parsedSource, options);
 
-        return {
-            code,
-        };
-    } catch (err) {
-        throw err;
-    }
+    //     return {
+    //         code,
+    //     };
+    // } catch (err) {
+    //     throw err;
+    // }
 }
 
 /**
