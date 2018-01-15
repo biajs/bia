@@ -9,10 +9,10 @@ import generateCode from './generators/dom/dom';
  */
 export function compile(source: string, options: any) {
     const parsedSource = parse(source, options);
-    const code = generateCode(parsedSource, options);
+    // const code = generateCode(parsedSource, options);
 
     return {
-        code,
+        // code,
     };
 }
 
