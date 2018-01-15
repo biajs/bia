@@ -8,7 +8,7 @@
     "compile-fixtures": "ts-node build/compile_fixtures.ts",
     "create-test": "ts-node build/create_test.ts",
     "coverage": "nyc report --reporter=lcov > coverage.lcov && codecov -t c44f788d-4245-4ca7-9634-777c51af060a",
-    "test": "nyc mocha",
+    "test": "mocha",
     "test-watch": "mocha --watch test/**/*.spec.ts --watch-extensions ts"
   },
   "repository": {
