@@ -1,6 +1,6 @@
 import { code, expect, render } from '../../utils';
 
-it.only('element_with_nested_static_and_dynamic_children', function() {
+it('element_with_nested_static_and_dynamic_children', function() {
     const template = `
         <template>
             <div>
