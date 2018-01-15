@@ -1,4 +1,4 @@
-import { compile } from '../../../../src/index';
+import { create } from '../../../../src/index';
 import { div, expect, render } from '../../../utils';
 
 export default function(file) {
@@ -9,17 +9,15 @@ export default function(file) {
     `;
 
     it.only('component_options', function() {
-        const result = compile(source, {
+        const Component = create(source, {
             filename: 'Component.bia',
             name: 'Component',
             format: 'fn',
         });
 
-        console.log(result);
-
-        // const el = div();
-        // const vm = render(file, { el, foo: 'bar' });
+        const el = div();
+        const vm = new Component({ el, foo: 'bar' });
         
-        // expect(vm.$options).to.deep.equal({ el, foo: 'bar' });
+        expect(vm.$options).to.deep.equal({ el, foo: 'bar' });
     });
 }
