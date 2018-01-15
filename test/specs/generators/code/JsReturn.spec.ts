@@ -1,7 +1,7 @@
 import { JsCode, JsFunction, JsReturn } from '../../../../src/generators/code/index';
 import { expect } from 'chai';
 
-describe.skip('JsReturn', () => {
+describe('JsReturn', () => {
     it('can be cast to a string', () => {
         const code = new JsReturn({
             value: new JsFunction({

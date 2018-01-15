@@ -7,7 +7,7 @@ import {
     namespaceRootIdentifiers,
 } from '../../../src/utils/code';
 
-describe.skip('code utilities', () => {
+describe('code utilities', () => {
     // // helper factories to create ParsedNode objects
     // function createElementNode(tagName: string = 'div'): ParsedNode {
     //     return createDomTree(document.createElement(tagName));

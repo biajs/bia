@@ -1,7 +1,7 @@
 import { JsCode, JsFunction, JsHelper, JsObject, JsReturn } from '../../../../src/generators/code/index';
 import { expect } from 'chai';
 
-describe.skip('BaseCode', () => {
+describe('BaseCode', () => {
     it('can be constructed without an id or content', () => {
         const code = new JsCode;
 

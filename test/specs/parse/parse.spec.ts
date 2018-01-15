@@ -3,7 +3,7 @@ const { expect } = require('chai');
 const fs = require('fs');
 const path = require('path');
 
-describe.skip('parsing', () => {
+describe('parsing', () => {
 
     // helper function to parse fixtures
     const parseTemplate = (name, opts) => {

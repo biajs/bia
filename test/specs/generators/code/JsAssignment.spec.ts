@@ -1,7 +1,7 @@
 import { JsAssignment, JsFunction } from '../../../../src/generators/code';
 import { expect } from 'chai';
 
-describe.skip('JsAssignment', () => {
+describe('JsAssignment', () => {
     it('can assign a raw value', () => {
         const assignment = new JsAssignment({ 
             left: 'foo', 

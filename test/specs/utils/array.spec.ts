@@ -5,7 +5,7 @@ import {
     hasDuplicateMembers,
 } from '../../../src/utils/array';
 
-describe.skip('array utilities', () => {
+describe('array utilities', () => {
     it('findDuplicateMembers', () => {
         expect(getDuplicateMembers(['foo', 'bar', 'baz', 'bar'])).to.deep.equal(['bar']);
     });

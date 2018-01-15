@@ -5,7 +5,7 @@ import {
     indent,
 } from '../../../src/utils/string';
 
-describe.skip('string utilities', () => {
+describe('string utilities', () => {
     it('escape', () => {
         expect(escape(`"`)).to.equal('\\\"');
         expect(escape(`'`)).to.equal('\\\'');

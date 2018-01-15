@@ -4,7 +4,7 @@ import { ParsedNode } from '../../../../src/interfaces';
 import { createParsedNode } from '../../../utils';
 import { expect } from 'chai';
 
-describe.skip('JsConditional', () => {
+describe('JsConditional', () => {
     let rootCode;
     let fooNode = 
 
