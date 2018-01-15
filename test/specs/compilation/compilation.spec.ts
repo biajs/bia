@@ -3,10 +3,12 @@ describe('compilation', () => {
     const path = require('path');
 
     const currentPath = path.resolve(__dirname);
-    const dirs = fs.readdirSync(currentPath).filter(f => fs.statSync(path.join(currentPath, f)).isDirectory())
+    const dirs = fs.readdirSync(currentPath).filter(f => fs.statSync(path.join(currentPath, f)).isDirectory());
 
     dirs.forEach(dir => {
         const testDir = `${currentPath}/${dir}`;
+
+        console.log('test dir', testDir);
         
         require(`${testDir}/test`).default(`${testDir}/Component.bia`);
     });
