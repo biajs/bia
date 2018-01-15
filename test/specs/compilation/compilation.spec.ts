@@ -1,4 +1,4 @@
-describe('compilation', () => {
+describe('compilation', function() {
     const fs = require('fs');
     const path = require('path');
 

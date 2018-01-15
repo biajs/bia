@@ -1,7 +1,7 @@
 import { compile, div, expect, render } from '../../../utils';
 
 export default function(file) {
-    it.skip('if_block', (done) => {
+    it.skip('if_block', function(done) {
         // const { code } = compile(file);
         // console.log(code);
 

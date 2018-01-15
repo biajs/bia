@@ -1,7 +1,7 @@
 import { compile, div, expect, render } from '../../../utils';
 
 export default function(file) {
-    it.skip('for_loop', () => {
+    it.skip('for_loop', function() {
         // const { code } = compile(file);
         // console.log(code);
 

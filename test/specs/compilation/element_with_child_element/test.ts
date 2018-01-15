@@ -1,7 +1,7 @@
 import { compile, div, expect, render } from '../../../utils';
 
 export default function(file) {
-    it.skip('element_with_child_element', () => {
+    it.skip('element_with_child_element', function() {
         // const { code } = compile(file);
         // console.log(code);
 

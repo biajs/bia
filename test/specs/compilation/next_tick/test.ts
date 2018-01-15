@@ -1,7 +1,7 @@
 import { compile, div, expect, render } from '../../../utils';
 
 export default function(file) {
-    it.skip('next_tick', (done) => {
+    it.skip('next_tick', function(done) {
         // const { code } = compile(file);
         // console.log(code);
 
