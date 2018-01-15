@@ -4,7 +4,9 @@ import { ParsedNode } from '../src/interfaces';
 export const compile = (p) => {
     const source = require('fs').readFileSync(p, 'utf8');
 
-    return require('../src/index').compile(source, {
+    console.log('source', source);
+
+    return require('../dist/bia').compile(source, {
         filename: 'Component.bia',
         name: 'Component',
         format: 'fn',
