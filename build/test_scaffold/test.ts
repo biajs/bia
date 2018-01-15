@@ -1,6 +1,6 @@
 import { code, expect, render } from '../../utils';
 
-it('_NAME_', function() {
+it.only('_NAME_', function() {
     const template = `
         <template>
             <div>

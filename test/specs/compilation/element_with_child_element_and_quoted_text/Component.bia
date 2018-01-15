@@ -1,5 +1,0 @@
-<template>
-    <div>
-        <span>one "two" 'three'</span>
-    </div>
-</template>
