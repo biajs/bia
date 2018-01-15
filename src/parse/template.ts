@@ -1,4 +1,5 @@
 const { JSDOM } = require('jsdom');
+const { minify } = require('html-minifier');
 
 import { 
     CompileOptions,
@@ -21,7 +22,11 @@ interface ElementAttribute {
  * @param template 
  */
 export default function(source: string, options: CompileOptions) {
-    const { document } = new JSDOM(source).window;
+    const minifiedSource = typeof options.htmlMinifier === 'object'
+        ? minify(source, options.htmlMinifier)
+        : source;
+
+    const { document } = new JSDOM(minifiedSource).window;
 
     validateTemplate(document, options);
     

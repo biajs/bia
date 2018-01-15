@@ -4,6 +4,7 @@ import { JsFragment } from './generators/dom/fragment/JsFragment';
 export interface CompileOptions {
     filename: string;
     format: 'es' | 'fn';
+    htmlMinifier: Object;
     name: string;
 };
 

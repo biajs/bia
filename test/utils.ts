@@ -5,8 +5,11 @@ import { create, compile } from '../src/index';
 export const code = (source, compilerOpts: any = {}) => {
     return compile(source, {
         filename: 'Component.bia',
-        name: 'Component',
         format: 'fn',
+        htmlMinifier: {
+            collapseWhitespace: true,
+        },
+        name: 'Component',
         ...compilerOpts,
     }).code;
 }
@@ -43,8 +46,11 @@ export const expect = require('chai').expect;
 export const render = (source, opts: any = {}, compilerOpts: any = {}) => {
     const Component = create(source, {
         filename: 'Component.bia',
-        name: 'Component',
         format: 'fn',
+        htmlMinifier: {
+            collapseWhitespace: true,
+        },
+        name: 'Component',
         ...compilerOpts,
     });
 
