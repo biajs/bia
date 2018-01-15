@@ -1,18 +1,19 @@
 import { code, expect, render } from '../../utils';
 
-describe.only('_NAME_', () => {
-    it('_NAME_', function() {
-        const vm = code(`
-            <template>
-                <div></div>
-            </template>
-        `, {
-            data: {
+it('_NAME_', function() {
+    const template = `
+        <template>
+            <div>
 
-            },
-        });
-        
-        console.log(vm);
-        // console.log(vm.$el.outerHTML);
-    });
+            </div>
+        </template>
+    `;
+
+    const options = {};
+
+    const output = code(template, options);
+    console.log(output);
+
+    // const vm = render(template, options);
+    // expect(vm.$options.foo).to.equal('bar');
 });
