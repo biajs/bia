@@ -14,4 +14,4 @@ test:
   override:
     - yarn test-coverage
   post:
-    - yarn run coverage
+    - yarn run report-coverage
