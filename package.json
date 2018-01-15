@@ -9,7 +9,7 @@
     "create-test": "ts-node build/create_test.ts",
     "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov -t c44f788d-4245-4ca7-9634-777c51af060a",
     "test": "mocha",
-    "test-coverage": "istanbul cover node_modules/mocha/bin/_mocha",
+    "test-coverage": "nyc mocha",
     "test-watch": "mocha --watch test/**/*.spec.ts --watch-extensions ts"
   },
   "repository": {
