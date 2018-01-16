@@ -1,5 +1,6 @@
 import appendNode from './append_node';
 import assign from './assign';
+import createComment from './create_comment';
 import createElement from './create_element';
 import createText from './create_text';
 import defineReactive from './define_reactive';
@@ -22,6 +23,7 @@ import toggleVisibility from './toggle_visibility';
 export {
     appendNode,
     assign,
+    createComment,
     createElement,
     createText,
     defineReactive,
