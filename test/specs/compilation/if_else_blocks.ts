@@ -1,6 +1,6 @@
 import { code, expect, render } from '../../utils';
 
-it.only('if_else_blocks', function(done) {
+it('if_else_blocks', function(done) {
     const template = `
         <template>
             <div>
@@ -16,16 +16,16 @@ it.only('if_else_blocks', function(done) {
         },
     };
 
-    const output = code(template, options);
-    console.log(output);
+    // const output = code(template, options);
+    // console.log(output);
 
-    // const vm = render(template, options);
-    // expect(vm.$el.outerHTML).to.equal(`<div><p>foo</p></div>`)
+    const vm = render(template, options);
+    expect(vm.$el.outerHTML).to.equal(`<div><p>foo</p></div>`)
 
-    // vm.foo = false;
+    vm.foo = false;
 
-    // vm.$nextTick(() => {
-        // expect(vm.$el.outerHTML).to.equal('<div><span>bar</span></div>');
+    vm.$nextTick(() => {
+        expect(vm.$el.outerHTML).to.equal(`<div><span>bar</span></div>`)
         done();
-    // });
+    });
 });

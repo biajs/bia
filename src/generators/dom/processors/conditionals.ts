@@ -128,11 +128,12 @@ function createFirstLogicalBranch(code: JsCode, currentNode: ParsedNode, fragmen
     selector.addIf(currentNode, `create_${name}`);
 
     // define the block within our fragment
+    const selectName = selector.name;
     const blockName = fragment.getVariableName(selector, 'current_block_type');
     const ifName = fragment.getVariableName(currentNode, 'if_block');    
     const parentEl = fragment.getVariableName(currentNode.parent);
 
-    fragment.code.append(`var ${blockName} = ${selector.name}(vm);`);
+    fragment.code.append(`var ${blockName} = ${selectName}(vm);`);
     fragment.code.append(`var ${ifName} = ${blockName}(vm);`)
 
     // create
@@ -140,6 +141,18 @@ function createFirstLogicalBranch(code: JsCode, currentNode: ParsedNode, fragmen
 
     // mount the if block to our parent
     fragment.mount.append(`${ifName}.m(${parentEl}, null);`)
+
+    // update
+    fragment.update.append(new JsIf({
+        condition: `${blockName} !== (${blockName} = ${selectName}(vm))`,
+        content: [
+            `${ifName}.u();`,
+            `${ifName}.d();`,
+            `${ifName} = ${blockName}(vm);`,
+            `${ifName}.c();`,
+            `${ifName}.m(${parentEl}, null)`,
+        ],
+    }));
 }
 
 // 
