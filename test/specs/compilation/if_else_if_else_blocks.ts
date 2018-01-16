@@ -1,6 +1,6 @@
 import { code, expect, render } from '../../utils';
 
-it.skip('if_else_if_else_blocks', function(done) {
+it('if_else_if_else_blocks', function(done) {
     const template = `
         <template>
             <div>
