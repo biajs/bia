@@ -4,6 +4,7 @@ export function collapseNewlines(source: string): string {
     return source.replace(/\n\s*\n+/g, "\n\n");
 }
 
+// deindent a string
 export function deindent(source: string) {
     let lines = source.split('\n');
 
@@ -12,7 +13,7 @@ export function deindent(source: string) {
     while (isWhitespace(lines[lines.length - 1])) lines = lines.slice(0, lines.length - 1);
 
     // remove leading indentation
-    while (lines.every(line => !!line.match(/^\s/g))) lines = lines.map(l => l.slice(1));
+    while (lines.every(l => !!l.match(/^\s/g))) lines = lines.map(l => l.slice(1));
 
     return lines.join('\n');
 }
