@@ -12,8 +12,13 @@ export function deindent(source: string) {
     while (isWhitespace(lines[0])) lines = lines.slice(1);
     while (isWhitespace(lines[lines.length - 1])) lines = lines.slice(0, lines.length - 1);
 
+    console.log('current', lines.join('\n'));
+
     // remove leading indentation
-    while (lines.every(l => !!l.match(/^\s/g))) lines = lines.map(l => l.slice(1));
+    while (lines.every(l => !l.length || !!l.match(/^\s*\S/g))) {
+        if (!lines.find(l => !!l.match(/^\s/g))) break;
+        lines = lines.map(l => l.length > 0 ? l.slice(1) : l);
+    }
 
     return lines.join('\n');
 }
