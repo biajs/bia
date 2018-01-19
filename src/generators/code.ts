@@ -1,6 +1,6 @@
 import {
     deindent,
-} from '../../utils/string';
+} from '../utils/string';
 
 interface CodeOptions {
     helpers: Object,

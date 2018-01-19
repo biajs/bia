@@ -1,6 +1,3 @@
-import { JsFunction } from './generators/code/index';
-import { JsFragment } from './generators/dom/fragment/JsFragment';
-
 export interface CompileOptions {
     filename: string;
     format: 'es' | 'fn';
@@ -13,22 +10,6 @@ export interface DomProcessor {
     createChildFragments: Function,
     process: Function,
     postProcess: Function,
-}
-
-// lifecycle methods of a dom fragment
-export interface FragmentLifecycle {
-    constructor: JsFunction,
-    create: JsFunction,
-    destroy: JsFunction,
-    mount: JsFunction,
-    unmount: JsFunction,
-    update: JsFunction,
-}
-
-// object used to identify fragments and parsed nodes
-export interface JsFragmentNode {
-    fragment: JsFragment,
-    node: ParsedNode,
 }
 
 // directive object parsed from dom element

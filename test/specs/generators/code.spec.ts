@@ -1,5 +1,5 @@
-import code from '../../../../src/generators/code/code';
-import { expect } from '../../../utils';
+import code from '../../../src/generators/code';
+import { expect } from '../../utils';
 
 describe('code generation', () => {
 
