@@ -12,12 +12,15 @@ export function deindent(source: string) {
     while (isWhitespace(lines[0])) lines = lines.slice(1);
     while (isWhitespace(lines[lines.length - 1])) lines = lines.slice(0, lines.length - 1);
 
+    // trim lines that are entirely whitespace
+    lines = lines.map(line => line.match(/^\s*$/g) ? '' : line);
+
     // itterate over each remaining line and find the smallest indentation
     let smallestIndentation = null;
 
     for (let i = 0, len = lines.length; i < len; i++) {
         // @todo: adjust this regex so we don't need to do the -1 nonsense
-        const indentation = lines[i].match(/^\s+\S/g);
+        const indentation = lines[i].match(/^\s*\S/g);
         
         if (indentation && (!smallestIndentation || indentation[0].length - 1 < smallestIndentation)) {
             smallestIndentation = indentation[0].length - 1;
@@ -25,12 +28,9 @@ export function deindent(source: string) {
     }
 
     // itterate over each line again, and remove the indentation
-    const re = new RegExp(`^\\s{0,${smallestIndentation}}`, 'g');
-    
     if (smallestIndentation) {
-        for (let i = 0, len = lines.length; i < len; i++) {
-            lines[i] = lines[i].replace(re, '');
-        }
+        const re = new RegExp(`^\\s{0,${smallestIndentation}}`, 'g');
+        lines = lines.map(line => line.replace(re, ''));
     }
 
     return lines.join('\n');

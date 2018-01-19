@@ -21,6 +21,10 @@ export default function(source, options = null) {
                 options.containers[container] = [];
             }
 
+            if (typeof child === 'object' && typeof child.parent !== 'undefined') {
+                child.parent = this;
+            }
+
             options.containers[container].push(child);
         },
 
@@ -33,6 +37,11 @@ export default function(source, options = null) {
         // deindented raw source
         //
         rawSource: source,
+
+        //
+        // root code instance
+        //
+        root: options.root || null,
 
         //
         // cast the code object to a string
@@ -50,7 +59,7 @@ export default function(source, options = null) {
             if (isRoot(this)) output = replaceHelpers(options, output);
 
             // replace containers
-            // output = replaceContainers(options, output);
+            output = replaceContainers(options, output);
 
             return output;
         },
@@ -58,6 +67,15 @@ export default function(source, options = null) {
 
     // register partials
     registerChildPartials(block, options.partials);
+
+    // expose a computed "root" property
+    Object.defineProperty(block, 'root', {
+        get() {
+            let parent = block.parent;
+            while (parent.parent) parent = parent.parent;
+            return parent;
+        },
+    });
 
     return block;
 }

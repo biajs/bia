@@ -26,12 +26,20 @@ describe('string utilities', () => {
                     baz
         `)).to.equal(`foo\n    bar\n        baz`);
 
+        // blank lines
         expect(deindent(`
             one
 
             two
             three
         `)).to.equal('one\n\ntwo\nthree');
+
+        // duplicate deindentation
+        expect(deindent(deindent(`
+            function foo() {
+                return bar;
+            }
+        `))).to.equal(`function foo() {\n    return bar;\n}`);
     });
 
     it('escape', () => {

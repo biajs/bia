@@ -1,14 +1,16 @@
 import code from '../../../../src/generators/code/code';
 import { expect } from '../../../utils';
 
-describe.skip('code generation', () => {
+describe.only('code generation', () => {
 
     it('can be cast to a string', () => {
         const output = code(`
             console.log('hello world');
         `);
 
-        expect(String(output)).to.equal(`console.log('hello world');`);
+        expect(output).to.equalCode(`
+            console.log('hello world');
+        `);
     });
 
     it('can reference helper functions', () => {
@@ -30,18 +32,18 @@ describe.skip('code generation', () => {
             },
         });
         
-        expect(output.toString()).to.equal(
-            `function foo() {\n` +
-            `    // hey\n` +
-            `}\n` +
-            `\n` +
-            `function bar() {}\n` +
-            `\n` +
-            `function whatever() {\n` +
-            `    foo();\n` +
-            `    bar();\n` +
-            `}`
-        );
+        expect(output).to.equalCode(`
+            function foo() {
+                // hey
+            }
+
+            function bar() {}
+
+            function whatever() {
+                foo();
+                bar();
+            }
+        `);
     });
 
     it('renders partials', () => {
@@ -55,11 +57,11 @@ describe.skip('code generation', () => {
             },
         });
 
-        expect(output.toString()).to.equal(
-            `function foo() {\n` + 
-            `    return 5;\n` +
-            `}`
-        );
+        expect(output).to.equalCode(`
+            function foo() {
+                return 5;
+            }
+        `);
     });
 
     it('renders partials at the correct indentation', () => {
@@ -77,13 +79,13 @@ describe.skip('code generation', () => {
             },
         });
 
-        expect(output.toString()).to.equal(
-            `function foo() {\n` + 
-            `    return {\n` +
-            `        foo: 'bar',\n` +
-            `    };\n` +
-            `}`
-        );
+        expect(output).to.equalCode(`
+            function foo() {
+                return {
+                    foo: 'bar',
+                };
+            }
+        `);
     });
 
     it('allows helpers to be used from partials', () => {
@@ -99,10 +101,10 @@ describe.skip('code generation', () => {
             },
         });
 
-        expect(output.toString()).to.equal(
-            `function foo() {}\n` + 
-            `foo(1, 2, 3);`
-        );
+        expect(output).to.equalCode(`
+            function foo() {}
+            foo(1, 2, 3);
+        `);
     });
 
     it('allows helpers to be used from deeply nested partials', () => {
@@ -122,10 +124,10 @@ describe.skip('code generation', () => {
             }
         });
 
-        expect(output.toString()).to.equal(
-            `function foo() {}\n` + 
-            `foo(1, 2, 3);`
-        );
+        expect(output).to.equalCode(`
+            function foo() {}
+            foo(1, 2, 3);
+        `);
     });
 
     it('code can be appended to a container', () => {
@@ -137,19 +139,60 @@ describe.skip('code generation', () => {
             // after
         `);
 
-        // output.append(`// foo`, 'someContainer');
-        // output.append('// bar', 'someContainer');
+        output.append(`// foo`, 'someContainer');
+        output.append('// bar', 'someContainer');
 
-        console.log('!!', output.toString(), '!!');
+        expect(output).to.equalCode(`
+            // before
 
-        // expect(output.toString()).to.equal(
-        //     `// before\n` +
-        //     `\n` +
-        //     `// foo\n` +
-        //     `\n` +
-        //     `// bar\n` +
-        //     `\n` +
-        //     `// after`
-        // )
+            // foo
+            
+            // bar
+
+            // after
+        `);
+    });
+
+    it('can append child code objects to containers', () => {
+        const parent = code(`
+            :foo
+        `);
+
+        const child = code(`
+            // hello from the child
+        `);
+
+        parent.append(child, 'foo');
+
+        expect(child.parent).to.equal(parent);
+        expect(parent).to.equalCode(`// hello from the child`);
+    })
+
+    it('removes unused containers', () => {
+        const output = code(`
+            function foo() {
+                :vars
+                return null;
+            }
+        `);
+
+        expect(output).to.equalCode(`
+            function foo() {
+
+                return null;
+            }
+        `);
+    });
+
+    it('exposes a computed "root" property', () => {
+        const foo = code(`:foo`);
+        const bar = code(`:bar`);
+        const baz = code(`// hello from baz`);
+
+        bar.append(baz, 'bar');
+        expect(baz.root).to.equal(bar);
+
+        foo.append(bar, 'foo');
+        expect(baz.root).to.equal(foo);
     });
 });

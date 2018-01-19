@@ -3,9 +3,21 @@ const path = require('path');
 const chai = require('chai');
 const chaiSubset = require('chai-subset');
 const sinonChai = require('sinon-chai');
+const { deindent } = require('../src/utils/string');
 
 chai.use(sinonChai);
 chai.use(chaiSubset);
+
+// add a custom code assertion
+chai.use(function(_chai, utils) {
+    _chai.Assertion.addMethod('equalCode', function(expected) {
+        const actual = typeof this._obj === 'string'
+            ? this._obj
+            : String(this._obj);
+            
+        new _chai.Assertion(deindent(actual)).to.equal(deindent(expected));
+    });
+});
 
 // simulate a global browser environment
 require('browser-env')();
