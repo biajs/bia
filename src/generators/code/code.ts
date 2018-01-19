@@ -8,6 +8,8 @@ interface CodeOptions {
 }
 
 export default function(source, options = null) {
+    const appendedSource = [];
+
     if (options === null) options = {};
     if (typeof options.containers === 'undefined') options.containers = {};
     if (typeof options.helpers === 'undefined') options.helpers = {};
@@ -16,16 +18,22 @@ export default function(source, options = null) {
     const block = {
 
         // append child code to a container
-        append(child, container) {
-            if (typeof options.containers[container] === 'undefined') {
-                options.containers[container] = [];
-            }
-
+        append(child, container = null) {
             if (typeof child === 'object' && typeof child.parent !== 'undefined') {
                 child.parent = this;
             }
 
-            options.containers[container].push(child);
+            // append to a container
+            if (container) {
+                if (typeof options.containers[container] === 'undefined') {
+                    options.containers[container] = [];
+                }
+
+                options.containers[container].push(child);
+            } 
+            
+            // append to main content
+            else appendedSource.push(child);
         },
 
         //
@@ -38,10 +46,9 @@ export default function(source, options = null) {
         //
         rawSource: source,
 
-        //
-        // root code instance
-        //
-        root: options.root || null,
+        // this property is computed, it's not actually null.
+        // see the Object.defineProperty() call below.
+        root: null,
 
         //
         // cast the code object to a string
@@ -49,7 +56,10 @@ export default function(source, options = null) {
         toString() {
             let output = deindent(source);
 
-            // containers
+            // append output added after creation
+            if (appendedSource.length) {
+                output += '\n\n' + deindent(appendedSource.join('\n\n'));
+            }
 
             // replace partials
             output = replacePartials(options, output);
@@ -119,7 +129,15 @@ function replaceHelpers(options, output) {
     });
 
     return output.replace(':helpers', used
-        .map(helper => options.helpers[helper])
+        .map(name => {
+            const helper = options.helpers[name];
+
+            if (!helper) {
+                throw `Helper function "${name}" not found.`;
+            }
+
+            return helper;
+        })
         .map(String)
         .map(deindent)
         .join('\n\n')

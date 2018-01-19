@@ -1,7 +1,7 @@
 import code from '../../../../src/generators/code/code';
 import { expect } from '../../../utils';
 
-describe.only('code generation', () => {
+describe('code generation', () => {
 
     it('can be cast to a string', () => {
         const output = code(`
@@ -44,6 +44,15 @@ describe.only('code generation', () => {
                 bar();
             }
         `);
+    });
+
+    it('throws an error if a referenced helper was not found', () => {
+        const output = code(`
+            :helpers
+            @foo(1, 2, 3);
+        `);
+
+        expect(() => output.toString()).to.throw(`Helper function "foo" not found.`);
     });
 
     it('renders partials', () => {
@@ -126,6 +135,41 @@ describe.only('code generation', () => {
 
         expect(output).to.equalCode(`
             function foo() {}
+            foo(1, 2, 3);
+        `);
+    });
+
+    it('code can be appended to other code', () => {
+        const output = code(`
+            // foo
+        `);
+
+        output.append('// bar');
+        output.append('// baz');
+
+        expect(output).to.equalCode(`
+            // foo
+            
+            // bar
+            
+            // baz
+        `);
+    });
+
+    it('appended code can use helpers', () => {
+        const output = code(`
+            :helpers
+        `, {
+            helpers: {
+                foo: `function foo() {}`,
+            },
+        });
+
+        output.append(`@foo(1, 2, 3);`);
+
+        expect(output.toString()).to.equalCode(`
+            function foo() {}
+            
             foo(1, 2, 3);
         `);
     });
