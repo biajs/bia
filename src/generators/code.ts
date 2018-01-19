@@ -127,6 +127,9 @@ function replaceHelpers(options, output) {
         if (used.indexOf(helper) === -1) used.push(helper);
         return helper;
     });
+    
+    // for easier readability, alphabetize our helpers
+    used.sort();
 
     return output.replace(':helpers', used
         .map(name => {

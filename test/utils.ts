@@ -1,9 +1,9 @@
 import { ParsedNode } from '../src/interfaces';
-import { create, compile } from '../src/index';
+import { create, compile as compileDomCode } from '../src/index';
 
 // helper function to compile components
-export const code = (source, compilerOpts: any = {}) => {
-    return compile(source, {
+export const compile = (source, compilerOpts: any = {}) => {
+    return compileDomCode(source, {
         filename: 'Component.bia',
         format: 'fn',
         htmlMinifier: {

@@ -10,7 +10,7 @@ import compileDomCode from './compilers/dom/dom';
 export function compile(source: string, options: any) {
     try {
         const parsedSource = parse(source, options);
-        const code = compileDomCode();
+        const code = compileDomCode(parsedSource, options);
 
         return {
             code,
