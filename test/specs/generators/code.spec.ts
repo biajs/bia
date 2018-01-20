@@ -1,10 +1,9 @@
-import code from '../../../src/generators/code';
+import Code from '../../../src/generators/code';
 import { expect } from '../../utils';
 
 describe('code generation', () => {
-
     it('can be cast to a string', () => {
-        const output = code(`
+        const output = new Code(`
             console.log('hello world');
         `);
 
@@ -14,40 +13,29 @@ describe('code generation', () => {
     });
 
     it('can reference helper functions', () => {
-        const output = code(`
+        const output = new Code(`
             :helpers
-            
+
             function whatever() {
                 @foo();
-                @bar();
             }
         `, {
             helpers: {
-                foo: `
-                    function foo() {
-                        // hey
-                    }
-                `,
-                bar: `function bar() {}`,
+                foo: `function foo() {}`,
             },
         });
-        
-        expect(output).to.equalCode(`
-            function foo() {
-                // hey
-            }
 
-            function bar() {}
+        expect(output).to.equalCode(`
+            function foo() {}
 
             function whatever() {
                 foo();
-                bar();
             }
         `);
     });
 
     it('throws an error if a referenced helper was not found', () => {
-        const output = code(`
+        const output = new Code(`
             :helpers
             @foo(1, 2, 3);
         `);
@@ -55,26 +43,46 @@ describe('code generation', () => {
         expect(() => output.toString()).to.throw(`Helper function "foo" not found.`);
     });
 
-    it('renders partials', () => {
-        const output = code(`
+    it('renders static partials', () => {
+        const output = new Code(`
             function foo() {
                 return %whatever;
             }
         `, {
             partials: {
-                whatever: `5`
+                whatever: `'hello'`
             },
         });
 
         expect(output).to.equalCode(`
             function foo() {
-                return 5;
+                return 'hello';
+            }
+        `);
+    });
+
+    it('renders dynamic partials', () => {
+        const output = new Code(`
+            function foo() {
+                return %whatever;
+            }
+        `, {
+            partials: {
+                whatever() {
+                    return `'world'`;
+                },
+            },
+        });
+
+        expect(output).to.equalCode(`
+            function foo() {
+                return 'world';
             }
         `);
     });
 
     it('renders partials at the correct indentation', () => {
-        const output = code(`
+        const output = new Code(`
             function foo() {
                 return %whatever;
             }
@@ -87,7 +95,7 @@ describe('code generation', () => {
                 `,
             },
         });
-
+        
         expect(output).to.equalCode(`
             function foo() {
                 return {
@@ -97,27 +105,64 @@ describe('code generation', () => {
         `);
     });
 
-    it('allows helpers to be used from partials', () => {
-        const output = code(`
+    it('throws an error of a partial was not found', () => {
+        const output = new Code(`
+            %somePartial
+        `);
+
+        expect(() => output.toString()).to.throw(`Partial "somePartial" not found.`);
+    });
+
+    it('allows helpers to be used from static partials', () => {
+        const output = new Code(`
             :helpers
-            %child
+            %foo
+            %bar
         `, {
-            partials: { 
-                child: code(`@foo(1, 2, 3);`),
-            },
             helpers: {
-                foo: `function foo() {}`,
+                doStuff: `function doStuff() {}`,
+            },
+            partials: { 
+                foo: `@doStuff('foo');`,
+                bar: new Code(`@doStuff('bar');`),
             },
         });
 
         expect(output).to.equalCode(`
-            function foo() {}
-            foo(1, 2, 3);
+            function doStuff() {}
+            doStuff('foo');
+            doStuff('bar');
+        `);
+    });
+
+    it('allows helpers to be used from dynamic partials', () => {
+        const output = new Code(`
+            :helpers
+            %foo
+            %bar
+        `, {
+            helpers: {
+                doStuff: `function doStuff() {}`,
+            },
+            partials: {
+                foo() {
+                    return `@doStuff('foo');`;
+                },
+                bar() {
+                    return new Code(`@doStuff('bar');`);
+                },
+            },
+        });
+
+        expect(output).to.equalCode(`
+            function doStuff() {}
+            doStuff('foo');
+            doStuff('bar');
         `);
     });
 
     it('allows helpers to be used from deeply nested partials', () => {
-        const output = code(`
+        const output = new Code(`
             :helpers
             %child
         `, {
@@ -125,118 +170,34 @@ describe('code generation', () => {
                 foo: `function foo() {}`,
             },
             partials: {
-                child: code(`%grandchild`, {
+                child: new Code(`%grandchild`, {
                     partials: {
                         grandchild: `@foo(1, 2, 3);`
-                    }
+                    },
                 }),
-            }
-        });
-
-        expect(output).to.equalCode(`
-            function foo() {}
-            foo(1, 2, 3);
-        `);
-    });
-
-    it('code can be appended to other code', () => {
-        const output = code(`
-            // foo
-        `);
-
-        output.append('// bar');
-        output.append('// baz');
-
-        expect(output).to.equalCode(`
-            // foo
-            
-            // bar
-            
-            // baz
-        `);
-    });
-
-    it('appended code can use helpers', () => {
-        const output = code(`
-            :helpers
-        `, {
-            helpers: {
-                foo: `function foo() {}`,
             },
         });
 
-        output.append(`@foo(1, 2, 3);`);
-
-        expect(output.toString()).to.equalCode(`
+        expect(output).to.equalCode(`
             function foo() {}
-            
             foo(1, 2, 3);
         `);
     });
 
-    it('code can be appended to a container', () => {
-        const output = code(`
-            // before
-
-            :someContainer
-
-            // after
+    it('allows code to be appended to the original content', () => {
+        const output = new Code(`
+            // foo
         `);
 
-        output.append(`// foo`, 'someContainer');
-        output.append('// bar', 'someContainer');
+        output.append(`// bar`);
+        output.append(new Code(`// baz`));
 
         expect(output).to.equalCode(`
-            // before
-
             // foo
             
             // bar
 
-            // after
+            // baz
         `);
-    });
-
-    it('can append child code objects to containers', () => {
-        const parent = code(`
-            :foo
-        `);
-
-        const child = code(`
-            // hello from the child
-        `);
-
-        parent.append(child, 'foo');
-
-        expect(child.parent).to.equal(parent);
-        expect(parent).to.equalCode(`// hello from the child`);
-    })
-
-    it('removes unused containers', () => {
-        const output = code(`
-            function foo() {
-                :vars
-                return null;
-            }
-        `);
-
-        expect(output).to.equalCode(`
-            function foo() {
-
-                return null;
-            }
-        `);
-    });
-
-    it('exposes a computed "root" property', () => {
-        const foo = code(`:foo`);
-        const bar = code(`:bar`);
-        const baz = code(`// hello from baz`);
-
-        bar.append(baz, 'bar');
-        expect(baz.root).to.equal(bar);
-
-        foo.append(bar, 'foo');
-        expect(baz.root).to.equal(foo);
     });
 });

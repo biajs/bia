@@ -3,143 +3,124 @@ import {
 } from '../utils/string';
 
 interface CodeOptions {
-    helpers: Object,
-    containers: Array<any>,
+    helpers?: Object,
+    parent?: Code|null,
+    partials?: Object,
 }
 
-export default function(source, options = null) {
-    const appendedSource = [];
+//
+// Code
+//
+export default class Code {
+    public appendedCode: Array<Code|string>
+    public codeTemplate: string;
+    public helpers: Object;
+    public parent: Code|null;
+    public partials: Object;
 
-    if (options === null) options = {};
-    if (typeof options.containers === 'undefined') options.containers = {};
-    if (typeof options.helpers === 'undefined') options.helpers = {};
-    if (typeof options.partials === 'undefined') options.partials = {};
+    // constructor
+    constructor(codeTemplate: string, options: CodeOptions = {}) {
+        this.appendedCode = [];
+        this.codeTemplate = codeTemplate;
+        this.helpers = options.helpers || {};
+        this.parent = options.parent || null;
+        this.partials = options.partials || {};
 
-    const block = {
+        // set the parent properties of any partials passed in
+        Object.keys(this.partials)
+            .filter(name => this.partials[name] instanceof Code)
+            .forEach(name => this.partials[name].parent = this);
+    }
 
-        // append child code to a container
-        append(child, container = null) {
-            if (typeof child === 'object' && typeof child.parent !== 'undefined') {
-                child.parent = this;
-            }
+    //
+    // append code
+    //
+    public append(code: Code|string): void {
+        if (code instanceof Code) {
+            code.parent = this;
+        }
 
-            // append to a container
-            if (container) {
-                if (typeof options.containers[container] === 'undefined') {
-                    options.containers[container] = [];
-                }
+        this.appendedCode.push(code);
+    }
 
-                options.containers[container].push(child);
-            } 
-            
-            // append to main content
-            else appendedSource.push(child);
-        },
+    //
+    // determine if this is the root code instance
+    //
+    public isRoot(): boolean {
+        return this.parent === null;
+    }
 
-        //
-        // parent code instance
-        //
-        parent: options.parent || null,
+    //
+    // find the root code instance
+    //
+    get root(): Code {
+        let root: Code = this;
 
-        //
-        // deindented raw source
-        //
-        rawSource: source,
+        while (root.parent) {
+            root = root.parent;
+        }
 
-        // this property is computed, it's not actually null.
-        // see the Object.defineProperty() call below.
-        root: null,
+        return root;
+    }
 
-        //
-        // cast the code object to a string
-        //
-        toString() {
-            let output = deindent(source);
+    //
+    // cast to a string
+    //
+    public toString(output: string = null): string {
+        if (!output) {
+            output = deindent(this.codeTemplate);
+        }
 
-            // append output added after creation
-            if (appendedSource.length) {
-                output += '\n\n' + deindent(appendedSource.join('\n\n'));
-            }
+        // inject appended code
+        if (this.appendedCode.length) {
+            output += '\n\n' + deindent(this.appendedCode.join('\n\n'));
+        }
 
-            // replace partials
-            output = replacePartials(options, output);
+        // replace partials
+        output = replacePartials(this, output);
 
-            // if we are the root instance, find any helpers that have
-            // been used and make sure to include them in the output
-            if (isRoot(this)) output = replaceHelpers(options, output);
+        // if we're the root code instance, 
+        if (this.isRoot()) {
+            output = replaceHelpers(this, output);
+        }
 
-            // replace containers
-            output = replaceContainers(options, output);
-
-            return output;
-        },
-    };
-
-    // register partials
-    registerChildPartials(block, options.partials);
-
-    // expose a computed "root" property
-    Object.defineProperty(block, 'root', {
-        get() {
-            let parent = block.parent;
-            while (parent.parent) parent = parent.parent;
-            return parent;
-        },
-    });
-
-    return block;
+        return output;
+    }
 }
 
-// find the indentation of a line at a particular offset
+// find the indentation at a particular offset
 function findIndentationAtOffset(source, offset) {
     return source.slice(0, offset).split('\n').pop().match(/^\s*/g);
 }
 
-// determine if a code object is the root instance
-function isRoot(c) {
-    return c.parent === null;
-}
+// function replaceContainers(options, output) {
+//     return output.replace(/:\w+/g, (prefixedContainer, offset) => {
+//         const container = prefixedContainer.slice(1);
 
-// register child partials with their parent
-function registerChildPartials(parent, partials) {
-    Object.keys(partials).forEach(name => {
-        if (typeof partials[name] !== 'string')
-            partials[name].parent = this;
-    });
-}
-
-function replaceContainers(options, output) {
-    return output.replace(/:\w+/g, (prefixedContainer, offset) => {
-        const container = prefixedContainer.slice(1);
-
-        return typeof options.containers[container] !== 'undefined'
-            ? options.containers[container].join('\n\n')
-            : '';
-    });
-}
+//         return typeof options.containers[container] !== 'undefined'
+//             ? options.containers[container].join('\n\n')
+//             : '';
+//     });
+// }
 
 // replace helpers with their code content
-function replaceHelpers(options, output) {
-    const used = [];
+function replaceHelpers(code: Code, output: string) {
+    const usedHelpers = [];
 
     output = output.replace(/@\w+/g, prefixedHelper => {
         const helper = prefixedHelper.slice(1);
-        if (used.indexOf(helper) === -1) used.push(helper);
+        if (usedHelpers.indexOf(helper) === -1) usedHelpers.push(helper);
         return helper;
     });
-    
-    // for easier readability, alphabetize our helpers
-    used.sort();
 
-    return output.replace(':helpers', used
-        .map(name => {
-            const helper = options.helpers[name];
+    usedHelpers.sort();
 
-            if (!helper) {
+    return output.replace(':helpers', usedHelpers.map(name => {
+            if (!code.helpers[name]) {
                 throw `Helper function "${name}" not found.`;
             }
 
-            return helper;
+            return code.helpers[name];
         })
         .map(String)
         .map(deindent)
@@ -148,13 +129,25 @@ function replaceHelpers(options, output) {
 }
 
 // replace partials with their code content
-function replacePartials(options, output) {
+function replacePartials(code, output) {
     return output.replace(/%\w+/g, (partial, offset) => {
         const name = partial.slice(1);
-
         const indentation = findIndentationAtOffset(output, offset);
+
+        if (typeof code.partials[name] === 'undefined') {
+            throw `Partial "${name}" not found.`;
+        }
+
+        const partialContent = typeof code.partials[name] === 'function'
+            ? code.partials[name].bind(code)()
+            : code.partials[name];
+
+        // if our dynamic patial returned a code instance, set the parent context
+        if (typeof code.partials[name] === 'function' && partialContent instanceof Code) {
+            partialContent.parent = code;
+        }
         
-        return deindent(String(options.partials[name]))
+        return deindent(String(partialContent))
             .split('\n')
             .map((line, index) => index ? indentation + line : line)
             .join('\n');

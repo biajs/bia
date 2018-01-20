@@ -1,6 +1,6 @@
 import { compile, expect, render } from '../../utils';
 
-it.only('empty_element', function() {
+it.skip('empty_element', function() {
     const template = `
         <template>
             <div></div>
