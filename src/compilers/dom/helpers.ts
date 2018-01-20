@@ -4,7 +4,7 @@ import Code from '../../generators/code';
 // append one node to another
 //
 export const appendNode = new Code(`
-    function appendNode(node, target) {
+    function #appendNode(node, target) {
         target.appendChild(node);
     }
 `);
@@ -13,7 +13,7 @@ export const appendNode = new Code(`
 // object assignment helper
 //
 export const assign = new Code(`
-    function assign(target) {
+    function #assign(target) {
         var k, source, i = 1, len = arguments.length;
 
         for (; i < len; i++) {
@@ -29,7 +29,7 @@ export const assign = new Code(`
 // create an html comment
 //
 export const createComment = new Code(`
-    function createComment(text) {
+    function #createComment(text) {
         return document.createComment(text);
     }
 `);
@@ -38,7 +38,7 @@ export const createComment = new Code(`
 // create an html element
 //
 export const createElement = new Code(`
-    function createElement(tag) {
+    function #createElement(tag) {
         return document.createElement(tag);
     }
 `);
@@ -47,7 +47,7 @@ export const createElement = new Code(`
 // create an html text node
 //
 export const createText = new Code(`
-    function createText(text) {
+    function #createText(text) {
         return document.createTextNode(text);
     }
 `);
@@ -56,7 +56,7 @@ export const createText = new Code(`
 // initialize a component
 //
 export const init = new Code(`
-    function init(vm, options) {
+    function #init(vm, options) {
         vm.$options = options;
         vm._handlers = [];
     }
@@ -66,7 +66,7 @@ export const init = new Code(`
 // proxy one object to another
 //
 export const proxy = new Code(`
-    function proxy(target, source) {
+    function #proxy(target, source) {
         for (let key in source) Object.defineProperty(target, key, {
             enumerable: true,
             configurable: true,

@@ -215,4 +215,44 @@ describe('code generation', () => {
             // baz
         `);
     });
+
+    it('renames identifiers prefixed with # if necessary', () => {
+        const output = new Code(`
+            #foo;
+            #bar;
+            #baz;
+        `, {
+            reservedIdentifiers: ['bar', 'baz', 'baz_1'],
+        });
+
+        expect(output).to.equalCode(`
+            foo;
+            bar_1;
+            baz_2;
+        `);
+    });
+
+    it('it renames helpers that collide with a reserved identifier', () => {
+        const output = new Code(`
+            :helpers
+
+            @one();
+            @two();
+        `, {
+            helpers: {
+                one: `function #one() {}`,
+                two: `function #two() {}`,
+            },
+            reservedIdentifiers: ['one', 'two', 'two_1'],
+        });
+
+        expect(output.toString()).to.equalCode(`
+            function one_1() {}
+
+            function two_2() {}
+
+            one_1();
+            two_2();
+        `);
+    });
 });

@@ -6,6 +6,7 @@ interface CodeOptions {
     helpers?: Object,
     parent?: Code|null,
     partials?: Object,
+    reservedIdentifiers?: Array<string>,
 }
 
 //
@@ -15,16 +16,25 @@ export default class Code {
     public appendedCode: Array<Code|string>
     public codeTemplate: string;
     public helpers: Object;
+    public identifiers: Object;
     public parent: Code|null;
     public partials: Object;
+    public reservedIdentifiers: Array<string>;
 
     // constructor
     constructor(codeTemplate: string, options: CodeOptions = {}) {
         this.appendedCode = [];
         this.codeTemplate = codeTemplate;
         this.helpers = options.helpers || {};
+        this.identifiers = {};
         this.parent = options.parent || null;
         this.partials = options.partials || {};
+        this.reservedIdentifiers = options.reservedIdentifiers || [];
+
+        // set the parent properties of any helpers passed in
+        Object.keys(this.helpers)
+            .filter(name => this.helpers[name] instanceof Code)
+            .forEach(name => this.helpers[name].parent = this);
 
         // set the parent properties of any partials passed in
         Object.keys(this.partials)
@@ -56,6 +66,24 @@ export default class Code {
         }
 
         this.appendedCode.push(code);
+    }
+
+    //
+    // get a named identifier
+    //
+    public getIdentifier(name): string {
+        let suffix = 1;
+        let currentName = name;
+
+        while (typeof this.identifiers[name] === 'undefined') {
+            if (this.reservedIdentifiers.indexOf(currentName) === -1) {
+                this.identifiers[name] = currentName;
+            }
+
+            currentName = `${name}_${suffix++}`;
+        }
+
+        return this.identifiers[name];
     }
 
     //
@@ -94,9 +122,10 @@ export default class Code {
         // replace partials
         output = replacePartials(this, output);
 
-        // if we're the root code instance, 
+        // if we're the root code instance, replace helpers and identifiers
         if (this.isRoot()) {
             output = replaceHelpers(this, output);
+            output = replaceIdentifiers(this, output);
         }
 
         return output;
@@ -123,9 +152,9 @@ function replaceHelpers(code: Code, output: string) {
     const usedHelpers = [];
 
     output = output.replace(/@\w+/g, prefixedHelper => {
-        const helper = prefixedHelper.slice(1);
-        if (usedHelpers.indexOf(helper) === -1) usedHelpers.push(helper);
-        return helper;
+        let name = prefixedHelper.slice(1);
+        if (usedHelpers.indexOf(name) === -1) usedHelpers.push(name);
+        return code.getIdentifier(name);
     });
 
     usedHelpers.sort();
@@ -135,12 +164,19 @@ function replaceHelpers(code: Code, output: string) {
                 throw `Helper function "${name}" not found.`;
             }
 
-            return code.helpers[name];
+            return String(code.helpers[name]).replace(new RegExp(`\#${name}`), code.getIdentifier(name));
         })
         .map(String)
         .map(deindent)
         .join('\n\n')
     );
+}
+
+// replace identifiers
+function replaceIdentifiers(code: Code, output: string): string {
+    return output.replace(/#\w+/g, (name) => {
+        return code.getIdentifier(name.slice(1));
+    });
 }
 
 // replace partials with their code content

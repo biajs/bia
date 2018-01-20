@@ -16,6 +16,7 @@ export default function (parsedSource, options) {
         %componentConstructor
     `, {
         helpers,
+        reservedIdentifiers: ['Component', 'proxy'],
     });
 
     source.addPartial('componentConstructor', getConstructor(source, options));
@@ -30,7 +31,7 @@ function getConstructor(source: Code, options) {
     const name = options.name;
 
     return new Code(`
-        function ${name}(options) {
+        function #${name}(options) {
             this.$state = @assign({}, options.data);
             @init(this, options);
             @proxy(this, this.$state);
