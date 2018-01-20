@@ -2,52 +2,45 @@ const pkg = require('../../../package.json');
 
 import * as helpers from './helpers';
 import Fragment from './fragment';
-// import code from '../../generators/code';
+import Code from '../../generators/code';
 
 //
 // compile dom code
 //
 export default function (parsedSource, options) {
-//     return code(`
-//         // bia v${pkg.version}
+    const source = new Code(`
+        // bia v${pkg.version}
 
-//         // constructor
-//         %constructor
+        :helpers
 
-//         // fragments
-//         %fragments
+        %componentConstructor
+    `, {
+        helpers,
+    });
 
-//         // helper functions
-//         :helpers
-//     `, { 
-//         helpers, 
-//         partials: {
-//             constructor: componentConstructor(options),
-//             fragments: processFragments(parsedSource, options),
-//         },
-//     }).toString();
+    source.addPartial('componentConstructor', getConstructor(source, options));
+
+    return source.toString();
 }
 
 //
 // component constructor
 //
-function componentConstructor(options) {
-    // const constructorFn = options.name;
+function getConstructor(source: Code, options) {
+    const name = options.name;
 
-    // return code(`
-    //     function ${constructorFn}(options) {
-    //         this.$state = @assign({}, options.data);
-    //         @init(this, options);
-    //         @proxy(this, this.$state);
+    return new Code(`
+        function ${name}(options) {
+            this.$state = @assign({}, options.data);
+            @init(this, options);
+            @proxy(this, this.$state);
 
-    //         var fragment = create_main_fragment(this);
-
-    //         if (options.el) {
-    //             this.$el = fragment.c();
-    //             fragment.m(options.el, options.anchor || null);
-    //         }
-    //     }
-    // `);
+            if (options.el) {
+                this.$el = fragment.c();
+                fragment.m(options.el, options.anchor || null);
+            }
+        }
+    `);
 }
 
 //

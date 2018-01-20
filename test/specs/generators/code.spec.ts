@@ -184,6 +184,21 @@ describe('code generation', () => {
         `);
     });
 
+    it('can have partials added dynamically', () => {
+        const output = new Code(`
+            %foo
+            %bar
+        `);
+
+        output.addPartial('foo', `// foo`);
+        output.addPartial('bar', new Code(`// bar`));
+
+        expect(output).to.equalCode(`
+            // foo
+            // bar
+        `);
+    });
+
     it('allows code to be appended to the original content', () => {
         const output = new Code(`
             // foo

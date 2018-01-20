@@ -1,9 +1,9 @@
-import code from '../../generators/code';
+import Code from '../../generators/code';
 
 //
 // append one node to another
 //
-export const appendNode = code(`
+export const appendNode = new Code(`
     function appendNode(node, target) {
         target.appendChild(node);
     }
@@ -12,7 +12,7 @@ export const appendNode = code(`
 //
 // object assignment helper
 //
-export const assign = code(`
+export const assign = new Code(`
     function assign(target) {
         var k, source, i = 1, len = arguments.length;
 
@@ -28,7 +28,7 @@ export const assign = code(`
 //
 // create an html comment
 //
-export const createComment = code(`
+export const createComment = new Code(`
     function createComment(text) {
         return document.createComment(text);
     }
@@ -37,7 +37,7 @@ export const createComment = code(`
 //
 // create an html element
 //
-export const createElement = code(`
+export const createElement = new Code(`
     function createElement(tag) {
         return document.createElement(tag);
     }
@@ -46,7 +46,7 @@ export const createElement = code(`
 //
 // create an html text node
 //
-export const createText = code(`
+export const createText = new Code(`
     function createText(text) {
         return document.createTextNode(text);
     }
@@ -55,7 +55,7 @@ export const createText = code(`
 //
 // initialize a component
 //
-export const init = code(`
+export const init = new Code(`
     function init(vm, options) {
         vm.$options = options;
         vm._handlers = [];
@@ -65,7 +65,7 @@ export const init = code(`
 //
 // proxy one object to another
 //
-export const proxy = code(`
+export const proxy = new Code(`
     function proxy(target, source) {
         for (let key in source) Object.defineProperty(target, key, {
             enumerable: true,

@@ -33,6 +33,21 @@ export default class Code {
     }
 
     //
+    // add a partial
+    //
+    public addPartial(name: string, code: Code|string): void {
+        if (typeof this.partials[name] !== 'undefined') {
+            throw `Failed to add partial "${name}", that partial already exists.`;
+        }
+
+        if (code instanceof Code) {
+            code.parent = this;
+        }
+
+        this.partials[name] = code;
+    }
+
+    //
     // append code
     //
     public append(code: Code|string): void {
@@ -129,7 +144,7 @@ function replaceHelpers(code: Code, output: string) {
 }
 
 // replace partials with their code content
-function replacePartials(code, output) {
+function replacePartials(code: Code, output: string): string {
     return output.replace(/%\w+/g, (partial, offset) => {
         const name = partial.slice(1);
         const indentation = findIndentationAtOffset(output, offset);
