@@ -49,6 +49,16 @@ export function escape(source: string): string {
         .replace(/"/g, '\\\"')        // double quotes
 }
 
+// find the line of a particular offset
+export function findLineAtOffset(source: string, offset: number): string {
+    return source.split('\n')[findLineIndexAtOffset(source, offset)];
+}
+
+// find the line index of a particular offset
+export function findLineIndexAtOffset(source, offset) {
+    return (source.slice(0, offset).match(/\n/g) || []).length;
+}
+
 /**
  * Indent a string.
  * 

@@ -216,6 +216,31 @@ describe('code generation', () => {
         `);
     });
 
+    it('removes containers that are empty', () => {
+        const output = new Code(`
+            :foo
+            // bar
+        `);
+
+        expect(output.toString()).to.equalCode(`
+            // bar
+        `);
+    });
+
+    it('allows code to be appended to a container', () => {
+        const output = new Code(`
+            :foo
+            // bar
+        `);
+
+        output.append(`// hello`, 'foo');
+
+        expect(output.toString()).to.equalCode(`
+            // hello
+            // bar
+        `);
+    })
+
     it('renames identifiers prefixed with # if necessary', () => {
         const output = new Code(`
             #foo;
@@ -255,4 +280,26 @@ describe('code generation', () => {
             two_2();
         `);
     });
+
+    it('collapses duplicate newlines', () => {
+        const output = new Code(`
+            // foo
+            
+            
+            // bar
+            // baz
+            
+            
+            // yar
+        `);
+
+        expect(output.toString()).to.equalCode(`
+            // foo
+            
+            // bar
+            // baz
+            
+            // yar
+        `);
+    })
 });

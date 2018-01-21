@@ -63,6 +63,13 @@ export const init = new Code(`
 `);
 
 //
+// no-op
+//
+export const noop = new Code(`
+    function #noop() {}
+`);
+
+//
 // proxy one object to another
 //
 export const proxy = new Code(`

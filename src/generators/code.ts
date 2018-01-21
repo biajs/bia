@@ -1,5 +1,7 @@
 import {
     deindent,
+    findLineIndexAtOffset,
+    isWhitespace,
 } from '../utils/string';
 
 interface CodeOptions {
@@ -15,6 +17,7 @@ interface CodeOptions {
 export default class Code {
     public appendedCode: Array<Code|string>
     public codeTemplate: string;
+    public containers: Object;
     public helpers: Object;
     public identifiers: Object;
     public parent: Code|null;
@@ -25,6 +28,7 @@ export default class Code {
     constructor(codeTemplate: string, options: CodeOptions = {}) {
         this.appendedCode = [];
         this.codeTemplate = codeTemplate;
+        this.containers = {};
         this.helpers = options.helpers || {};
         this.identifiers = {};
         this.parent = options.parent || null;
@@ -60,12 +64,22 @@ export default class Code {
     //
     // append code
     //
-    public append(code: Code|string): void {
+    public append(code: Code|string, container: string = null): void {
         if (code instanceof Code) {
             code.parent = this;
         }
 
-        this.appendedCode.push(code);
+        // append the code to a container
+        if (container) {
+            if (typeof this.containers[container] === 'undefined') {
+                this.containers[container] = [];
+            }
+
+            this.containers[container].push(code);
+        }
+
+        // or append the code to the base content
+        else this.appendedCode.push(code);
     }
 
     //
@@ -119,6 +133,9 @@ export default class Code {
             output += '\n\n' + deindent(this.appendedCode.join('\n\n'));
         }
 
+        // replace containers
+        output = replaceContainers(this, output);
+
         // replace partials
         output = replacePartials(this, output);
 
@@ -127,6 +144,11 @@ export default class Code {
             output = replaceHelpers(this, output);
             output = replaceIdentifiers(this, output);
         }
+
+        // collapse unecessary empty lines
+        output = output
+            .replace(/(\n\s*){2,}\n/g, '\n\n') // collapse to a single empty line
+            .replace(/\{\n(?:\s*|\n*)\n{1,}/g, '{\n') // remove newlines at the start of blocks
 
         return output;
     }
@@ -137,18 +159,41 @@ function findIndentationAtOffset(source, offset) {
     return source.slice(0, offset).split('\n').pop().match(/^\s*/g);
 }
 
-// function replaceContainers(options, output) {
-//     return output.replace(/:\w+/g, (prefixedContainer, offset) => {
-//         const container = prefixedContainer.slice(1);
+// replace containers with their code content
+function replaceContainers(code: Code, output: string): string {
+    const emptyContainerLines = [];
 
-//         return typeof options.containers[container] !== 'undefined'
-//             ? options.containers[container].join('\n\n')
-//             : '';
-//     });
-// }
+    output = output.replace(/:\w+/g, (prefixedContainer, offset) => {
+        const container = prefixedContainer.slice(1);
+
+        // helpers are a special container, and are processed by the root code instance
+        if (container === 'helpers') {
+            return ':helpers';
+        }
+
+        // keep track of empty containers so we can remove empty lines
+        if (typeof code.containers[container] === 'undefined') {
+            emptyContainerLines.push(findLineIndexAtOffset(output, offset));
+            return '';
+        }
+
+        // otherwise return our container content
+        return code.containers[container].join('\n\n');
+    });
+
+    emptyContainerLines.sort();
+
+    return output.split('\n').reduce((lines, currentLine, index) => {
+        if (emptyContainerLines.indexOf(index) === -1 || !isWhitespace(currentLine)) {
+            lines.push(currentLine);
+        }
+
+        return lines;
+    }, []).join('\n');
+}
 
 // replace helpers with their code content
-function replaceHelpers(code: Code, output: string) {
+function replaceHelpers(code: Code, output: string): string {
     const usedHelpers = [];
 
     output = output.replace(/@\w+/g, prefixedHelper => {
@@ -187,6 +232,11 @@ function replacePartials(code: Code, output: string): string {
 
         if (typeof code.partials[name] === 'undefined') {
             throw `Partial "${name}" not found.`;
+        } 
+        
+        // if there is no partial content, return nothing
+        if (code.partials[name] === null) {
+            return '';
         }
 
         const partialContent = typeof code.partials[name] === 'function'

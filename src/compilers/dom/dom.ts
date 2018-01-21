@@ -1,7 +1,6 @@
 const pkg = require('../../../package.json');
 
 import * as helpers from './helpers';
-import Fragment from './fragment';
 import Code from '../../generators/code';
 
 //
@@ -16,7 +15,9 @@ export default function (parsedSource, options) {
         %componentConstructor
     `, {
         helpers,
-        reservedIdentifiers: ['Component', 'proxy'],
+        reservedIdentifiers: [
+            // @todo: include identifiers from the <script> block
+        ],
     });
 
     source.addPartial('componentConstructor', getConstructor(source, options));
