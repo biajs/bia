@@ -3,7 +3,7 @@ import Code from '../../../src/generators/code';
 import Fragment from '../../../src/generators/fragment';
 import { expect } from '../../utils';
 
-describe.only('fragment class', () => {
+describe('fragment class', () => {
     let baseCode;
     let fragment;
     

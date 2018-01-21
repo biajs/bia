@@ -34,6 +34,48 @@ describe('code generation', () => {
         `);
     });
 
+    it('helpers can reference other helper functions', () => {
+        const output = new Code(`
+            :helpers
+
+            @foo();
+        `, {
+            helpers: {
+                foo: `
+                    function #foo() {
+                        return @bar();
+                    }
+                `,
+                bar: `
+                    function #bar() {
+                        return @baz();
+                    }
+                `,
+                baz: `
+                    function #baz() {
+                        return true;
+                    }
+                `,
+            },
+        });
+
+        expect(output.toString()).to.equalCode(`
+            function baz() {
+                return true;
+            }
+
+            function bar() {
+                return baz();
+            }
+
+            function foo() {
+                return bar();
+            }
+
+            foo();
+        `);
+    });
+
     it('throws an error if a referenced helper was not found', () => {
         const output = new Code(`
             :helpers

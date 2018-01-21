@@ -1,7 +1,7 @@
 import Code from '../../generators/code';
 
 //
-// append one node to another
+// appendNode
 //
 export const appendNode = new Code(`
     function #appendNode(node, target) {
@@ -10,7 +10,7 @@ export const appendNode = new Code(`
 `);
 
 //
-// object assignment helper
+// assign
 //
 export const assign = new Code(`
     function #assign(target) {
@@ -26,7 +26,7 @@ export const assign = new Code(`
 `);
 
 //
-// create an html comment
+// createComment
 //
 export const createComment = new Code(`
     function #createComment(text) {
@@ -35,7 +35,7 @@ export const createComment = new Code(`
 `);
 
 //
-// create an html element
+// createElement
 //
 export const createElement = new Code(`
     function #createElement(tag) {
@@ -44,7 +44,7 @@ export const createElement = new Code(`
 `);
 
 //
-// create an html text node
+// createText
 //
 export const createText = new Code(`
     function #createText(text) {
@@ -53,7 +53,44 @@ export const createText = new Code(`
 `);
 
 //
-// initialize a component
+// defineReactive
+//
+export const defineReactive = new Code(`
+    function #defineReactive(obj, key, val, namespace, onUpdate) {
+        if (val && typeof val === 'object') observe(val, namespace, onUpdate);
+        
+        Object.defineProperty(obj, key, {
+            enumerable: true,
+            configurable: true,
+            get: function () {
+                return val;
+            },
+            set: function (newVal) {
+                val = newVal;
+                @setChangedState(namespace);
+                Promise.resolve().then(@executePendingUpdates.bind(null, onUpdate));
+            },
+        });
+    }
+`);
+
+//
+// executePendingUpdates
+//
+export const executePendingUpdates = new Code(`
+    function #executePendingUpdates(onUpdate) {
+        if (!#isUpdating) return;
+        #onUpdate(#changedState);
+        #changedState = {};
+        #isUpdating = false;
+        let fns = queue, i = 0, len = fns.length;
+        #queue = [];
+        for (;i < len; i++) fns[i]();
+    }
+`);
+
+//
+// init
 //
 export const init = new Code(`
     function #init(vm, options) {
@@ -63,14 +100,25 @@ export const init = new Code(`
 `);
 
 //
-// no-op
+// noop
 //
 export const noop = new Code(`
     function #noop() {}
 `);
 
 //
-// proxy one object to another
+// observe
+//
+export const observe = new Code(`
+    function #observe(obj, namespace, onUpdate) {
+        for (var key in obj) {
+            @defineReactive(obj, key, obj[key], namespace.concat(key), onUpdate);
+        }
+    }
+`);
+
+//
+// proxy
 //
 export const proxy = new Code(`
     function #proxy(target, source) {
@@ -80,5 +128,20 @@ export const proxy = new Code(`
             get: function() { return source[key] },
             set: function(val) { source[key] = val },
         });
+    }
+`);
+
+//
+// setChangedState
+//
+export const setChangedState = new Code(`
+    function #setChangedState(namespace) {
+        var key, i = 0, len = namespace.length, obj = changedState;
+        isUpdating = true;
+        for (; i < len; i++) {
+            key = namespace[i];
+            if (typeof obj[key] === 'undefined') obj[key] = {};
+            obj = obj[key];
+        }
     }
 `);

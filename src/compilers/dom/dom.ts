@@ -9,6 +9,7 @@ import Code from '../../generators/code';
 export default function (parsedSource, options) {
     const source = new Code(`
         // bia v${pkg.version}
+        var #changedState = {}, #isUpdating = false, #queue = [];
 
         :helpers
 
@@ -36,6 +37,10 @@ function getConstructor(source: Code, options) {
             this.$state = @assign({}, options.data);
             @init(this, options);
             @proxy(this, this.$state);
+
+            // define fragment
+
+            @observe(this.$state, [], fragment.p);
 
             if (options.el) {
                 this.$el = fragment.c();

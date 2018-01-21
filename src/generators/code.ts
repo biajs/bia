@@ -141,7 +141,13 @@ export default class Code {
 
         // if we're the root code instance, replace helpers and identifiers
         if (this.isRoot()) {
-            output = replaceHelpers(this, output);
+            // replace helpers in a loop so they can call other helpers
+            while (output.match(/@\w+/g)) {
+                output = replaceHelpers(this, output);
+            }
+
+            output = output.replace(':helpers\n\n', '');
+
             output = replaceIdentifiers(this, output);
         }
 
@@ -204,7 +210,7 @@ function replaceHelpers(code: Code, output: string): string {
 
     usedHelpers.sort();
 
-    return output.replace(':helpers', usedHelpers.map(name => {
+    return output.replace(':helpers', ':helpers\n\n' + usedHelpers.map(name => {
             if (!code.helpers[name]) {
                 throw `Helper function "${name}" not found.`;
             }
