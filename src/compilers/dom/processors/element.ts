@@ -69,15 +69,25 @@ function manageRootElement(code, rootNode, fragment) {
 
     if (hasOnlyStaticText(rootNode)) {
         setProcessingFlag(rootNode.children[0], 'wasCreatedBySetText');
-
         fragment.create.append(`
             @setText(${varName}, '${escape(rootNode.children[0].textContent)}');
         `);
     } else if (hasOnlyStaticContent(rootNode)) {
+        walkNodeTree(rootNode, n => setProcessingFlag(n, 'wasCreatedByInnerHTML'));
         fragment.create.append(`
             ${varName}.innerHTML = '${escape(rootNode.innerHTML)}';
         `);
     }
+
+    // mount
+    fragment.mount.append(`
+        @insertNode(${varName}, target, anchor);
+    `)
+
+    // unmount
+    fragment.unmount.append(`
+        @detachNode(${varName});
+    `);
 }
 
 //

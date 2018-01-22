@@ -75,6 +75,15 @@ export const defineReactive = new Code(`
 `);
 
 //
+// detachNode
+//
+export const detachNode = new Code(`
+    function #detachNode(node) {
+        node.parentNode.removeChild(node);
+    }
+`);
+
+//
 // executePendingUpdates
 //
 export const executePendingUpdates = new Code(`
@@ -96,6 +105,15 @@ export const init = new Code(`
     function #init(vm, options) {
         vm.$options = options;
         vm._handlers = [];
+    }
+`);
+
+//
+// insertNode
+//
+export const insertNode = new Code(`
+    function #insertNode(node, target, anchor) {
+        target.insertBefore(node, anchor);
     }
 `);
 

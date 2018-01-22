@@ -67,7 +67,7 @@ function getConstructor(source: Code, options) {
 
             if (options.el) {
                 this.$el = fragment.c();
-                // fragment.m(options.el, options.anchor || null);
+                fragment.m(options.el, options.anchor || null);
             }
         }
     `);
