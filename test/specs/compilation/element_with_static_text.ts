@@ -1,9 +1,9 @@
 import { compile, expect, render } from '../../utils';
 
-it('empty_element', function() {
+it('element_with_static_text', function() {
     const source = `
         <template>
-            <div></div>
+            <div>hello world</div>
         </template>
     `;
 
@@ -13,5 +13,5 @@ it('empty_element', function() {
     // console.log(output);
 
     const vm = render(source, options);
-    expect(vm.$el.outerHTML).to.equal('<div></div>');
+    expect(vm.$el.outerHTML).to.equal('<div>hello world</div>');
 });

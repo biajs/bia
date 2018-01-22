@@ -36,13 +36,13 @@ describe('fragment class', () => {
         `);
     });
 
-    it('can push code onto lifecycle methods', () => {
-        fragment.create.push('// create');
-        fragment.hydrate.push('// hydrate');
-        fragment.mount.push('// mount');
-        fragment.update.push('// update');
-        fragment.unmount.push('// unmount');
-        fragment.destroy.push('// destroy');
+    it('can append code onto lifecycle methods', () => {
+        fragment.create.append('// create');
+        fragment.hydrate.append('// hydrate');
+        fragment.mount.append('// mount');
+        fragment.update.append('// update');
+        fragment.unmount.append('// unmount');
+        fragment.destroy.append('// destroy');
         
         expect(fragment.toString()).to.equalCode(`
             function #test_fragment(vm) {
@@ -107,8 +107,8 @@ describe('fragment class', () => {
         `);
     });
 
-    it('can push code into the constructor', () => {
-        fragment.content.push('// hello world');
+    it('can append code into the constructor', () => {
+        fragment.content.append('// hello world');
         
         expect(fragment.toString()).to.equalCode(`
             function #test_fragment(vm) {
@@ -128,7 +128,7 @@ describe('fragment class', () => {
 
     it('defines variables before executing constructor content', () => {
         fragment.define({}, 'foo');
-        fragment.content.push('// hello world');
+        fragment.content.append('// hello world');
 
         expect(fragment.toString()).to.equalCode(`
             function #test_fragment(vm) {
@@ -149,11 +149,9 @@ describe('fragment class', () => {
     });
 
     it('adds line breaks between constructor content', () => {
-        baseCode.reservedIdentifiers.push('createComment');
+        fragment.content.append(`// foo`);
 
-        fragment.content.push(`// foo`);
-
-        fragment.content.push(`// bar`);
+        fragment.content.append(`// bar`);
 
         expect(fragment.toString()).to.equalCode(`
             function #test_fragment(vm) {

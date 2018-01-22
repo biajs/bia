@@ -1,31 +1,35 @@
 import Code from './code';
 
+import {
+    deindent,
+} from '../utils/string';
+
 export default class {
     public baseCode: Code;
-    public content: Array<Code | string>;
-    public create: Array<Code | string>;
+    public constructorContent: Array<Code | string>;
+    public createContent: Array<Code | string>;
     public definedVars: Object;
-    public destroy: Array<Code | string>;
-    public hydrate: Array<Code | string>;
-    public mount: Array<Code | string>;
+    public destroyContent: Array<Code | string>;
+    public hydrateContent: Array<Code | string>;
+    public mountContent: Array<Code | string>;
     public name: string;
-    public unmount: Array<Code | string>;
-    public update: Array<Code | string>;
+    public unmountContent: Array<Code | string>;
+    public updateContent: Array<Code | string>;
 
     //
     // constructor
     //
     constructor(baseCode: Code, name: string) {
         this.baseCode = baseCode;
-        this.content = [];
-        this.create = [];
+        this.constructorContent = [];
+        this.createContent = [];
         this.definedVars = {};
-        this.destroy = [];
-        this.hydrate = [];
-        this.mount = [];
+        this.destroyContent = [];
+        this.hydrateContent = [];
+        this.mountContent = [];
         this.name = name;
-        this.unmount = [];
-        this.update = [];
+        this.unmountContent = [];
+        this.updateContent = [];
     }
 
     //
@@ -65,8 +69,20 @@ export default class {
     //
     // create
     //
+    get create() {
+        return {
+            append: content => {
+                if (typeof content === 'string') {
+                    content = deindent(content);
+                }
+
+                this.createContent.push(content)
+            }
+        }
+    }
+
     get createFunction() {
-        if (this.create.length === 0) return '@noop';
+        if (this.createContent.length === 0) return '@noop';
 
         return new Code(`
             function create() {
@@ -74,7 +90,7 @@ export default class {
             }
         `, {
             partials: {
-                content: this.create.join('\n\n'),
+                content: this.createContent.join('\n\n'),
             },
         });
     }
@@ -82,9 +98,21 @@ export default class {
     //
     // constructor code
     //
+    get content() {
+        return {
+            append: content => {
+                if (typeof content === 'string') {
+                    content = deindent(content);
+                }
+
+                this.constructorContent.push(content)
+            }
+        }
+    }
+
     get constructorCode() {
-        if (this.content.length > 0) {
-            return new Code(this.content.join('\n\n'));
+        if (this.constructorContent.length > 0) {
+            return new Code(this.constructorContent.join('\n\n'));
         }
 
         return null;
@@ -133,8 +161,20 @@ export default class {
     //
     // destroy
     //
+    get destroy() {
+        return {
+            append: content => {
+                if (typeof content === 'string') {
+                    content = deindent(content);
+                }
+
+                this.destroyContent.push(content)
+            }
+        }
+    }
+
     get destroyFunction() {
-        if (this.destroy.length === 0) return '@noop';
+        if (this.destroyContent.length === 0) return '@noop';
 
         return new Code(`
             function destroy() {
@@ -142,7 +182,7 @@ export default class {
             }
         `, {
             partials: {
-                content: this.destroy.join('\n\n'),
+                content: this.destroyContent.join('\n\n'),
             },
         });
     }
@@ -150,8 +190,20 @@ export default class {
     //
     // hydrate
     //
+    get hydrate() {
+        return {
+            append: content => {
+                if (typeof content === 'string') {
+                    content = deindent(content);
+                }
+
+                this.hydrateContent.push(content)
+            }
+        }
+    }
+
     get hydrateFunction() {
-        if (this.hydrate.length === 0) return '@noop';
+        if (this.hydrateContent.length === 0) return '@noop';
 
         return new Code(`
             function hydrate() {
@@ -159,7 +211,7 @@ export default class {
             }
         `, {
             partials: {
-                content: this.hydrate.join('\n\n'),
+                content: this.hydrateContent.join('\n\n'),
             },
         });
     }
@@ -167,8 +219,20 @@ export default class {
     //
     // mount
     //
+    get mount() {
+        return {
+            append: content => {
+                if (typeof content === 'string') {
+                    content = deindent(content);
+                }
+
+                this.mountContent.push(content)
+            }
+        }
+    }
+
     get mountFunction() {
-        if (this.mount.length === 0) return '@noop';
+        if (this.mountContent.length === 0) return '@noop';
 
         return new Code(`
             function mount(target, anchor) {
@@ -176,7 +240,7 @@ export default class {
             }
         `, {
             partials: {
-                content: this.mount.join('\n\n'),
+                content: this.mountContent.join('\n\n'),
             },
         });
     }
@@ -184,8 +248,20 @@ export default class {
     //
     // unmount
     //
+    get unmount() {
+        return {
+            append: content => {
+                if (typeof content === 'string') {
+                    content = deindent(content);
+                }
+
+                this.unmountContent.push(content)
+            }
+        }
+    }
+
     get unmountFunction() {
-        if (this.unmount.length === 0) return '@noop';
+        if (this.unmountContent.length === 0) return '@noop';
 
         return new Code(`
             function unmount() {
@@ -193,7 +269,7 @@ export default class {
             }
         `, {
             partials: {
-                content: this.unmount.join('\n\n'),
+                content: this.unmountContent.join('\n\n'),
             },
         });
     }
@@ -201,8 +277,20 @@ export default class {
     //
     // update
     //
+    get update() {
+        return {
+            append: content => {
+                if (typeof content === 'string') {
+                    content = deindent(content);
+                }
+
+                this.updateContent.push(content)
+            }
+        }
+    }
+
     get updateFunction() {
-        if (this.update.length === 0) return '@noop';
+        if (this.updateContent.length === 0) return '@noop';
 
         return new Code(`
             function update(changed) {
@@ -210,7 +298,7 @@ export default class {
             }
         `, {
             partials: {
-                content: this.update.join('\n\n'),
+                content: this.updateContent.join('\n\n'),
             },
         });
     }

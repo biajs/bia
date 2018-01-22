@@ -1,9 +1,11 @@
 import { compile, expect, render } from '../../utils';
 
-it('empty_element', function() {
+it('element_with_static_children', function() {
     const source = `
         <template>
-            <div></div>
+            <div>
+                <span>hello world</span>
+            </div>
         </template>
     `;
 
@@ -13,5 +15,5 @@ it('empty_element', function() {
     // console.log(output);
 
     const vm = render(source, options);
-    expect(vm.$el.outerHTML).to.equal('<div></div>');
+    expect(vm.$el.outerHTML).to.equal('<div><span>hello world</span></div>');
 });

@@ -145,3 +145,12 @@ export const setChangedState = new Code(`
         }
     }
 `);
+
+//
+// setText
+//
+export const setText = new Code(`
+    function #setText(el, text) {
+        el.textContent = text;
+    }
+`);

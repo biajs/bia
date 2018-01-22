@@ -1,19 +1,17 @@
-import { code, expect, render } from '../../utils';
+import { compile, expect, render } from '../../utils';
 
 it.only('_NAME_', function() {
-    const template = `
+    const source = `
         <template>
-            <div>
-
-            </div>
+            <div></div>
         </template>
     `;
 
     const options = {};
 
-    const output = code(template, options);
+    const output = compile(source, options);
     console.log(output);
 
-    // const vm = render(template, options);
-    // expect(vm.$options.foo).to.equal('bar');
+    // const vm = render(source, options);
+    // console.log(vm.$el.outerHTML);
 });

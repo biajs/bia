@@ -2,6 +2,28 @@ import Code from '../../../generators/code';
 import Fragment from '../../../generators/fragment';
 import { ParsedNode } from '../../../interfaces';
 
+//
+// utils
+//
+import { 
+    escape,
+} from '../../../utils/string';
+
+import { 
+    hasConditionalDirective, 
+    hasLoopDirective,
+    hasOnlyStaticContent,
+    hasOnlyStaticText,
+    hasProcessingFlag,
+    isElementNode, 
+    isTextNode,
+    setProcessingFlag,
+    walkNodeTree,
+} from '../../../utils/parsed_node';
+
+//
+// element processor
+//
 export default {
 
     //
@@ -36,24 +58,36 @@ export default {
 //
 // manage the root element
 //
-function manageRootElement(code, currentNode, fragment) {
-    const tagName = currentNode.tagName;
-    const varName = fragment.define(currentNode, tagName);
+function manageRootElement(code, rootNode, fragment) {
+    const tagName = rootNode.tagName;
+    const varName = fragment.define(rootNode, tagName);
     
     // create
-    fragment.create.push(`
+    fragment.create.append(`
         ${varName} = @createElement('${tagName}');
     `);
+
+    if (hasOnlyStaticText(rootNode)) {
+        setProcessingFlag(rootNode.children[0], 'wasCreatedBySetText');
+
+        fragment.create.append(`
+            @setText(${varName}, '${escape(rootNode.children[0].textContent)}');
+        `);
+    } else if (hasOnlyStaticContent(rootNode)) {
+        fragment.create.append(`
+            ${varName}.innerHTML = '${escape(rootNode.innerHTML)}';
+        `);
+    }
 }
 
 //
 // return the root element
 //
-function returnRootElement(code, currentNode, fragment) {
-    const tagName = currentNode.tagName;
-    const varName = fragment.define(currentNode, tagName);
+function returnRootElement(code, rootNode, fragment) {
+    const tagName = rootNode.tagName;
+    const varName = fragment.define(rootNode, tagName);
 
-    fragment.create.push(`
+    fragment.create.append(`
         return ${varName};
     `);
 }
