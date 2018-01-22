@@ -19,22 +19,3 @@ export function compile(source: string, options: any) {
         throw err;
     }
 }
-
-/**
- * Compile source code into a component, and return it.
- * 
- * @param {string} source 
- * @param {Object} options 
- */
-export function create(source: string, options: any) {
-    try {
-        const { code } = compile(source, {
-            ...options,
-            format: 'fn',
-        });
-
-        return new Function(code)();
-    } catch (err) {
-        throw err;
-    }
-}

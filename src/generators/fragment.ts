@@ -33,7 +33,7 @@ export default class {
     //
     get code() {
         return new Code(`
-            function ${this.name}(vm) {
+            function #${this.name}(vm) {
                 %definedVars
                 
                 %content

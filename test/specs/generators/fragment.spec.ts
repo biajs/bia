@@ -171,5 +171,15 @@ describe('fragment class', () => {
                 };
             }
         `);
+    });
+
+    it.skip('whatever', () => {
+        fragment.getVarName({}, 'foo');
+
+        fragment.content.push(`
+            // hello rachael!!!!!
+        `);
+
+        console.log(baseCode.toString());
     })
 });

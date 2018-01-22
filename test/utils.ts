@@ -1,5 +1,5 @@
 import { ParsedNode } from '../src/interfaces';
-import { create, compile as compileDomCode } from '../src/index';
+import { compile as compileDomCode } from '../src/index';
 
 // helper function to compile components
 export const compile = (source, compilerOpts: any = {}) => {
@@ -48,19 +48,16 @@ export const render = (source = null, opts: any = {}, compilerOpts: any = {}) =>
         source = `<template><div></div></template>`;
     }
 
-    const Component = create(source, {
-        filename: 'Component.bia',
-        format: 'fn',
-        htmlMinifier: {
-            collapseWhitespace: true,
-        },
-        name: 'Component',
-        ...compilerOpts,
-    });
-
     if (typeof opts.el === 'undefined') {
         opts.el = div();
     }
+
+    const code = compile(source, {
+        ...compilerOpts,
+        format: 'fn',
+    });
+
+    const Component = new Function(code)();
 
     return new Component(opts);
 }

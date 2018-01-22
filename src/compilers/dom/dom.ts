@@ -2,6 +2,7 @@ const pkg = require('../../../package.json');
 
 import * as helpers from './helpers';
 import Code from '../../generators/code';
+import Fragment from '../../generators/fragment';
 
 //
 // compile dom code
@@ -11,9 +12,22 @@ export default function (parsedSource, options) {
         // bia v${pkg.version}
         var #changedState = {}, #isUpdating = false, #queue = [];
 
+        //
+        // helpers
+        //
         :helpers
 
+        //
+        // fragments
+        //
+        :fragments
+
+        //
+        // constructor
+        //
         %componentConstructor
+
+        return #${options.name};
     `, {
         helpers,
         reservedIdentifiers: [
@@ -39,12 +53,13 @@ function getConstructor(source: Code, options) {
             @proxy(this, this.$state);
 
             // define fragment
+            var fragment = #create_main_fragment(this);
 
             @observe(this.$state, [], fragment.p);
 
             if (options.el) {
                 this.$el = fragment.c();
-                fragment.m(options.el, options.anchor || null);
+                // fragment.m(options.el, options.anchor || null);
             }
         }
     `);

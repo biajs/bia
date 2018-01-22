@@ -13,5 +13,7 @@ it.only('empty_element', function() {
     console.log(output);
 
     // const vm = render(template, options);
+
+    // console.log(vm);
     // expect(vm.$options.foo).to.equal('bar');
 });
