@@ -74,7 +74,7 @@ export default class {
             }
         `, {
             partials: {
-                content: this.create,
+                content: this.create.join('\n\n'),
             },
         });
     }
@@ -142,7 +142,7 @@ export default class {
             }
         `, {
             partials: {
-                content: this.destroy,
+                content: this.destroy.join('\n\n'),
             },
         });
     }
@@ -159,7 +159,7 @@ export default class {
             }
         `, {
             partials: {
-                content: this.hydrate,
+                content: this.hydrate.join('\n\n'),
             },
         });
     }
@@ -176,7 +176,7 @@ export default class {
             }
         `, {
             partials: {
-                content: this.mount,
+                content: this.mount.join('\n\n'),
             },
         });
     }
@@ -193,7 +193,7 @@ export default class {
             }
         `, {
             partials: {
-                content: this.unmount,
+                content: this.unmount.join('\n\n'),
             },
         });
     }
@@ -210,7 +210,7 @@ export default class {
             }
         `, {
             partials: {
-                content: this.update,
+                content: this.update.join('\n\n'),
             },
         });
     }

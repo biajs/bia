@@ -198,7 +198,7 @@ function getStaticStyles(el: HTMLElement): Object {
 // get an element's tagName, or null if there is none
 // <div /> => 'div'
 function getTagName(el: HTMLElement): string | null {
-    return el.tagName || null;
+    return el.tagName ? el.tagName.toLowerCase() : null;
 }
 
 // get the text content of a node, or null if it's not a text node

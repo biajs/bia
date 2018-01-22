@@ -41,6 +41,8 @@ export default function (parsedSource, options) {
 
     // define our main fragment and start processing the template
     const mainFragment = new Fragment(source, 'create_main_fragment');
+    source.append(mainFragment, 'fragments');
+
     processFragments(source, parsedSource.template, mainFragment);
 
     return source.toString();
@@ -80,7 +82,7 @@ function processFragments(source: Code, currentNode: ParsedNode, fragment: Fragm
     // pass the current node through each processor
     processors.forEach(processor => {
         // give each processor the change to define a child fragment
-        if (typeof processor.childFragment === 'function') {
+        if (!childFragment && typeof processor.childFragment === 'function') {
             childFragment = processor.childFragment(source, currentNode, fragment);
         }
 
@@ -92,6 +94,8 @@ function processFragments(source: Code, currentNode: ParsedNode, fragment: Fragm
 
     // if a child fragment was defined, start the process over again
     if (childFragment) {
+        console.log('yep!');
+        source.append(childFragment, 'fragments');
         processFragments(source, currentNode, childFragment);
     }
 

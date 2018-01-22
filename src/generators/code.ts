@@ -15,7 +15,7 @@ interface CodeOptions {
 // Code
 //
 export default class Code {
-    public appendedCode: Array<Code|string>
+    public appendedCode: Array<Object|string>
     public codeTemplate: string;
     public containers: Object;
     public helpers: Object;
@@ -64,7 +64,7 @@ export default class Code {
     //
     // append code
     //
-    public append(code: Code|string, container: string = null): void {
+    public append(code: Object|string, container: string = null): void {
         if (code instanceof Code) {
             code.parent = this;
         }

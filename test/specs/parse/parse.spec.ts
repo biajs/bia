@@ -19,7 +19,7 @@ describe('parsing', () => {
     it('EmptyNode', () => {
         expect(parseTemplate('EmptyNode', {})).to.containSubset({
             attributes: {},
-            tagName: 'DIV',
+            tagName: 'div',
             textContent: null,
             type: 'ELEMENT',
             children: [],
@@ -32,7 +32,7 @@ describe('parsing', () => {
                 foo: 'bar',
                 'data-baz': 'yar',
             },
-            tagName: 'DIV',
+            tagName: 'div',
             textContent: null,
             type: 'ELEMENT',
             children: [],
@@ -42,7 +42,7 @@ describe('parsing', () => {
     it('NodeWithText', () => {
         expect(parseTemplate('NodeWithText', {})).to.containSubset({
             attributes: {},
-            tagName: 'DIV',
+            tagName: 'div',
             textContent: null,
             type: 'ELEMENT',
             children: [
@@ -62,14 +62,14 @@ describe('parsing', () => {
 
         expect(node).to.containSubset({
             attributes: {},
-            tagName: 'DIV',
+            tagName: 'div',
             textContent: null,
             type: 'ELEMENT',
             children: [
                 {
                     attributes: {},
                     children: [],
-                    tagName: 'SPAN',
+                    tagName: 'span',
                     textContent: null,
                     type: 'ELEMENT',
                 }
@@ -121,7 +121,7 @@ describe('parsing', () => {
 
     it('Directives', () => {
         const node = parseTemplate('Directives', {});
-        const span = node.children.filter(n => n.tagName === 'SPAN');
+        const span = node.children.filter(n => n.tagName === 'span');
 
         // there should be a directive on all but the first, and two on the last
         expect(span[0].directives.length).to.equal(0);
@@ -200,7 +200,7 @@ describe('parsing', () => {
         const node = parseTemplate('DiscardIndentation', {});
 
         expect(node.children.length).to.equal(1);
-        expect(node.children[0].tagName).to.equal('SPAN');
+        expect(node.children[0].tagName).to.equal('span');
     });
 
     it('DynamicChildren', () => {

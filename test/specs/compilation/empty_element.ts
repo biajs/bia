@@ -1,6 +1,6 @@
 import { compile, expect, render } from '../../utils';
 
-it.only('empty_element', function() {
+it('empty_element', function() {
     const template = `
         <template>
             <div></div>
@@ -9,11 +9,9 @@ it.only('empty_element', function() {
 
     const options = {};
 
-    const output = compile(template, options);
+    // const output = compile(template, options);
     // console.log(output);
 
-    // const vm = render(template, options);
-
-    // console.log(vm);
-    // expect(vm.$options.foo).to.equal('bar');
+    const vm = render(template, options);
+    expect(vm.$el.outerHTML).to.equal('<div></div>');
 });
