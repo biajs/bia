@@ -15,7 +15,7 @@ export default {
     // process the current node
     //
     process(code: Code, currentNode: ParsedNode, fragment: Fragment) {
-        // manage the root element
+        
     },
 
     //

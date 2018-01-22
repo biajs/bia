@@ -23,7 +23,7 @@ describe('fragment class', () => {
 
     it('can be cast to a string', () => {
         expect(fragment.toString()).to.equalCode(`
-            function test_fragment(vm) {
+            function #test_fragment(vm) {
                 return {
                     c: @noop,
                     h: @noop,
@@ -45,7 +45,7 @@ describe('fragment class', () => {
         fragment.destroy.push('// destroy');
         
         expect(fragment.toString()).to.equalCode(`
-            function test_fragment(vm) {
+            function #test_fragment(vm) {
                 return {
                     c: function create() {
                         // create
@@ -78,21 +78,21 @@ describe('fragment class', () => {
 
         baseCode.reservedIdentifiers = ['world'];
 
-        expect(fragment.getVarName(foo, 'hello')).to.equal('hello');
-        expect(fragment.getVarName(bar, 'hello')).to.equal('hello_1');
-        expect(fragment.getVarName(baz, 'world')).to.equal('world_1');
-        expect(fragment.getVarName(yar, 'world')).to.equal('world_2');        
+        expect(fragment.define(foo, 'hello')).to.equal('hello');
+        expect(fragment.define(bar, 'hello')).to.equal('hello_1');
+        expect(fragment.define(baz, 'world')).to.equal('world_1');
+        expect(fragment.define(yar, 'world')).to.equal('world_2');        
     });
 
     it('includes defined variables in the constructor', () => {
         const foo = {};
         const bar = {};
 
-        fragment.getVarName(foo, 'div');
-        fragment.getVarName(bar, 'div');
+        fragment.define(foo, 'div');
+        fragment.define(bar, 'div');
 
         expect(fragment.toString()).to.equalCode(`
-            function test_fragment(vm) {
+            function #test_fragment(vm) {
                 var div, div_1;
 
                 return {
@@ -111,7 +111,7 @@ describe('fragment class', () => {
         fragment.content.push('// hello world');
         
         expect(fragment.toString()).to.equalCode(`
-            function test_fragment(vm) {
+            function #test_fragment(vm) {
                 // hello world
 
                 return {
@@ -127,11 +127,11 @@ describe('fragment class', () => {
     });
 
     it('defines variables before executing constructor content', () => {
-        fragment.getVarName({}, 'foo');
+        fragment.define({}, 'foo');
         fragment.content.push('// hello world');
 
         expect(fragment.toString()).to.equalCode(`
-            function test_fragment(vm) {
+            function #test_fragment(vm) {
                 var foo;
 
                 // hello world
@@ -156,7 +156,7 @@ describe('fragment class', () => {
         fragment.content.push(`// bar`);
 
         expect(fragment.toString()).to.equalCode(`
-            function test_fragment(vm) {
+            function #test_fragment(vm) {
                 // foo
 
                 // bar
@@ -172,14 +172,4 @@ describe('fragment class', () => {
             }
         `);
     });
-
-    it.skip('whatever', () => {
-        fragment.getVarName({}, 'foo');
-
-        fragment.content.push(`
-            // hello rachael!!!!!
-        `);
-
-        console.log(baseCode.toString());
-    })
 });

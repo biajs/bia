@@ -4,6 +4,7 @@ import * as helpers from './helpers';
 import Code from '../../generators/code';
 import Fragment from '../../generators/fragment';
 import processors from './processors/_index';
+import { ParsedNode } from '../../interfaces';
 
 //
 // compile dom code
@@ -38,6 +39,10 @@ export default function (parsedSource, options) {
 
     source.addPartial('componentConstructor', getConstructor(source, options));
 
+    // define our main fragment and start processing the template
+    const mainFragment = new Fragment(source, 'create_main_fragment');
+    processFragments(source, parsedSource.template, mainFragment);
+
     return source.toString();
 }
 
@@ -67,8 +72,38 @@ function getConstructor(source: Code, options) {
 }
 
 //
-// fragment processing
+// recursively process fragments
 //
-function processFragments(currentNode, options) {
-    
+function processFragments(source: Code, currentNode: ParsedNode, fragment: Fragment) {
+    let childFragment = null;
+
+    // pass the current node through each processor
+    processors.forEach(processor => {
+        // give each processor the change to define a child fragment
+        if (typeof processor.childFragment === 'function') {
+            childFragment = processor.childFragment(source, currentNode, fragment);
+        }
+
+        // process the fragment
+        if (typeof processor.process === 'function') {
+            processor.process(source, currentNode, fragment);
+        }
+    });
+
+    // if a child fragment was defined, start the process over again
+    if (childFragment) {
+        processFragments(source, currentNode, childFragment);
+    }
+
+    // otherwise process the child nodes under the same fragment
+    else {
+        currentNode.children.forEach(childNode => processFragments(source, childNode, fragment));
+    }
+
+    // and lastly, call any post processors that exist
+    processors.forEach(processor => {
+        if (typeof processor.postProcess === 'function') {
+            processor.postProcess(source, currentNode, fragment);
+        }
+    });
 }

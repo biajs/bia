@@ -91,6 +91,31 @@ export default class {
     }
 
     //
+    // get the name of a fragment variable
+    //
+    public define(obj: Object, desiredName: string = 'unknown') {
+        // if we've already defined this variable, return the name
+        for (let name in this.definedVars) {
+            if (this.definedVars[name] === obj) return name;
+        }
+
+        // otherwise find a name that isn't taken and return that
+        let nameIndex = 1;
+        let currentName = desiredName;
+
+        while (
+            this.baseCode.reservedIdentifiers.indexOf(currentName) > -1 ||
+            typeof this.definedVars[currentName] !== 'undefined'
+        ) {
+            currentName = `${desiredName}_${nameIndex++}`;
+        }
+
+        this.definedVars[currentName] = obj;
+
+        return currentName;
+    }
+
+    //
     // define fragment vars
     //
     get definedVarsCode() {
@@ -120,31 +145,6 @@ export default class {
                 content: this.destroy,
             },
         });
-    }
-
-    //
-    // get the name of a fragment variable
-    //
-    public getVarName(obj: Object, desiredName: string = 'unknown') {
-        // if we've already defined this variable, return the name
-        for (let name in this.definedVars) {
-            if (this.definedVars[name] === obj) return name;
-        }
-
-        // otherwise find a name that isn't taken and return that
-        let nameIndex = 1;
-        let currentName = desiredName;
-
-        while (
-            this.baseCode.reservedIdentifiers.indexOf(currentName) > -1 ||
-            typeof this.definedVars[currentName] !== 'undefined'
-        ) {
-            currentName = `${desiredName}_${nameIndex++}`;
-        }
-
-        this.definedVars[currentName] = obj;
-
-        return currentName;
     }
 
     //

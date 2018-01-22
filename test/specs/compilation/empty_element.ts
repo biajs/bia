@@ -10,7 +10,7 @@ it.only('empty_element', function() {
     const options = {};
 
     const output = compile(template, options);
-    console.log(output);
+    // console.log(output);
 
     // const vm = render(template, options);
 
