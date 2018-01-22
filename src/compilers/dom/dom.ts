@@ -3,6 +3,7 @@ const pkg = require('../../../package.json');
 import * as helpers from './helpers';
 import Code from '../../generators/code';
 import Fragment from '../../generators/fragment';
+import processors from './processors/_index';
 
 //
 // compile dom code
