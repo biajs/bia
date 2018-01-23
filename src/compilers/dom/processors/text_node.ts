@@ -18,7 +18,7 @@ import {
 
 import {
     escape,
-    splitTextInterpolations,
+    splitInterpolations,
 } from '../../../utils/string';
 
 //
@@ -77,7 +77,7 @@ function processDynamicText(currentNode, fragment, varName, parentVarName) {
 
     // create our text concatenation and dependencies
     const dependencies = [];
-    const concatenation = splitTextInterpolations(currentNode.textContent)
+    const concatenation = splitInterpolations(currentNode.textContent)
         .reduce((segments, text) => {
             if (text.startsWith('{{')) {
                 const expression = text.slice(2, -2).trim();

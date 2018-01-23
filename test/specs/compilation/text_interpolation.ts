@@ -1,24 +1,127 @@
 import { compile, expect, render } from '../../utils';
 
-it.skip('text_interpolation', function() {
-    const source = `
-        <template>
-            <div>
+describe.only('text interpolation', () => {
+    it('basic concatenation', function() {
+        const source = `
+            <template>
                 <div>Hello {{ name }}</div>
+            </template>
+        `;
+    
+        const options = {
+            data: {
+                name: 'Bob',
+            }
+        };
+    
+        // const output = compile(source, options);
+        // console.log(output);
+    
+        const vm = render(source, options);
+        expect(vm.$el.textContent).to.equal('Hello Bob');
+    
+        vm.name = 'Jill';
+        // vm.$nextTick(() => {
+        //     expect(vm.$el.outerHTML).to.equal('Hello Jill');
+        //     done();
+        // });
+    });
+
+    it('static vars', () => {
+        const source = `
+            <template>
+                <div>{{ 'Hello there' }}</div>
+            </template>
+        `;
+    
+        const options = {};
+    
+        // const output = compile(source, options);
+        // console.log(output);
+    
+        const vm = render(source, options);
+        expect(vm.$el.textContent).to.equal('Hello there');
+    });
+
+    it('interpolated concatenation', () => {
+        const source = `
+            <template>
+                <div>{{ 'Hello ' + name }}</div>
+            </template>
+        `;
+    
+        const options = {
+            data: {
+                name: 'Bob',
+            },
+        };
+    
+        // const output = compile(source, options);
+        // console.log(output);
+    
+        const vm = render(source, options);
+        expect(vm.$el.textContent).to.equal('Hello Bob');
+    });
+
+    it('function calls', function() {
+        const source = `
+            <template>
                 <div>Hello {{ name.toUpperCase() }}</div>
-            </div>
-        </template>
-    `;
+            </template>
+        `;
+    
+        const options = {
+            data: {
+                name: 'Bob',
+            }
+        };
+    
+        // const output = compile(source, options);
+        // console.log(output);
+    
+        const vm = render(source, options);
+        expect(vm.$el.textContent).to.equal('Hello BOB');
+    });
 
-    const options = {
-        data: {
-            name: 'Bob',
-        }
-    };
+    it('nested state', () => {
+        const source = `
+            <template>
+                <div>{{ foo.bar }}</div>
+            </template>
+        `;
+    
+        const options = {
+            data: {
+                foo: {
+                    bar: 'Hello from bar',
+                }
+            },
+        };
+    
+        // const output = compile(source, options);
+        // console.log(output);
+    
+        const vm = render(source, options);
+        expect(vm.$el.textContent).to.equal('Hello from bar');
+    });
 
-    const output = compile(source, options);
-    console.log(output);
+    it.only('ternary expression', () => {
+        const source = `
+            <template>
+                <div>The switch is: {{ (switch ? 'on' : 'off') }}</div>
+            </template>
+        `;
 
-    // const vm = render(source, options);
-    // console.log(vm.$el.outerHTML);
+        const options = {
+            data: {
+                switch: false,
+            },
+        };
+
+        const output = compile(source, options);
+        console.log(output);
+
+        // const vm = render(source, options);
+        // expect(vm.$el.textContent).to.equal('Hello Bob');
+    });
 });
