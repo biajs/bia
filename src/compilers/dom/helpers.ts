@@ -84,6 +84,21 @@ export const detachNode = new Code(`
 `);
 
 //
+// emit
+//
+export const emit = new Code(`
+    function #emit(eventName, payload) {
+        var handlers = eventName in this._handlers && this._handlers[eventName].slice();
+        
+        if (handlers) {
+            for (var i = 0, len = handlers.length; i < len; i++) {
+                handlers[i].call(this, payload);
+            }
+        }
+    }
+`);
+
+//
 // executePendingUpdates
 //
 export const executePendingUpdates = new Code(`
@@ -92,7 +107,7 @@ export const executePendingUpdates = new Code(`
         #onUpdate(#changedState);
         #changedState = {};
         #isUpdating = false;
-        let fns = queue, i = 0, len = fns.length;
+        let fns = #queue, i = 0, len = fns.length;
         #queue = [];
         for (;i < len; i++) fns[i]();
     }
@@ -118,6 +133,15 @@ export const insertNode = new Code(`
 `);
 
 //
+// nextTick
+//
+export const nextTick = new Code(`
+    function #nextTick(fn) {
+        #queue.push(fn);
+    }
+`);
+
+//
 // noop
 //
 export const noop = new Code(`
@@ -132,6 +156,24 @@ export const observe = new Code(`
         for (var key in obj) {
             @defineReactive(obj, key, obj[key], namespace.concat(key), onUpdate);
         }
+    }
+`);
+
+//
+// on
+//
+export const on = new Code(`
+    function #on(eventName, handler) {
+        var handlers = this._handlers[eventName] || (this._handlers[eventName] = []);
+        
+        handlers.push(handler);
+        
+        return {
+            cancel: function () {
+                var index = handlers.indexOf(handler);
+                if (~index) handlers.splice(index, 1);
+            }
+        };
     }
 `);
 

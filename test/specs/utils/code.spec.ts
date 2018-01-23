@@ -3,11 +3,26 @@ import { createDomTree } from '../../../src/parse/template';
 import { expect } from 'chai';
 
 import { 
+    findExpressionDependencies,
     findRootIdentifiers,
     namespaceRootIdentifiers,
 } from '../../../src/utils/code';
 
 describe('code utilities', () => {
+    it.only('findExpressionDependencies', () => {
+        // expect(findExpressionDependencies(`foo`)).to.deep.equal({ 
+        //     foo: {},
+        // });
+
+        findExpressionDependencies(`foo['bar']`)
+
+        // expect(findExpressionDependencies(`foo.bar`)).to.deep.equal({
+        //     foo: {
+        //         bar: {},
+        //     },
+        // });
+    });
+
     it('findRootIdentifiers', () => {
         expect(findRootIdentifiers('one && foo.bar.baz')).to.deep.equal(['one', 'foo']);
     });

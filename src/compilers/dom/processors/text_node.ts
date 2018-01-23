@@ -83,17 +83,19 @@ function processDynamicText(currentNode, fragment, varName, parentVarName) {
             if (isInterpolation(text)) {
                 const expression = text.slice(2, -2).trim();
                 dependencies.push(expression);
-                return segments.concat(`(${namespaceRootIdentifiers(expression)})`);
+                return segments.concat(`(${expression})`);
             }
 
             return segments.concat(`'${escape(text)}'`);
         }, [])
         .join(' + ');
+        
+    
 
     // constructor
     fragment.content.append(`
         function #${fnName}() {
-            return ${concatenation};
+            return ${namespaceRootIdentifiers(concatenation)};
         }
     `);
 

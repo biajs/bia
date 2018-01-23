@@ -25,9 +25,9 @@ export default function (parsedSource, options) {
         :fragments
 
         //
-        // constructor
+        // component
         //
-        %componentConstructor
+        %component
 
         return #${options.name};
     `, {
@@ -37,7 +37,7 @@ export default function (parsedSource, options) {
         ],
     });
 
-    source.addPartial('componentConstructor', getConstructor(source, options));
+    source.addPartial('component', getConstructor(source, options));
 
     // define our main fragment and start processing the template
     const mainFragment = new Fragment(source, 'create_main_fragment');
@@ -70,6 +70,12 @@ function getConstructor(source: Code, options) {
                 fragment.m(options.el, options.anchor || null);
             }
         }
+
+        @assign(#${name}.prototype, {
+            $emit: @emit,
+            $nextTick: @nextTick,
+            $on: @on,
+        });
     `);
 }
 
