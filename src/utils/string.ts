@@ -80,7 +80,7 @@ export function isWhitespace(text: string): boolean {
     return !!text.match(/^\s*$/g);
 }
 
-// split a text with interpolations
+// split a string with interpolations
 export function splitInterpolations(source: string): Array<string> {
     // this regex matches text interpolations, and takes special
     // care not to match quoted braces inside interpolations

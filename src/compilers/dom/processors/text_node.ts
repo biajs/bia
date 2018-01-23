@@ -18,6 +18,7 @@ import {
 
 import {
     escape,
+    isInterpolation,
     splitInterpolations,
 } from '../../../utils/string';
 
@@ -79,19 +80,15 @@ function processDynamicText(currentNode, fragment, varName, parentVarName) {
     const dependencies = [];
     const concatenation = splitInterpolations(currentNode.textContent)
         .reduce((segments, text) => {
-            if (text.startsWith('{{')) {
+            if (isInterpolation(text)) {
                 const expression = text.slice(2, -2).trim();
                 dependencies.push(expression);
-                return segments.concat(namespaceRootIdentifiers(expression, 'vm'));
+                return segments.concat(`(${namespaceRootIdentifiers(expression)})`);
             }
 
             return segments.concat(`'${escape(text)}'`);
         }, [])
         .join(' + ');
-
-    // console.log(splitTextInterpolations(currentNode.textContent));
-
-    // const concatenation = '// concat';
 
     // constructor
     fragment.content.append(`

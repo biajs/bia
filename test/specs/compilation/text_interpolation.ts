@@ -1,6 +1,6 @@
 import { compile, expect, render } from '../../utils';
 
-describe.only('text interpolation', () => {
+describe('text interpolation', () => {
     it('basic concatenation', function() {
         const source = `
             <template>
@@ -105,10 +105,30 @@ describe.only('text interpolation', () => {
         expect(vm.$el.textContent).to.equal('Hello from bar');
     });
 
-    it.only('ternary expression', () => {
+    it('or expressions', () => {
         const source = `
             <template>
-                <div>The switch is: {{ (switch ? 'on' : 'off') }}</div>
+                <div>{{ greeting || 'goodbye' }}</div>
+            </template>
+        `;
+
+        const options = {
+            data: {
+                greeting: 'hello',
+            },
+        };
+
+        // const output = compile(source, options);
+        // console.log(output);
+
+        const vm = render(source, options);
+        expect(vm.$el.textContent).to.equal('hello');
+    });
+
+    it.skip('ternary expressions', () => {
+        const source = `
+            <template>
+                <div>The switch is {{ switch ? 'on' : 'off' }}</div>
             </template>
         `;
 
@@ -122,6 +142,6 @@ describe.only('text interpolation', () => {
         console.log(output);
 
         // const vm = render(source, options);
-        // expect(vm.$el.textContent).to.equal('Hello Bob');
-    });
+        // expect(vm.$el.textContent).to.equal('hello');
+    })
 });
