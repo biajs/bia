@@ -70,12 +70,43 @@ export function indent(source: string, depth: number = 1): string {
     return source.split('\n').map(line => indentationString + line).join('\n');
 }
 
+// determine if a string represents a text interpolation
+export function isInterpolation(text: string): boolean {
+    return text.startsWith('{{') && text.endsWith('}}');
+}
+
 // determine if a string is nothing but whitespace
 export function isWhitespace(text: string): boolean {
     return !!text.match(/^\s*$/g);
 }
 
 // split a text with interpolations
-export function splitTextInterpolations(source: string): Array<string> {
-    return source.split(/({{\s*[\w\.]+\s*}})/g).filter(str => str.length);
+export function splitInterpolations(source: string): Array<string> {
+    // this regex matches text interpolations, and takes special
+    // care not to match quoted braces inside interpolations
+    //
+    // examples: https://regexr.com/3jjr6
+    const re = /{{[^]*?(?:(?:('|"|`)[^\1]*?[^\\]\1)[^]*?)*}}/g;
+
+    let index = 0;
+    let interpolations = [];
+    
+    // @todo: create this control flow without relying on String.replace
+    source.replace(re, (match, _, pos) => {        
+        if (pos > 0) {
+            interpolations.push(source.slice(index, pos));
+        }
+
+        interpolations.push(match);
+        index += pos + match.length;
+        return '';
+    });
+
+    if (index === 0 && source.length) {
+        interpolations.push(source);
+    } else if (index < source.length) {
+        interpolations.push(source.slice(index));
+    }
+
+    return interpolations;
 }

@@ -4,6 +4,8 @@ import {
     deindent,
     escape,
     indent,
+    isInterpolation,
+    splitInterpolations,
 } from '../../../src/utils/string';
 
 describe('string utilities', () => {
@@ -51,5 +53,54 @@ describe('string utilities', () => {
     it('indent', () => {
         expect(indent('a single line')).to.equal('    a single line');
         expect(indent('line one\nline two')).to.equal('    line one\n    line two');
+    });
+
+    it('isInterpolation', () => {
+        expect(isInterpolation(``)).to.be.false;
+        expect(isInterpolation(`foo`)).to.be.false;
+        expect(isInterpolation(`{{foo}}`)).to.be.true;
+        expect(isInterpolation(`{{ foo }}`)).to.be.true;
+    });
+
+    it('splitTextInterpolations', () => {
+        [
+            {
+                text: ``,
+                result: [],
+            },
+            {
+                text: `one`,
+                result: [`one`],
+            }, 
+            {
+                text: `{{}}`,
+                result: [`{{}}`],
+            },
+            {
+                text: `{{one}}`,
+                result: [`{{one}}`],
+            },
+            {
+                text: `one {{ two }}`,
+                result: [`one `, `{{ two }}`],
+            }, 
+            {
+                text: `one {{ two }} three`,
+                result: [`one `, `{{ two }}`, ` three`],
+            },
+            {
+                text: `one {{ '{{ two }}' }}`,
+                result: [`one `, `{{ '{{ two }}' }}`],
+            },
+            {
+                text: `one {{
+                    two
+                }} three`,
+                result: [`one `, `{{\n                    two\n                }}`, ` three`],
+            },
+        ].forEach((test) => {
+            // @ts-ignore
+            expect(splitInterpolations(test.text)).to.deep.equal(test.result);
+        });
     });
 });

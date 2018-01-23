@@ -39,7 +39,17 @@ export default {
     process(code: Code, currentNode: ParsedNode, fragment: Fragment) {
         // manage the root element
         if (!currentNode.parent) {
-            manageRootElement(code, currentNode, fragment);
+            manageRootElement(currentNode, fragment);
+        }
+
+        // manage non-root static elements
+        else if (
+            isElementNode(currentNode) &&
+            !hasLoopDirective(currentNode) &&
+            !hasConditionalDirective(currentNode) &&
+            !hasProcessingFlag(currentNode, 'wasCreatedByInnerHTML')
+        ) {
+            manageStaticElement(currentNode, fragment);
         }
     },
 
@@ -50,7 +60,7 @@ export default {
         // hydrate the fragment if necessary, and return the root element
         if (!currentNode.parent) {
             // hydrateFragment
-            returnRootElement(code, currentNode, fragment);
+            returnRootElement(currentNode, fragment);
         }
     },
 }
@@ -58,7 +68,7 @@ export default {
 //
 // manage the root element
 //
-function manageRootElement(code, rootNode, fragment) {
+function manageRootElement(rootNode, fragment) {
     const tagName = rootNode.tagName;
     const varName = fragment.define(rootNode, tagName);
     
@@ -91,11 +101,17 @@ function manageRootElement(code, rootNode, fragment) {
 }
 
 //
+// manage a non-root static element
+//
+function manageStaticElement(currentNode, fragment) {
+    
+}
+
+//
 // return the root element
 //
-function returnRootElement(code, rootNode, fragment) {
-    const tagName = rootNode.tagName;
-    const varName = fragment.define(rootNode, tagName);
+function returnRootElement(rootNode, fragment) {
+    const varName = fragment.define(rootNode);
 
     fragment.create.append(`
         return ${varName};
