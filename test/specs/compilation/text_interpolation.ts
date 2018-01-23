@@ -125,23 +125,23 @@ describe('text interpolation', () => {
         expect(vm.$el.textContent).to.equal('hello');
     });
 
-    it.skip('ternary expressions', () => {
+    it('ternary expressions', () => {
         const source = `
             <template>
-                <div>The switch is {{ switch ? 'on' : 'off' }}</div>
+                <div>{{ foo ? 'bar' : 'baz' }}</div>
             </template>
         `;
 
         const options = {
             data: {
-                switch: false,
+                foo: true,
             },
         };
 
-        const output = compile(source, options);
-        console.log(output);
+        // const output = compile(source, options);
+        // console.log(output);
 
-        // const vm = render(source, options);
-        // expect(vm.$el.textContent).to.equal('hello');
+        const vm = render(source, options);
+        expect(vm.$el.textContent).to.equal('bar');
     })
 });
