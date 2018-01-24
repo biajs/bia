@@ -4,34 +4,36 @@ const falafel = require('falafel');
 
 // find an expression's dependencies
 export function findExpressionDependencies(src: string) {
-    const deps = {};
-    const rawDeps = [];
+    const deps = [];
 
     falafel(src, node => {
         if (isIdentifier(node)) {
+            // object properties: foo[bar] / foo.bar
             if (isObjectProp(node)) {
                 const parentSource = node.parent.source();
-                // static: foo.bar
-                // computed: foo[bar]
-                rawDeps.push(isComputedProp(node)
-                    ? rawDeps.push(parentSource.slice(0, -node.name.length - 2) + `[${node.name}]`)
-                    : parentSource.slice(0, -node.name.length) + node.name
-                );
+
+                if (isComputedProp(node)) {
+                    // computed: foo[bar]
+                    deps.push(node.source(), parentSource.slice(0, -node.name.length - 2) + `[${node.name}]`);
+                } else {
+                    // static: foo.bar
+                    deps.push(parentSource.slice(0, -node.name.length) + node.name);
+                }
             } 
             
             // non-obj identifier: foo
-            else rawDeps.push(node.name);
+            else deps.push(node.name);
         } 
         
         // literal: foo['bar']
         else if (isLiteral(node) && isObjectProp(node)) {
-            rawDeps.push(node.parent.source());
+            deps.push(node.parent.source());
         }
     });
 
-    console.log(rawDeps);
+    console.log(deps);
 
-    return rawDeps;
+    return deps;
 }
 
 // find root identifiers in source code

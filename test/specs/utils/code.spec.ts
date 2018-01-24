@@ -14,7 +14,7 @@ describe('code utilities', () => {
         //     foo: {},
         // });
 
-        findExpressionDependencies(`foo['bar']`)
+        findExpressionDependencies(`one[two]['three']`)
 
         // expect(findExpressionDependencies(`foo.bar`)).to.deep.equal({
         //     foo: {
