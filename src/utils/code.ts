@@ -2,40 +2,6 @@ import { ParsedNode } from '../interfaces';
 import { isElementNode, isTextNode } from './parsed_node';
 const falafel = require('falafel');
 
-// find an expression's dependencies
-export function findExpressionDependencies(src: string) {
-    const deps = [];
-
-    falafel(src, node => {
-        if (isIdentifier(node)) {
-            // object properties: foo[bar] / foo.bar
-            if (isObjectProp(node)) {
-                const parentSource = node.parent.source();
-
-                if (isComputedProp(node)) {
-                    // computed: foo[bar]
-                    deps.push(node.source(), parentSource.slice(0, -node.name.length - 2) + `[${node.name}]`);
-                } else {
-                    // static: foo.bar
-                    deps.push(parentSource.slice(0, -node.name.length) + node.name);
-                }
-            } 
-            
-            // non-obj identifier: foo
-            else deps.push(node.name);
-        } 
-        
-        // literal: foo['bar']
-        else if (isLiteral(node) && isObjectProp(node)) {
-            deps.push(node.parent.source());
-        }
-    });
-
-    console.log(deps);
-
-    return deps;
-}
-
 // find root identifiers in source code
 export function findRootIdentifiers(src: string) {
     const rootIdentifiers = [];
@@ -46,6 +12,9 @@ export function findRootIdentifiers(src: string) {
 }
 
 // acorn node helpers
+export function isCallExpression(node) {
+    return node && node.type === 'CallExpression';
+}
 export function isComputedProp(node) {
     return isObjectProp(node) && node.parent.computed;
 }
@@ -82,8 +51,8 @@ export function namespaceRootIdentifiers(src: string, namespace: string = 'vm', 
 // walk over the root identifiers in source code
 export function walkRootIdentifiers(src: string, fn: Function) {
     return falafel(src, (node) => {
-        if (isIdentifier(node) && !isObjectProp(node)) {
-            fn(node);
+        if (isIdentifier(node)) {
+            if (!isObjectProp(node) || isComputedProp(node)) fn(node);
         }
     });
 }

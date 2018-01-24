@@ -1,10 +1,10 @@
 import { compile, expect, render } from '../../utils';
 
 describe('text interpolation', () => {
-    it.skip('basic concatenation', function(done) {
+    it('basic concatenation', function(done) {
         const source = `
             <template>
-                <div>Hello {{ name.lol }}</div>
+                <div>Hello {{ name }}</div>
             </template>
         `;
     
@@ -14,17 +14,18 @@ describe('text interpolation', () => {
             }
         };
     
-        const output = compile(source, options);
+        // const output = compile(source, options);
         // console.log(output);
     
-        // const vm = render(source, options);
-        // expect(vm.$el.textContent).to.equal('Hello Bob');
+        const vm = render(source, options);
+        expect(vm.$el.textContent).to.equal('Hello Bob');
     
-        // vm.name = 'Jill';
-        // vm.$nextTick(() => {
-        //     console.log(vm.$el.outerHTML);
+        vm.name = 'Jill';
+
+        vm.$nextTick(() => {
+            expect(vm.$el.textContent).to.equal('Hello Jill');
             done();
-        // });
+        });
     });
 
     it('static vars', () => {
@@ -83,7 +84,7 @@ describe('text interpolation', () => {
         expect(vm.$el.textContent).to.equal('Hello BOB');
     });
 
-    it('nested state', () => {
+    it('nested state', (done) => {
         const source = `
             <template>
                 <div>{{ foo.bar }}</div>
@@ -93,7 +94,7 @@ describe('text interpolation', () => {
         const options = {
             data: {
                 foo: {
-                    bar: 'Hello from bar',
+                    bar: 'One day, at band camp...',
                 }
             },
         };
@@ -102,7 +103,14 @@ describe('text interpolation', () => {
         // console.log(output);
     
         const vm = render(source, options);
-        expect(vm.$el.textContent).to.equal('Hello from bar');
+        expect(vm.$el.textContent).to.equal('One day, at band camp...');
+
+        vm.foo.bar = 'A bear came.';
+
+        vm.$nextTick(() => {
+            expect(vm.$el.textContent).to.equal('A bear came.');
+            done();
+        });
     });
 
     it('or expressions', () => {
@@ -125,7 +133,7 @@ describe('text interpolation', () => {
         expect(vm.$el.textContent).to.equal('hello');
     });
 
-    it('ternary expressions', () => {
+    it('ternary expressions', (done) => {
         const source = `
             <template>
                 <div>{{ foo ? 'bar' : 'baz' }}</div>
@@ -143,5 +151,78 @@ describe('text interpolation', () => {
 
         const vm = render(source, options);
         expect(vm.$el.textContent).to.equal('bar');
+
+        vm.foo = false;
+
+        vm.$nextTick(() => {
+            expect(vm.$el.textContent).to.equal('baz');
+            done();
+        });
+    });
+
+    it('computed object properties', (done) => {
+        const source = `
+            <template>
+                <div>{{ foo[bar] }}</div>
+            </template>
+        `;
+
+        const options = {
+            data: {
+                foo: {
+                    hello: 'Hello',
+                    world: 'World',
+                },
+                bar: 'hello',
+            },
+        };
+
+        // const output = compile(source, options);
+        // console.log(output);
+
+        const vm = render(source, options);
+        expect(vm.$el.textContent).to.equal('Hello');
+
+        vm.bar = 'world';
+
+        vm.$nextTick(() => {
+            expect(vm.$el.textContent).to.equal('World');
+            
+            vm.foo = { hello: 'one', world: 'two' };
+
+            vm.$nextTick(() => {
+                expect(vm.$el.textContent).to.equal('two');
+                done();
+            });
+        });
+    });
+
+    it('square bracket object props', (done) => {
+        const source = `
+            <template>
+                <div>{{ foo['bar'] }}</div>
+            </template>
+        `;
+
+        const options = {
+            data: {
+                foo: {
+                    bar: 'Hello',
+                },
+            },
+        };
+
+        // const output = compile(source, options);
+        // console.log(output);
+
+        const vm = render(source, options);
+        expect(vm.$el.textContent).to.equal('Hello');
+
+        vm.foo.bar = 'Goodbye';
+
+        vm.$nextTick(() => {
+            expect(vm.$el.textContent).to.equal('Goodbye');
+            done();
+        });
     })
 });

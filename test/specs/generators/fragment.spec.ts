@@ -53,10 +53,10 @@ describe('fragment class', () => {
                     h: function hydrate() {
                         // hydrate
                     },
-                    m: function mount(target, anchor) {
+                    m: function mount(#target, #anchor) {
                         // mount
                     },
-                    p: function update(changed) {
+                    p: function update(#changed) {
                         // update
                     },
                     u: function unmount() {

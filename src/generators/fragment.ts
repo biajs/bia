@@ -235,7 +235,7 @@ export default class {
         if (this.mountContent.length === 0) return '@noop';
 
         return new Code(`
-            function mount(target, anchor) {
+            function mount(#target, #anchor) {
                 %content
             }
         `, {
@@ -293,7 +293,7 @@ export default class {
         if (this.updateContent.length === 0) return '@noop';
 
         return new Code(`
-            function update(changed) {
+            function update(#changed) {
                 %content
             }
         `, {

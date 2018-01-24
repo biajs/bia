@@ -1,3 +1,4 @@
+const falafel = require('falafel');
 import Code from '../../../generators/code';
 import Fragment from '../../../generators/fragment';
 import { ParsedNode } from '../../../interfaces';
@@ -6,7 +7,9 @@ import { ParsedNode } from '../../../interfaces';
 // utils
 //
 import {
-    findRootIdentifiers,
+    isIdentifier,
+    isComputedProp,
+    isObjectProp,
     namespaceRootIdentifiers,
 } from '../../../utils/code';
 
@@ -21,6 +24,7 @@ import {
     isInterpolation,
     splitInterpolations,
 } from '../../../utils/string';
+import { isObject } from 'util';
 
 //
 // text node processor
@@ -74,7 +78,9 @@ export default {
 // process dynamic text
 //
 function processDynamicText(currentNode, fragment, varName, parentVarName) {
+    const valName = varName + '_value';
     const fnName = varName + '_content';
+    fragment.define(null, valName);
 
     // create our text concatenation and dependencies
     const dependencies = [];
@@ -90,7 +96,7 @@ function processDynamicText(currentNode, fragment, varName, parentVarName) {
         }, [])
         .join(' + ');
         
-    
+    const changeCondition = getChangedCondition(dependencies, []);
 
     // constructor
     fragment.content.append(`
@@ -101,11 +107,48 @@ function processDynamicText(currentNode, fragment, varName, parentVarName) {
 
     // create
     fragment.create.append(`
-        ${varName} = @createText(#${fnName}());
+        #${valName} = #${fnName}();
+        ${varName} = @createText(#${valName});
     `);
 
     // mount
     fragment.mount.append(`
         @appendNode(${varName}, ${parentVarName});
     `);
+
+    // update
+    fragment.update.append(`
+        if (${changeCondition}#${valName} !== (#${valName} = #${fnName}())) {
+            @setText(${varName}, #${valName})
+        }
+    `)
+}
+
+function getChangedCondition(interpolations, scope) {
+    // @todo: support fragment scopes
+
+    // for simplicity, we'll re-calculate our text node
+    // whenever one of the root identifiers changes.
+    // down the road we should optimize this conditional.
+    // see: https://github.com/scottbedard/bia/issues/8
+    const rootIdentifiers = new Set;
+
+    interpolations.forEach(interpolation => {
+        falafel(interpolation, node => {
+            // root identifiers
+            if (isIdentifier(node) && !isObjectProp(node)) {
+                rootIdentifiers.add(node.name);
+            }
+
+            // root identifiers, nested as computed object properties
+            if (isIdentifier(node) && isComputedProp(node)) {
+                rootIdentifiers.add(node.name);
+            }
+        });
+    });
+
+    const rawDeps = Array.from(rootIdentifiers).join(' || ');
+    const prefixedDeps = namespaceRootIdentifiers(rawDeps, '#changed', scope);
+
+    return prefixedDeps.length ? `(${prefixedDeps}) && ` : '';
 }
