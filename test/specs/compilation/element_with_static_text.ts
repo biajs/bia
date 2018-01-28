@@ -7,11 +7,9 @@ it('element_with_static_text', function() {
         </template>
     `;
 
-    const options = {};
-
-    // const output = compile(source, options);
+    // const output = compile(source);
     // console.log(output);
 
-    const vm = render(source, options);
+    const vm = render(source, {});
     expect(vm.$el.outerHTML).to.equal('<div>hello world</div>');
 });

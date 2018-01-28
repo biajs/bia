@@ -8,16 +8,15 @@ describe('text interpolation', () => {
             </template>
         `;
     
-        const options = {
-            data: {
-                name: 'Bob',
-            }
-        };
-    
-        // const output = compile(source, options);
+        // const output = compile(source);
         // console.log(output);
     
-        const vm = render(source, options);
+        const vm = render(source, {
+            data: {
+                name: 'Bob',
+            },
+        });
+
         expect(vm.$el.textContent).to.equal('Hello Bob');
     
         vm.name = 'Jill';
@@ -34,13 +33,11 @@ describe('text interpolation', () => {
                 <div>{{ 'Hello there' }}</div>
             </template>
         `;
-    
-        const options = {};
-    
-        // const output = compile(source, options);
+
+        // const output = compile(source);
         // console.log(output);
     
-        const vm = render(source, options);
+        const vm = render(source, {});
         expect(vm.$el.textContent).to.equal('Hello there');
     });
 
@@ -51,16 +48,15 @@ describe('text interpolation', () => {
             </template>
         `;
     
-        const options = {
+        // const output = compile(source);
+        // console.log(output);
+    
+        const vm = render(source, {
             data: {
                 name: 'Bob',
             },
-        };
-    
-        // const output = compile(source, options);
-        // console.log(output);
-    
-        const vm = render(source, options);
+        });
+
         expect(vm.$el.textContent).to.equal('Hello Bob');
     });
 
@@ -71,16 +67,15 @@ describe('text interpolation', () => {
             </template>
         `;
     
-        const options = {
+        // const output = compile(source);
+        // console.log(output);
+    
+        const vm = render(source, {
             data: {
                 name: 'Bob',
             }
-        };
-    
-        // const output = compile(source, options);
-        // console.log(output);
-    
-        const vm = render(source, options);
+        });
+
         expect(vm.$el.textContent).to.equal('Hello BOB');
     });
 
@@ -90,19 +85,18 @@ describe('text interpolation', () => {
                 <div>{{ foo.bar }}</div>
             </template>
         `;
+
+        // const output = compile(source);
+        // console.log(output);
     
-        const options = {
+        const vm = render(source, {
             data: {
                 foo: {
                     bar: 'One day, at band camp...',
                 }
             },
-        };
-    
-        // const output = compile(source, options);
-        // console.log(output);
-    
-        const vm = render(source, options);
+        });
+
         expect(vm.$el.textContent).to.equal('One day, at band camp...');
 
         vm.foo.bar = 'A bear came.';
@@ -120,16 +114,15 @@ describe('text interpolation', () => {
             </template>
         `;
 
-        const options = {
+        // const output = compile(source);
+        // console.log(output);
+
+        const vm = render(source, {
             data: {
                 greeting: 'hello',
             },
-        };
+        });
 
-        // const output = compile(source, options);
-        // console.log(output);
-
-        const vm = render(source, options);
         expect(vm.$el.textContent).to.equal('hello');
     });
 
@@ -140,16 +133,15 @@ describe('text interpolation', () => {
             </template>
         `;
 
-        const options = {
+        // const output = compile(source);
+        // console.log(output);
+
+        const vm = render(source, {
             data: {
                 foo: true,
             },
-        };
+        });
 
-        // const output = compile(source, options);
-        // console.log(output);
-
-        const vm = render(source, options);
         expect(vm.$el.textContent).to.equal('bar');
 
         vm.foo = false;
@@ -167,7 +159,10 @@ describe('text interpolation', () => {
             </template>
         `;
 
-        const options = {
+        // const output = compile(source);
+        // console.log(output);
+
+        const vm = render(source, {
             data: {
                 foo: {
                     hello: 'Hello',
@@ -175,12 +170,8 @@ describe('text interpolation', () => {
                 },
                 bar: 'hello',
             },
-        };
+        });
 
-        // const output = compile(source, options);
-        // console.log(output);
-
-        const vm = render(source, options);
         expect(vm.$el.textContent).to.equal('Hello');
 
         vm.bar = 'world';
@@ -204,18 +195,17 @@ describe('text interpolation', () => {
             </template>
         `;
 
-        const options = {
+        // const output = compile(source);
+        // console.log(output);
+
+        const vm = render(source, {
             data: {
                 foo: {
                     bar: 'Hello',
                 },
             },
-        };
+        });
 
-        // const output = compile(source, options);
-        // console.log(output);
-
-        const vm = render(source, options);
         expect(vm.$el.textContent).to.equal('Hello');
 
         vm.foo.bar = 'Goodbye';
@@ -224,5 +214,5 @@ describe('text interpolation', () => {
             expect(vm.$el.textContent).to.equal('Goodbye');
             done();
         });
-    })
+    });
 });

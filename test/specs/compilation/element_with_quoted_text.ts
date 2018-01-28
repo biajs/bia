@@ -9,11 +9,9 @@ it('element_with_quoted_text', function() {
         </template>
     `;
 
-    const options = {};
-
-    // const output = compile(source, options);
+    // const output = compile(source);
     // console.log(output);
 
-    const vm = render(source, options);
+    const vm = render(source, {});
     expect(vm.$el.outerHTML).to.equal(`<div>one "two" 'three'</div>`);
 });
