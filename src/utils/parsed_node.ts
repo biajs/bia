@@ -71,8 +71,9 @@ export function hasTextInterpolations(node: ParsedNode): boolean {
 }
 
 // determine if a node has a particular directive
-export function nodeHasDirective(node: ParsedNode, directive: string): boolean {
-    return isElementNode(node) && node.directives.some(d => d.name === directive);
+export function nodeHasDirective(node: ParsedNode, ...directives: Array<string>): boolean {
+    return isElementNode(node)
+        && directives.filter(name => !!node.directives.find(d => d.name === name)).length > 0;
 }
 
 // determine if a node will require hydration or not

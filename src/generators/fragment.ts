@@ -1,10 +1,20 @@
 import Code from './code';
+import { ParsedNode } from '../interfaces';
+import { deindent } from '../utils/string';
 
-import {
-    deindent,
-} from '../utils/string';
+//
+// options
+//
+interface FragmentOptions {
+    name: string;
+    node: ParsedNode;
+    parent?: Fragment;
+};
 
-export default class {
+//
+// fragment
+//
+export default class Fragment {
     public baseCode: Code;
     public constructorContent: Array<Code | string>;
     public createContent: Array<Code | string>;
@@ -12,14 +22,16 @@ export default class {
     public destroyContent: Array<Code | string>;
     public hydrateContent: Array<Code | string>;
     public mountContent: Array<Code | string>;
+    public parent: null|Fragment;
     public name: string;
+    public node: ParsedNode;
     public unmountContent: Array<Code | string>;
     public updateContent: Array<Code | string>;
 
     //
     // constructor
     //
-    constructor(baseCode: Code, name: string) {
+    constructor(baseCode: Code, options: FragmentOptions) {
         this.baseCode = baseCode;
         this.constructorContent = [];
         this.createContent = [];
@@ -27,9 +39,18 @@ export default class {
         this.destroyContent = [];
         this.hydrateContent = [];
         this.mountContent = [];
-        this.name = name;
+        this.node = options.node;
+        this.name = options.name;
+        this.parent = options.parent || null;
         this.unmountContent = [];
         this.updateContent = [];
+    }
+
+    //
+    // create a child fragment
+    //
+    public createChild(name: string, node: ParsedNode): Fragment {
+        return new Fragment(this.baseCode, { name, node, parent: this });
     }
 
     //

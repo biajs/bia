@@ -62,7 +62,7 @@ export default {
         if (currentNode.textInterpolations.length === 0) {
             // processStaticText
         } else {
-            processDynamicText(currentNode, fragment, varName, parentVarName);
+            // processDynamicText(currentNode, fragment, varName, parentVarName);
         }
     },
 

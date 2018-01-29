@@ -40,7 +40,11 @@ export default function (parsedSource, options) {
     source.addPartial('component', getConstructor(source, options));
 
     // define our main fragment and start processing the template
-    const mainFragment = new Fragment(source, 'create_main_fragment');
+    const mainFragment = new Fragment(source, {
+        name: 'create_main_fragment',
+        node: parsedSource.template,
+    });
+
     source.append(mainFragment, 'fragments');
 
     processFragments(source, parsedSource.template, mainFragment);
@@ -83,37 +87,37 @@ function getConstructor(source: Code, options) {
 // recursively process fragments
 //
 function processFragments(source: Code, currentNode: ParsedNode, fragment: Fragment) {
+
+    // give each processor the change to define a child fragment
     let childFragment = null;
 
-    // pass the current node through each processor
     processors.forEach(processor => {
-        // give each processor the change to define a child fragment
         if (!childFragment && typeof processor.childFragment === 'function') {
             childFragment = processor.childFragment(source, currentNode, fragment);
-        }
+        }        
+    });
 
-        // process the fragment
+    // append the child fragment if one was defined
+    if (childFragment) {
+        source.append(childFragment, 'fragments');
+    }
+
+    // process the current node
+    processors.forEach(processor => {
         if (typeof processor.process === 'function') {
-            processor.process(source, currentNode, fragment);
+            processor.process(source, currentNode, fragment, childFragment);
         }
     });
 
-    // if a child fragment was defined, start the process over again
-    if (childFragment) {
-        console.log('yep!');
-        source.append(childFragment, 'fragments');
-        processFragments(source, currentNode, childFragment);
-    }
+    // recursively process each child node with their correct fragment
+    const fragmentContext = childFragment || fragment;
 
-    // otherwise process the child nodes under the same fragment
-    else {
-        currentNode.children.forEach(childNode => processFragments(source, childNode, fragment));
-    }
+    currentNode.children.forEach(childNode => processFragments(source, childNode, fragmentContext));
 
     // and lastly, call any post processors that exist
     processors.forEach(processor => {
         if (typeof processor.postProcess === 'function') {
-            processor.postProcess(source, currentNode, fragment);
+            processor.postProcess(source, currentNode, fragment, childFragment);
         }
     });
 }
