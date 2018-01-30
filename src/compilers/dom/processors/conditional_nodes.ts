@@ -82,9 +82,15 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
     const name = fragment.define(currentNode, 'if_block');
     const parentName = fragment.define(currentNode.parent);
 
+    const nextNode = getNextElementNode(currentNode);
+
+    const anchor = nextNode && nextNode.type === 'TEXT'
+        ? fragment.define(nextNode, 'text')
+        : 'null';
+
     // constructor
     fragment.content.append(`
-        var #${name} = (${condition}) && #create_${name}(#vm);
+        #${name} = (${condition}) && #create_${name}(#vm);
     `);
 
     // create
@@ -94,7 +100,7 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
 
     // mount
     fragment.mount.append(`
-        if (#${name}) #${name}.m(#${parentName}, null)
+        if (#${name}) #${name}.m(#${parentName});
     `)
 
     // update
@@ -103,7 +109,7 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
             if (!#${name}) {
                 #${name} = #create_${name}(vm);
                 #${name}.c();
-                #${name}.m(#${parentName});
+                #${name}.m(#${parentName}, ${anchor});
             }
         } else if (#${name}) {
             #${name}.u();

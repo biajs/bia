@@ -32,13 +32,6 @@ import { isObject } from 'util';
 export default {
 
     //
-    // define a child fragment
-    //
-    childFragment(code: Code, currentNode: ParsedNode, fragment: Fragment) {
-        
-    },
-
-    //
     // process the current node
     //
     process(code: Code, currentNode: ParsedNode, fragment: Fragment) {
@@ -56,26 +49,19 @@ export default {
         const varName = fragment.define(currentNode, 'text');
         const parentVarName = fragment.define(currentNode.parent);
 
-        // fragment.define(currentNode, varName);
+        fragment.define(currentNode, varName);
 
         // process our static or dynamic text
         if (currentNode.textInterpolations.length === 0) {
-            // processStaticText
+            processStaticText(currentNode, fragment, varName, parentVarName);
         } else {
-            // processDynamicText(currentNode, fragment, varName, parentVarName);
+            processDynamicText(currentNode, fragment, varName, parentVarName);
         }
-    },
-
-    //
-    // post-process the current node
-    //
-    postProcess(code: Code, currentNode: ParsedNode, fragment: Fragment) {
-        
     },
 }
 
 //
-// process dynamic text
+// dynamic text
 //
 function processDynamicText(currentNode, fragment, varName, parentVarName) {
     const valName = varName + '_value';
@@ -151,4 +137,19 @@ function getChangedCondition(interpolations, scope) {
     const prefixedDeps = namespaceRootIdentifiers(rawDeps, '#changed', scope);
 
     return prefixedDeps.length ? `(${prefixedDeps}) && ` : '';
+}
+
+//
+// static text
+//
+function processStaticText(currentNode, fragment, text, parent) {
+    // create
+    fragment.create.append(`
+        #${text} = @createText('${escape(currentNode.textContent)}');
+    `);
+
+    // mount
+    fragment.mount.append(`
+        @appendNode(${text}, ${parent});
+    `);
 }
