@@ -84,9 +84,15 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
 
     const nextNode = getNextElementNode(currentNode);
 
-    const anchor = nextNode && nextNode.type === 'TEXT'
-        ? fragment.define(nextNode, 'text')
-        : 'null';
+    let anchor = 'null';
+
+    if (nextNode) {
+        if (nextNode.type === 'TEXT') {
+            anchor = fragment.define(nextNode, 'text')
+        } else if (nextNode.type === 'ELEMENT') {
+            anchor = fragment.define(nextNode, nextNode.tagName);
+        }
+    }
 
     // constructor
     fragment.content.append(`

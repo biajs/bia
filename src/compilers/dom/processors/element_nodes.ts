@@ -106,7 +106,28 @@ function manageRootElement(rootNode, fragment) {
 // manage a non-root static element
 //
 function manageStaticElement(currentNode, fragment) {
+    const el = fragment.define(currentNode, currentNode.tagName);
+    const parent = fragment.define(currentNode.parent);
     
+    // create
+    const createContent = [
+        `#${el} = @createElement('${currentNode.tagName}');`,
+    ]
+
+    if (hasOnlyStaticText(currentNode)) {
+        setProcessingFlag(currentNode.children[0], 'wasCreatedBySetText');
+        createContent.push(`@setText(#${el}, '${escape(currentNode.children[0].textContent)}');`);
+    } else if (hasOnlyStaticContent(currentNode)) {
+        walkNodeTree(currentNode, n => setProcessingFlag(n, 'wasCreatedByInnerHTML'));
+        createContent.push(`#${el}.innerHTML = '${escape(currentNode.innerHTML)}';`);
+    }
+
+    fragment.create.append(createContent.join('\n'));
+
+    // mount
+    fragment.mount.append(`
+        @appendNode(#${el}, #${parent});
+    `)
 }
 
 //
@@ -116,6 +137,6 @@ function returnRootElement(rootNode, fragment) {
     const varName = fragment.define(rootNode);
 
     fragment.create.append(`
-        return ${varName};
+        return #${varName};
     `);
 }

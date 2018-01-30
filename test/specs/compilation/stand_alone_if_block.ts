@@ -56,4 +56,33 @@ describe('stand alone if blocks', () => {
             done();
         });
     });
+
+    it('static elements before and after', (done) => {
+        const source = `
+            <template>
+                <div>
+                    <b>before</b>
+                    <i b-if="middle">middle</i>
+                    <s>after</s>
+                </div>
+            </template>
+        `;
+
+        // const output = compile(source);
+        // console.log(output);
+
+        const vm = render(source, {
+            data: {
+                middle: false,
+            },
+        });
+
+        expect(vm.$el.outerHTML).to.equal(`<div><b>before</b><s>after</s></div>`);
+
+        vm.middle = true;
+        vm.$nextTick(() => {
+            expect(vm.$el.outerHTML).to.equal(`<div><b>before</b><i>middle</i><s>after</s></div>`);
+            done();
+        });
+    });
 });
