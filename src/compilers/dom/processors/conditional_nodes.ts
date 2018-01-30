@@ -1,6 +1,7 @@
 import Code from '../../../generators/code';
 import Fragment from '../../../generators/fragment';
 import { ParsedNode } from '../../../interfaces';
+import BranchSelector from '../code/branch_selector';
 
 //
 // utils
@@ -34,12 +35,18 @@ export default {
             hasProcessingFlag(currentNode, 'conditionalNodeProcessed')
         ) return;
 
-        let name = 'create_if_block';
+        let name = 'if_block';
+
+        if (nodeHasDirective(currentNode, 'else-if')) {
+            name = 'else_if_block';
+        } else if (nodeHasDirective(currentNode, 'else')) {
+            name = 'else_block';
+        }
 
         // mark the conditional as processed
         setProcessingFlag(currentNode, 'conditionalNodeProcessed');
 
-        return fragment.createChild(name, currentNode);
+        return fragment.createChild(`create_${name}`, currentNode);
     },
 
     //
@@ -88,15 +95,15 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
     const parentName = fragment.define(currentNode.parent);
 
     // figure out if we need to insert with an anchor
-    let anchor = 'null';
+    let mountArgs = [`#${parentName}`];
     
     const nextNode = getNextElementNode(currentNode);
 
     if (nextNode) {
         if (nextNode.type === 'TEXT') {
-            anchor = fragment.define(nextNode, 'text')
+            mountArgs.push(fragment.define(nextNode, 'text'));
         } else if (nextNode.type === 'ELEMENT') {
-            anchor = fragment.define(nextNode, nextNode.tagName);
+            mountArgs.push(fragment.define(nextNode, nextNode.tagName));
         }
     }
 
@@ -121,7 +128,7 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
             if (!#${name}) {
                 #${name} = #create_${name}(vm);
                 #${name}.c();
-                #${name}.m(#${parentName}, ${anchor});
+                #${name}.m(${mountArgs.join(', ')});
             }
         } else if (#${name}) {
             #${name}.u();
@@ -139,11 +146,24 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
 // first logical branches
 //
 function processFirstLogicalBranch(code, currentNode, fragment) {
+    const directive = getDirective(currentNode, 'if');
+    const name = fragment.define(currentNode, 'if_block');
+    const currentBlockType = fragment.define(currentNode, 'current_block_type');
+    const selectBlockType = fragment.define(currentNode, 'select_block_type');
+    
+    // create a selector function, and add our if branch to it
+    const branchSelector = new BranchSelector(selectBlockType);
+
+    branchSelector.add(namespaceRootIdentifiers(directive.expression), `#create_${name}`);
+
+    code.append(branchSelector, 'fragments');
+
     // create 
 
     // constructor
     fragment.content.append(`
-        // select
+        // #${currentBlockType} = #${selectBlockType}(#vm);
+        // #${name} = #${currentBlockType}(#vm);
     `);
 
     // create

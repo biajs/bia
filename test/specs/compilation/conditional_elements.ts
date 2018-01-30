@@ -1,6 +1,6 @@
 import { compile, expect, render } from '../../utils';
 
-describe.skip('conditional elements', () => {
+describe.skip('conditional branches', () => {
     it('if / else branches', () => {
         const source = `
             <template>
