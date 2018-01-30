@@ -92,7 +92,7 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
     const directive = getDirective(currentNode, 'if');
     const condition = namespaceRootIdentifiers(directive.expression);
     const name = fragment.define(currentNode, 'if_block');
-    const parentName = fragment.define(currentNode.parent);
+    const parentName = fragment.define(currentNode.parent, currentNode.parent.tagName);
 
     // figure out if we need to insert with an anchor
     let mountArgs = [`#${parentName}`];

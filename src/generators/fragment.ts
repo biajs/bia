@@ -11,6 +11,11 @@ interface FragmentOptions {
     parent?: Fragment;
 };
 
+interface ObjectDefinition {
+    obj: Object;
+    definitions: Object; // { desired_name: 'actual_name' }
+}
+
 //
 // fragment
 //
@@ -18,7 +23,7 @@ export default class Fragment {
     public baseCode: Code;
     public constructorContent: Array<Code | string>;
     public createContent: Array<Code | string>;
-    public definedVars: Object;
+    public definedVars: Array<ObjectDefinition>;
     public destroyContent: Array<Code | string>;
     public hydrateContent: Array<Code | string>;
     public mountContent: Array<Code | string>;
@@ -35,7 +40,7 @@ export default class Fragment {
         this.baseCode = baseCode;
         this.constructorContent = [];
         this.createContent = [];
-        this.definedVars = {};
+        this.definedVars = [];
         this.destroyContent = [];
         this.hydrateContent = [];
         this.mountContent = [];
@@ -143,32 +148,47 @@ export default class Fragment {
     // get the name of a fragment variable
     //
     public define(obj: Object, desiredName: string = 'unknown') {
-        // if we've already defined this variable, return the name
-        for (let name in this.definedVars) {
-            if (this.definedVars[name] === obj) return name;
+        // check to see if we've already defined variables for this object
+        let definedObject = this.definedVars.find(defined => defined.obj === obj);
+
+        // and if not, create a new container for our variable definitions
+        if (!definedObject) {
+            definedObject = { obj, definitions: {} };
+            this.definedVars.push(definedObject);
         }
 
-        // otherwise find a name that isn't taken and return that
-        let nameIndex = 1;
-        let currentName = desiredName;
+        // define this var if we haven't done so already
+        if (typeof definedObject.definitions[desiredName] === 'undefined') {
+            let nameIndex = 1;
+            let currentName = desiredName;
 
-        while (
-            this.baseCode.reservedIdentifiers.indexOf(currentName) > -1 ||
-            typeof this.definedVars[currentName] !== 'undefined'
-        ) {
-            currentName = `${desiredName}_${nameIndex++}`;
+            // create an array of all the currently taken variable names
+            const takenVars = this.baseCode.reservedIdentifiers.concat(
+                ...this.definedVars.map(definedObj => {
+                    return Object.keys(definedObj.definitions)
+                        .map(key => definedObj.definitions[key]);
+                }),
+            );
+
+            // find a variable name that isn't taken
+            while (takenVars.indexOf(currentName) > -1) {
+                currentName = `${desiredName}_${nameIndex++}`;
+            }
+
+            definedObject.definitions[desiredName] = currentName;
         }
 
-        this.definedVars[currentName] = obj;
-
-        return currentName;
+        return definedObject.definitions[desiredName];
     }
 
     //
     // define fragment vars
     //
     get definedVarsCode() {
-        const varNames = Object.keys(this.definedVars);
+        const varNames = this.definedVars.map(definedObj => {
+            return Object.keys(definedObj.definitions)
+                .map(key => definedObj.definitions[key]);
+        });
 
         if (varNames.length > 0) {
             return new Code(`

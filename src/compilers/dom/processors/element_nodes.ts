@@ -107,7 +107,7 @@ function manageRootElement(rootNode, fragment) {
 //
 function manageStaticElement(currentNode, fragment) {
     const el = fragment.define(currentNode, currentNode.tagName);
-    const parent = fragment.define(currentNode.parent);
+    const parent = fragment.define(currentNode.parent, currentNode.parent.tagName);
     
     // create
     const createContent = [
@@ -134,7 +134,7 @@ function manageStaticElement(currentNode, fragment) {
 // return the root element
 //
 function returnRootElement(rootNode, fragment) {
-    const varName = fragment.define(rootNode);
+    const varName = fragment.define(rootNode, rootNode.tagName);
 
     fragment.create.append(`
         return #${varName};

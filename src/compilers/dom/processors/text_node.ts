@@ -47,7 +47,7 @@ export default {
 
         // define our text node and get the parent element's var name
         const varName = fragment.define(currentNode, 'text');
-        const parentVarName = fragment.define(currentNode.parent);
+        const parentVarName = fragment.define(currentNode.parent, currentNode.parent.tagName);
 
         fragment.define(currentNode, varName);
 

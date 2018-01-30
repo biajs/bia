@@ -92,6 +92,28 @@ describe('fragment class', () => {
         expect(fragment.define(yar, 'world')).to.equal('world_2');        
     });
 
+    it('can define multiple vars off the same object', () => {
+        let foo = {};
+        let bar = {};
+
+        baseCode.reservedIdentifiers = ['hello'];
+
+        expect(fragment.define(foo, 'thing')).to.equal('thing');
+        expect(fragment.define(bar, 'thing')).to.equal('thing_1');
+        expect(fragment.define(foo, 'thing')).to.equal('thing');
+        expect(fragment.define(bar, 'thing')).to.equal('thing_1');
+        
+        expect(fragment.define(foo, 'blah')).to.equal('blah');
+        expect(fragment.define(bar, 'blah')).to.equal('blah_1');
+        expect(fragment.define(foo, 'blah')).to.equal('blah');
+        expect(fragment.define(bar, 'blah')).to.equal('blah_1');
+        
+        expect(fragment.define(foo, 'hello')).to.equal('hello_1');
+        expect(fragment.define(bar, 'hello')).to.equal('hello_2');
+        expect(fragment.define(foo, 'hello')).to.equal('hello_1');
+        expect(fragment.define(bar, 'hello')).to.equal('hello_2');
+    });
+
     it('includes defined variables in the constructor', () => {
         const foo = {};
         const bar = {};
