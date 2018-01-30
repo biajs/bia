@@ -82,9 +82,10 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
     const name = fragment.define(currentNode, 'if_block');
     const parentName = fragment.define(currentNode.parent);
 
-    const nextNode = getNextElementNode(currentNode);
-
+    // figure out if we need to insert with an anchor
     let anchor = 'null';
+    
+    const nextNode = getNextElementNode(currentNode);
 
     if (nextNode) {
         if (nextNode.type === 'TEXT') {

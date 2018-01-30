@@ -1,11 +1,12 @@
 import * as helpers from '../../../src/compilers/dom/helpers';
 import Code from '../../../src/generators/code';
 import Fragment from '../../../src/generators/fragment';
-import { expect } from '../../utils';
+import { createParsedNode, expect } from '../../utils';
 
 describe('fragment class', () => {
     let baseCode;
     let fragment;
+    let node;
     
     beforeEach(() => {
         baseCode = new Code(`
@@ -16,7 +17,14 @@ describe('fragment class', () => {
             helpers,
         });
 
-        fragment = new Fragment(baseCode, 'test_fragment');
+        node = createParsedNode({
+            tagName: 'div',
+        });
+
+        fragment = new Fragment(baseCode, {
+            node: node,
+            name: 'test_fragment',
+        });
 
         baseCode.append(fragment, 'fragments');
     });
