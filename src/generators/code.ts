@@ -1,5 +1,6 @@
 import {
     deindent,
+    findLineAtOffset,
     findLineIndexAtOffset,
     isWhitespace,
 } from '../utils/string';
@@ -170,6 +171,7 @@ function replaceContainers(code: Code, output: string): string {
     const emptyContainerLines = [];
 
     output = output.replace(/:\w+/g, (prefixedContainer, offset) => {
+        const line = findIndentationAtOffset(output, offset);
         const container = prefixedContainer.slice(1);
 
         // helpers are a special container, and are processed by the root code instance

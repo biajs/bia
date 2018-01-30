@@ -1,6 +1,6 @@
 import { compile, expect, render } from '../../utils';
 
-describe.skip('conditional branches', () => {
+describe.only('conditional branches', () => {
     it('if / else branches', () => {
         const source = `
             <template>
@@ -12,6 +12,6 @@ describe.skip('conditional branches', () => {
         `; 
 
         const output = compile(source);
-        console.log(output);
+        // console.log(output);
     });
 });

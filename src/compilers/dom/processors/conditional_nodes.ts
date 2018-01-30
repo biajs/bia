@@ -14,6 +14,7 @@ import {
     getDirective, 
     getNextElementNode, 
     getPreviousElementNode,
+    getPreviousNodeWithDirective,
     hasProcessingFlag,
     isElementNode,
     nodeHasDirective,
@@ -63,6 +64,7 @@ export default {
         }
 
         const hasIfDirective = nodeHasDirective(currentNode, 'if');
+        const hasElseDirective = nodeHasDirective(currentNode, 'else');
         const nextNode = getNextElementNode(currentNode);
         const nextNodeIsConditional = nextNode && nodeHasDirective(nextNode, 'if', 'else-if', 'else');
 
@@ -74,6 +76,11 @@ export default {
         // if blocks that have else branches
         else if (hasIfDirective && nextNodeIsConditional) {
             return processFirstLogicalBranch(code, currentNode, fragment);
+        }
+
+        // else blocks
+        else if (hasElseDirective) {
+            return processLastLogicalBranch(code, currentNode, fragment);
         }
     },
 
@@ -154,7 +161,7 @@ function processFirstLogicalBranch(code, currentNode, fragment) {
     // create a selector function, and add our if branch to it
     const branchSelector = new BranchSelector(selectBlockType);
 
-    branchSelector.add(namespaceRootIdentifiers(directive.expression), `#create_${name}`);
+    branchSelector.add(currentNode, `#create_${name}`, namespaceRootIdentifiers(directive.expression));
 
     code.append(branchSelector, 'fragments');
 
@@ -170,4 +177,22 @@ function processFirstLogicalBranch(code, currentNode, fragment) {
     fragment.create.append(`
         // hello there
     `)
+}
+
+//
+// last logical branch
+//
+function processLastLogicalBranch(code, currentNode, fragment) {
+    // find original if branch
+    const ifNode = getPreviousNodeWithDirective(currentNode, 'if');
+
+    // find selector for that node
+    const blockSelector = code.containers.fragments
+        .find(obj => obj instanceof BranchSelector && obj.ifNode === ifNode);
+
+    // create else block
+    const name = fragment.define(currentNode, 'else_block');
+
+    // append else branch to selector
+    blockSelector.add(currentNode, `#create_${name}`);
 }

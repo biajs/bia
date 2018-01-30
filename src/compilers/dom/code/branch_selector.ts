@@ -1,14 +1,15 @@
 import Code from '../../../generators/code';
 
 export default class BranchSelector extends Code {
-    public ifCondition;
-    public elseIfConditions;
     public elseCondition;
+    public elseIfConditions;
+    public ifCondition;
+    public ifNode;
 
     constructor(name) {
         super(`
             function #${name}(vm) {
-                // :conditions
+                :conditions
             }
         `);
 
@@ -20,9 +21,10 @@ export default class BranchSelector extends Code {
     //
     // add a conditional branch
     //
-    public add(condition, branch) {
+    public add(currentNode, branch, condition = null) {
         // if
         if (condition && !this.ifCondition) {
+            this.ifNode = currentNode;
             this.ifCondition = condition;
             this.append(`if (${condition}) return ${branch};`, 'conditions');
         }
@@ -30,5 +32,21 @@ export default class BranchSelector extends Code {
         // else if
 
         // else
+        else if (!condition && !this.elseCondition) {
+            console.log ('appending else');
+            this.append(`return ${branch};`, 'conditions');
+        }
+    }
+
+    public toString() {
+        console.log();
+        console.log();
+        console.log(this.containers);
+        console.log();
+        console.log();
+        console.log(super.toString());
+        console.log();
+        console.log();
+        return super.toString();
     }
 }
