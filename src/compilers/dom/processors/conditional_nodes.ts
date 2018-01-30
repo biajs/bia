@@ -29,11 +29,17 @@ export default {
     //
     childFragment(code: Code, currentNode: ParsedNode, fragment: Fragment) {
         if (
-            nodeHasDirective(currentNode, 'if', 'else-if', 'else') &&
-            !hasProcessingFlag(currentNode, 'conditionalNodeProcessed')
-        ) {
-            return fragment.createChild('create_if_block', currentNode);
-        }
+            !isElementNode(currentNode) ||
+            !nodeHasDirective(currentNode, 'if', 'else-if', 'else') ||
+            hasProcessingFlag(currentNode, 'conditionalNodeProcessed')
+        ) return;
+
+        let name = 'create_if_block';
+
+        // mark the conditional as processed
+        setProcessingFlag(currentNode, 'conditionalNodeProcessed');
+
+        return fragment.createChild(name, currentNode);
     },
 
     //
@@ -68,32 +74,43 @@ export default {
 }
 
 //
-// process a stand alone if block
+// stand alone if blocks
 //
 function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment: Fragment, childFragment: Fragment) {
-    setProcessingFlag(currentNode, 'conditionalNodeProcessed');
-
     const directive = getDirective(currentNode, 'if');
     const condition = namespaceRootIdentifiers(directive.expression);
     const name = fragment.define(currentNode, 'if_block');
     const parentName = fragment.define(currentNode.parent);
 
-    // parent constructor
-    fragment.constructorContent.push(`
-        // var #${name} = (${condition}) && #create_${name}(#vm);
+    // constructor
+    fragment.content.append(`
+        var #${name} = (${condition}) && #create_${name}(#vm);
     `);
 
     // create
-    fragment.createContent.push(`
+    fragment.create.append(`
         if (#${name}) #${name}.c();
     `);
 
     // mount
-    fragment.mountContent.push(`
+    fragment.mount.append(`
         if (#${name}) #${name}.m(#${parentName}, null)
     `)
 
     // update
+    fragment.update.append(`
+        if (${condition}) {
+            if (!#${name}) {
+                #${name} = #create_${name}(vm);
+                #${name}.c();
+                #${name}.m(#${parentName});
+            }
+        } else if (#${name}) {
+            #${name}.u();
+            #${name}.d();
+            #${name} = null;
+        }
+    `);
 
     // unmount
 

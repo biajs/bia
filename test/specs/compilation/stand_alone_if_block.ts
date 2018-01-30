@@ -1,7 +1,7 @@
 import { compile, expect, render } from '../../utils';
 
 describe.only('stand alone if blocks', () => {  
-    it('basic conditional node', function() {
+    it('basic conditional node', function(done) {
         const source = `
             <template>
                 <div>
@@ -10,7 +10,7 @@ describe.only('stand alone if blocks', () => {
             </template>
         `;
 
-        const output = compile(source);
+        // const output = compile(source);
         // console.log(output);
 
         const vm = render(source, {
@@ -19,6 +19,12 @@ describe.only('stand alone if blocks', () => {
             },
         });
         
-        console.log(vm.$el.outerHTML);
+        expect(vm.$el.outerHTML).to.equal(`<div><span>hello</span></div>`);
+
+        vm.foo = false;
+        vm.$nextTick(() => {
+            expect(vm.$el.outerHTML).to.equal(`<div></div>`);
+            done();
+        });
     });
 })

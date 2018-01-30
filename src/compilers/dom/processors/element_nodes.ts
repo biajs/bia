@@ -37,14 +37,16 @@ export default {
     // process the current node
     //
     process(code: Code, currentNode: ParsedNode, fragment: Fragment) {
-        // manage the root element
+        // do nothing if we aren't an element node
+        if (!isElementNode(currentNode)) return;
+
+        // manage a fragment's root element
         if (currentNode === fragment.node) {
             manageRootElement(currentNode, fragment);
         }
 
         // manage non-root static elements
         else if (
-            isElementNode(currentNode) &&
             !hasLoopDirective(currentNode) &&
             !hasConditionalDirective(currentNode) &&
             !hasProcessingFlag(currentNode, 'wasCreatedByInnerHTML')

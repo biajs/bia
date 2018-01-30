@@ -87,6 +87,12 @@ function getConstructor(source: Code, options) {
 // recursively process fragments
 //
 function processFragments(source: Code, currentNode: ParsedNode, fragment: Fragment) {
+    // process the current node
+    processors.forEach(processor => {
+        if (typeof processor.process === 'function') {
+            processor.process(source, currentNode, fragment, childFragment);
+        }
+    });
 
     // give each processor the change to define a child fragment
     let childFragment = null;
@@ -100,20 +106,16 @@ function processFragments(source: Code, currentNode: ParsedNode, fragment: Fragm
     // append the child fragment if one was defined
     if (childFragment) {
         source.append(childFragment, 'fragments');
+        processFragments(source, currentNode, childFragment);
+    } 
+    
+    // otherwise recursively process our child nodes as art of the same fragment
+    else {
+        currentNode.children.forEach(childNode => {
+            processFragments(source, childNode, fragment);
+        });
     }
-
-    // process the current node
-    processors.forEach(processor => {
-        if (typeof processor.process === 'function') {
-            processor.process(source, currentNode, fragment, childFragment);
-        }
-    });
-
-    // recursively process each child node with their correct fragment
-    const fragmentContext = childFragment || fragment;
-
-    currentNode.children.forEach(childNode => processFragments(source, childNode, fragmentContext));
-
+    
     // and lastly, call any post processors that exist
     processors.forEach(processor => {
         if (typeof processor.postProcess === 'function') {
