@@ -61,7 +61,12 @@ export default {
 
         // stand-alone if blocks
         if (hasIfDirective && !nextNodeIsConditional) {
-            return processStandAloneIfBlock(code, currentNode, fragment, childFragment);
+            return processStandAloneIfBlock(code, currentNode, fragment);
+        }
+        
+        // if blocks that have else branches
+        else if (hasIfDirective && nextNodeIsConditional) {
+            return processFirstLogicalBranch(code, currentNode, fragment);
         }
     },
 
@@ -76,7 +81,7 @@ export default {
 //
 // stand alone if blocks
 //
-function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment: Fragment, childFragment: Fragment) {
+function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment: Fragment) {
     const directive = getDirective(currentNode, 'if');
     const condition = namespaceRootIdentifiers(directive.expression);
     const name = fragment.define(currentNode, 'if_block');
@@ -128,4 +133,21 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
     // unmount
 
     // destroy
+}
+
+//
+// first logical branches
+//
+function processFirstLogicalBranch(code, currentNode, fragment) {
+    // create 
+
+    // constructor
+    fragment.content.append(`
+        // select
+    `);
+
+    // create
+    fragment.create.append(`
+        // hello there
+    `)
 }
