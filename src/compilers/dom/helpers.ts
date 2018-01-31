@@ -30,7 +30,7 @@ export const assign = new Code(`
 //
 export const createComment = new Code(`
     function #createComment(text) {
-        return document.createComment(text);
+        return document.createComment(text || '');
     }
 `);
 

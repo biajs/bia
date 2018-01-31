@@ -36,16 +36,18 @@ export default {
             hasProcessingFlag(currentNode, 'conditionalNodeProcessed')
         ) return;
 
-        let name = 'if_block';
+        let blockName = 'if_block';    
 
         if (nodeHasDirective(currentNode, 'else-if')) {
-            name = 'else_if_block';
+            blockName = 'else_if_block';
         } else if (nodeHasDirective(currentNode, 'else')) {
-            name = 'else_block';
+            blockName = 'else_block';
         }
 
         // mark the conditional as processed
         setProcessingFlag(currentNode, 'conditionalNodeProcessed');
+
+        const name = fragment.define(currentNode, blockName);
 
         return fragment.createChild(`create_${name}`, currentNode);
     },
@@ -66,7 +68,7 @@ export default {
         const hasIfDirective = nodeHasDirective(currentNode, 'if');
         const hasElseDirective = nodeHasDirective(currentNode, 'else');
         const nextNode = getNextElementNode(currentNode);
-        const nextNodeIsConditional = nextNode && nodeHasDirective(nextNode, 'if', 'else-if', 'else');
+        const nextNodeIsConditional = nextNode && nodeHasDirective(nextNode, 'else-if', 'else');
 
         // stand-alone if blocks
         if (hasIfDirective && !nextNodeIsConditional) {
@@ -102,6 +104,7 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
     const parentName = fragment.define(currentNode.parent, currentNode.parent.tagName);
 
     // figure out if we need to insert with an anchor
+    let anchor;
     let mountArgs = [`#${parentName}`];
     
     const nextNode = getNextElementNode(currentNode);
@@ -110,7 +113,14 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
         if (nextNode.type === 'TEXT') {
             mountArgs.push(fragment.define(nextNode, 'text'));
         } else if (nextNode.type === 'ELEMENT') {
-            mountArgs.push(fragment.define(nextNode, nextNode.tagName));
+            // if the next node is dynamic, we need to use an anchor comment
+            if (nodeHasDirective(nextNode, 'if')) {
+                anchor = fragment.define(currentNode, 'if_block_anchor');
+                mountArgs.push(anchor);
+            }
+
+            // otherwise just use the next element
+            else mountArgs.push(fragment.define(nextNode, nextNode.tagName));
         }
     }
 
@@ -120,14 +130,27 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
     `);
 
     // create
-    fragment.create.append(`
-        if (#${name}) #${name}.c();
-    `);
+    const createLine = `if (#${name}) #${name}.c();`;
+    if (anchor) {
+        fragment.create.append(`
+            ${createLine}
+            #${anchor} = @createComment();
+        `)
+    } else {
+        fragment.create.append(createLine);
+    }
 
     // mount
-    fragment.mount.append(`
-        if (#${name}) #${name}.m(#${parentName});
-    `)
+    const mountLine = `if (#${name}) #${name}.m(#${parentName});`;
+    
+    if (anchor) {
+        fragment.mount.append(`
+            ${mountLine}
+            @appendNode(#${anchor}, #${parentName});
+        `)
+    } else {
+        fragment.mount.append(mountLine);
+    }
 
     // update
     fragment.update.append(`
