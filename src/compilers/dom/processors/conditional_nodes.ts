@@ -156,7 +156,7 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
     fragment.update.append(`
         if (${condition}) {
             if (!#${name}) {
-                #${name} = #create_${name}(vm);
+                #${name} = #create_${name}(#vm);
                 #${name}.c();
                 #${name}.m(${mountArgs.join(', ')});
             }
@@ -179,7 +179,8 @@ function processFirstLogicalBranch(code, currentNode, fragment) {
     const directive = getDirective(currentNode, 'if');
     const name = fragment.define(currentNode, 'if_block');
     const currentBlockType = fragment.define(currentNode, 'current_block_type');
-    const selectBlockType = fragment.define(currentNode, 'select_block_type');
+    const selectBlockType = code.getIdentifier('select_block_type');
+    const parentName = fragment.define(currentNode.parent, currentNode.parent.tagName);
     
     // create a selector function, and add our if branch to it
     const branchSelector = new BranchSelector(selectBlockType);
@@ -192,14 +193,40 @@ function processFirstLogicalBranch(code, currentNode, fragment) {
 
     // constructor
     fragment.content.append(`
-        // #${currentBlockType} = #${selectBlockType}(#vm);
-        // #${name} = #${currentBlockType}(#vm);
+        #${currentBlockType} = #${selectBlockType}(#vm);
+        #${name} = #${currentBlockType}(#vm);
     `);
 
     // create
     fragment.create.append(`
-        // hello there
-    `)
+        #${name}.c();
+    `);
+
+    // mount
+    fragment.mount.append(`
+        #${name}.m(#${parentName});
+    `);
+
+    // update
+    fragment.update.append(`
+        if (#${currentBlockType} !== (#${currentBlockType} = #${selectBlockType}(#vm))) {
+            #${name}.u();
+            #${name}.d();
+            #${name} = #${currentBlockType}(#vm);
+            #${name}.c();
+            #${name}.m(#${parentName});
+        }
+    `);
+
+    // unmount
+    fragment.unmount.append(`
+        #${name}.u();
+    `);
+
+    // destroy
+    fragment.destroy.append(`
+        #${name}.d();
+    `);
 }
 
 //

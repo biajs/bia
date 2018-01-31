@@ -33,20 +33,7 @@ export default class BranchSelector extends Code {
 
         // else
         else if (!condition && !this.elseCondition) {
-            console.log ('appending else');
             this.append(`return ${branch};`, 'conditions');
         }
-    }
-
-    public toString() {
-        console.log();
-        console.log();
-        console.log(this.containers);
-        console.log();
-        console.log();
-        console.log(super.toString());
-        console.log();
-        console.log();
-        return super.toString();
     }
 }
