@@ -36,9 +36,10 @@ export function getPreviousElementNode(node: ParsedNode) {
 export function getPreviousNodeWithDirective(node: ParsedNode, directive: string) {
     if (node.parent) {
         const previousNodes = node.parent.children.slice(0, node.parent.children.indexOf(node));
+
         let i = previousNodes.length;
 
-        while (i--) {
+        while (--i) {
             if (nodeHasDirective(previousNodes[i], directive)) {
                 return previousNodes[i];
             }

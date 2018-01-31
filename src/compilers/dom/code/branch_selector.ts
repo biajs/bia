@@ -22,18 +22,12 @@ export default class BranchSelector extends Code {
     // add a conditional branch
     //
     public add(currentNode, branch, condition = null) {
-        // if
-        if (condition && !this.ifCondition) {
-            this.ifNode = currentNode;
-            this.ifCondition = condition;
+        // if / else-if
+        if (condition) {
             this.append(`if (${condition}) return ${branch};`, 'conditions');
         }
 
-        // else if
-
         // else
-        else if (!condition && !this.elseCondition) {
-            this.append(`return ${branch};`, 'conditions');
-        }
+        else this.append(`return ${branch};`, 'conditions');
     }
 }

@@ -66,7 +66,6 @@ export default {
         }
 
         const hasIfDirective = nodeHasDirective(currentNode, 'if');
-        const hasElseDirective = nodeHasDirective(currentNode, 'else');
         const nextNode = getNextElementNode(currentNode);
         const nextNodeIsConditional = nextNode && nodeHasDirective(nextNode, 'else-if', 'else');
 
@@ -75,13 +74,18 @@ export default {
             return processStandAloneIfBlock(code, currentNode, fragment);
         }
         
-        // if blocks that have else branches
+        // if blocks with multiple branches
         else if (hasIfDirective && nextNodeIsConditional) {
             return processFirstLogicalBranch(code, currentNode, fragment);
         }
 
+        // else-if blocks
+        else if (nodeHasDirective(currentNode, 'else-if')) {
+            return processSecondaryLogicalBranch(code, currentNode, fragment);
+        }
+
         // else blocks
-        else if (hasElseDirective) {
+        else if (nodeHasDirective(currentNode, 'else')) {
             return processLastLogicalBranch(code, currentNode, fragment);
         }
     },
@@ -230,19 +234,37 @@ function processFirstLogicalBranch(code, currentNode, fragment) {
 }
 
 //
+// secondary logical branches
+//
+function processSecondaryLogicalBranch(code, currentNode, fragment) {
+    // find the original if branch, and the block selector associated with it
+    const ifNode = getPreviousNodeWithDirective(currentNode, 'if');
+
+    const blockSelector = code.containers.fragments
+        .find(obj => obj instanceof BranchSelector && obj.ifNode === ifNode);
+
+    // create else-if block
+    const directive = getDirective(currentNode, 'else-if');
+
+    // add our else-if condition to the block selector
+    const name = fragment.define(currentNode, 'else_if_block');
+
+    blockSelector.add(currentNode, `#create_${name}`, namespaceRootIdentifiers(directive.expression));
+}
+
+//
 // last logical branch
 //
 function processLastLogicalBranch(code, currentNode, fragment) {
-    // find original if branch
+    // find the original if branch, and the block selector associated with it
     const ifNode = getPreviousNodeWithDirective(currentNode, 'if');
 
-    // find selector for that node
     const blockSelector = code.containers.fragments
         .find(obj => obj instanceof BranchSelector && obj.ifNode === ifNode);
 
     // create else block
     const name = fragment.define(currentNode, 'else_block');
 
-    // append else branch to selector
+    // add our else path to the block selector
     blockSelector.add(currentNode, `#create_${name}`);
 }
