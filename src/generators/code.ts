@@ -171,8 +171,9 @@ function replaceContainers(code: Code, output: string): string {
     const emptyContainerLines = [];
 
     output = output.replace(/:\w+/g, (prefixedContainer, offset) => {
-        const line = findIndentationAtOffset(output, offset);
         const container = prefixedContainer.slice(1);
+        const indentation = findIndentationAtOffset(output, offset);
+        const line = findIndentationAtOffset(output, offset);
 
         // helpers are a special container, and are processed by the root code instance
         if (container === 'helpers') {
@@ -186,7 +187,9 @@ function replaceContainers(code: Code, output: string): string {
         }
 
         // otherwise return our container content
-        return code.containers[container].join('\n\n');
+        return code.containers[container]
+            .map((line, index) => index ? indentation + line : line)
+            .join('\n\n');
     });
 
     emptyContainerLines.sort();

@@ -343,5 +343,24 @@ describe('code generation', () => {
             
             // yar
         `);
+    });
+
+    it('indents partials correctly', () => {
+        const output = new Code(`
+            function () {
+                :content
+            }
+        `);
+
+        output.append('// hello', 'content');
+        output.append('// world', 'content');
+
+        expect(output.toString()).to.equalCode(`
+            function () {
+                // hello
+
+                // world
+            }
+        `);
     })
 });
