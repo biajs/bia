@@ -124,4 +124,62 @@ describe('conditional branches', () => {
             done();
         });
     });
+
+    it.skip('sibling if/else blocks', (done) => {
+        // block selectors need unique names
+        const source = `
+            <template>
+                <div>
+                    <p b-if="foo">foo</p>
+                    <p b-else>bar</p>
+                    <p b-if="baz">baz</p>
+                    <p b-else>yar</p>
+                </div>
+            </template>
+        `;
+
+        const output = compile(source);
+        console.log(output);
+
+        const vm = render(source, {
+            data: {
+                foo: false,
+                baz: false,
+            },
+        });
+
+        console.log(vm.$el.outerHTML);
+
+        done();
+    });
+
+    it('sibling stand-alone if blocks', (done) => {
+        const source = `
+            <template>
+                <div>
+                    <s b-if="true">before</s>
+                    <u b-if="foo">foo</u>
+                    <i b-else>bar</i>
+                    <b b-if="true">after</b>
+                </div>
+            </template>
+        `; 
+
+        // const output = compile(source);
+        // console.log(output);
+
+        const vm = render(source, {
+            data: {
+                foo: true,
+            },
+        });
+
+        expect(vm.$el.outerHTML).to.equal(`<div><s>before</s><!----><u>foo</u><!----><b>after</b></div>`);
+
+        vm.foo = false;
+        vm.$nextTick(() => {
+            expect(vm.$el.outerHTML).to.equal(`<div><s>before</s><!----><i>bar</i><!----><b>after</b></div>`);
+            done();
+        });
+    });
 });

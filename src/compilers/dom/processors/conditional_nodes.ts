@@ -189,11 +189,18 @@ function processFirstLogicalBranch(code, currentNode, fragment) {
     code.append(branchSelector, 'fragments');
 
     // determine if we need to use an anchor or not
-    let mountArgs = [`#${parentName}`];
+    let anchorComment;
     let anchorNode = nextNonConditionalNode(currentNode);
+    let mountArgs = [`#${parentName}`];
 
     if (anchorNode) {
-        if (anchorNode.type === 'ELEMENT') {
+
+        // if the anchor node is dyanmic, use a comment anchor instead
+        // otherwise we can just use the next element as our anchor
+        if (nodeHasDirective(anchorNode, 'if')) {
+            anchorComment = fragment.define(anchorNode, `${name}_anchor`);
+            mountArgs.push(anchorComment);
+        } else if (anchorNode.type === 'ELEMENT') {
             mountArgs.push(fragment.define(anchorNode, anchorNode.tagName));
         } else if (anchorNode.type === 'TEXT') {
             mountArgs.push(fragment.define(anchorNode, 'text'));
@@ -207,14 +214,28 @@ function processFirstLogicalBranch(code, currentNode, fragment) {
     `);
 
     // create
-    fragment.create.append(`
-        #${name}.c();
-    `);
+    if (anchorComment) {
+        fragment.create.append(`
+            #${name}.c();
+            #${anchorComment} = @createComment();
+        `);
+    } else {
+        fragment.create.append(`
+            #${name}.c();
+        `);
+    }
 
     // mount
-    fragment.mount.append(`
-        #${name}.m(#${parentName});
-    `);
+    if (anchorComment) {
+        fragment.mount.append(`
+            #${name}.m(#${parentName});
+            @appendNode(#${anchorComment}, #${parentName});
+        `);
+    } else {
+        fragment.mount.append(`
+            #${name}.m(#${parentName});
+        `);
+    }
 
     // update
     fragment.update.append(`
