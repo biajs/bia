@@ -19,6 +19,7 @@ import {
     isElementNode,
     nodeHasDirective,
     setProcessingFlag,
+    hasConditionalDirective,
 } from '../../../utils/parsed_node';
 
 //
@@ -75,17 +76,17 @@ export default {
         }
         
         // if blocks with multiple branches
-        else if (hasIfDirective && nextNodeIsConditional) {
+        if (hasIfDirective && nextNodeIsConditional) {
             return processFirstLogicalBranch(code, currentNode, fragment);
         }
 
         // else-if blocks
-        else if (nodeHasDirective(currentNode, 'else-if')) {
+        if (nodeHasDirective(currentNode, 'else-if')) {
             return processSecondaryLogicalBranch(code, currentNode, fragment);
         }
 
         // else blocks
-        else if (nodeHasDirective(currentNode, 'else')) {
+        if (nodeHasDirective(currentNode, 'else')) {
             return processLastLogicalBranch(code, currentNode, fragment);
         }
     },
@@ -108,24 +109,17 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
     const parentName = fragment.define(currentNode.parent, currentNode.parent.tagName);
 
     // figure out if we need to insert with an anchor
-    let anchor;
     let mountArgs = [`#${parentName}`];
-    
-    const nextNode = getNextElementNode(currentNode);
+    let anchor, anchorNode = nextNonConditionalNode(currentNode);
 
-    if (nextNode) {
-        if (nextNode.type === 'TEXT') {
-            mountArgs.push(fragment.define(nextNode, 'text'));
-        } else if (nextNode.type === 'ELEMENT') {
-            // if the next node is dynamic, we need to use an anchor comment
-            if (nodeHasDirective(nextNode, 'if')) {
-                anchor = fragment.define(currentNode, 'if_block_anchor');
-                mountArgs.push(anchor);
-            }
-
-            // otherwise just use the next element
-            else mountArgs.push(fragment.define(nextNode, nextNode.tagName));
+    if (anchorNode) {
+        if (anchorNode.type === 'ELEMENT') {
+            anchor = fragment.define(anchorNode, anchorNode.tagName);
+        } else if (anchorNode.type === 'TEXT') {
+            anchor = fragment.define(anchorNode, 'text');
         }
+        
+        mountArgs.push(anchor);
     }
 
     // constructor
@@ -134,26 +128,27 @@ function processStandAloneIfBlock(code: Code, currentNode: ParsedNode, fragment:
     `);
 
     // create
-    const createLine = `if (#${name}) #${name}.c();`;
     if (anchor) {
         fragment.create.append(`
-            ${createLine}
+            if (#${name}) #${name}.c();
             #${anchor} = @createComment();
-        `)
+        `);
     } else {
-        fragment.create.append(createLine);
+        fragment.create.append(`
+            if (#${name}) #${name}.c();
+        `);
     }
 
     // mount
-    const mountLine = `if (#${name}) #${name}.m(#${parentName});`;
-    
     if (anchor) {
         fragment.mount.append(`
-            ${mountLine}
+            if (#${name}) #${name}.m(#${parentName});
             @appendNode(#${anchor}, #${parentName});
         `)
     } else {
-        fragment.mount.append(mountLine);
+        fragment.mount.append(`
+            if (#${name}) #${name}.m(#${parentName});
+        `);
     }
 
     // update
@@ -193,7 +188,17 @@ function processFirstLogicalBranch(code, currentNode, fragment) {
 
     code.append(branchSelector, 'fragments');
 
-    // create 
+    // determine if we need to use an anchor or not
+    let mountArgs = [`#${parentName}`];
+    let anchorNode = nextNonConditionalNode(currentNode);
+
+    if (anchorNode) {
+        if (anchorNode.type === 'ELEMENT') {
+            mountArgs.push(fragment.define(anchorNode, anchorNode.tagName));
+        } else if (anchorNode.type === 'TEXT') {
+            mountArgs.push(fragment.define(anchorNode, 'text'));
+        }
+    }
 
     // constructor
     fragment.content.append(`
@@ -218,7 +223,7 @@ function processFirstLogicalBranch(code, currentNode, fragment) {
             #${name}.d();
             #${name} = #${currentBlockType}(#vm);
             #${name}.c();
-            #${name}.m(#${parentName});
+            #${name}.m(${ mountArgs.join(', ') });
         }
     `);
 
@@ -267,4 +272,17 @@ function processLastLogicalBranch(code, currentNode, fragment) {
 
     // add our else path to the block selector
     blockSelector.add(currentNode, `#create_${name}`);
+}
+
+// helper function to find the next node that isn't part of the current condition
+function nextNonConditionalNode(node) {
+    if (node.parent) {
+        for (let i = node.parent.children.indexOf(node) + 1; i < node.parent.children.length; i++) {
+            let currentNode = node.parent.children[i];
+
+            if (!nodeHasDirective(currentNode, 'else-if', 'else')) {
+                return currentNode;
+            }
+        }
+    }
 }

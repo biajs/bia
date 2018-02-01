@@ -39,7 +39,7 @@ export function getPreviousNodeWithDirective(node: ParsedNode, directive: string
 
         let i = previousNodes.length;
 
-        while (--i) {
+        while (i--) {
             if (nodeHasDirective(previousNodes[i], directive)) {
                 return previousNodes[i];
             }

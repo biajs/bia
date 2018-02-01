@@ -64,4 +64,64 @@ describe('conditional branches', () => {
             });
         });
     });
+
+    it('between static elements', (done) => {
+        const source = `
+            <template>
+                <div>
+                    <div>foo</div>
+                    <div b-if="bar">bar</div>
+                    <div b-else>baz</div>
+                    <div>yar</div>
+                </div>
+            </template>
+        `; 
+
+        // const output = compile(source);
+        // console.log(output);
+
+        const vm = render(source, {
+            data: {
+                bar: true,
+            },
+        });
+
+        expect(vm.$el.outerHTML).to.equal(`<div><div>foo</div><div>bar</div><div>yar</div></div>`);
+
+        vm.bar = false;
+        vm.$nextTick(() => {
+            expect(vm.$el.outerHTML).to.equal(`<div><div>foo</div><div>baz</div><div>yar</div></div>`);
+            done();
+        });
+    });
+
+    it('between static text nodes', (done) => {
+        const source = `
+            <template>
+                <div>
+                    hello
+                    <u b-if="foo">foo</u>
+                    <s b-else>bar</s>
+                    world
+                </div>
+            </template>
+        `; 
+
+        // const output = compile(source);
+        // console.log(output);
+
+        const vm = render(source, {
+            data: {
+                foo: true,
+            },
+        });
+
+        expect(vm.$el.outerHTML).to.equal(`<div>hello <u>foo</u> world</div>`);
+
+        vm.foo = false;
+        vm.$nextTick(() => {
+            expect(vm.$el.outerHTML).to.equal(`<div>hello <s>bar</s> world</div>`);
+            done();
+        });
+    });
 });
