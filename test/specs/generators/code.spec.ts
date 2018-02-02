@@ -147,7 +147,7 @@ describe('code generation', () => {
         `);
     });
 
-    it('throws an error of a partial was not found', () => {
+    it('throws an error if a partial was not found', () => {
         const output = new Code(`
             %somePartial
         `);
@@ -281,7 +281,7 @@ describe('code generation', () => {
             // hello
             // bar
         `);
-    })
+    });
 
     it('renames identifiers prefixed with # if necessary', () => {
         const output = new Code(`
@@ -362,5 +362,18 @@ describe('code generation', () => {
                 // world
             }
         `);
-    })
+    });
+
+    it('generates unique variable names', () => {
+        const code = new Code(`//`, {
+            reservedIdentifiers: ['bar'],
+        });
+
+        expect(code.getUniqueIdentifier('foo')).to.equal('foo');
+        expect(code.getUniqueIdentifier('foo')).to.equal('foo_1');
+
+        // since 'bar' is a reserved identifier, it should start with bar_0
+        expect(code.getUniqueIdentifier('bar')).to.equal('bar_1');
+        expect(code.getUniqueIdentifier('bar')).to.equal('bar_2');
+    });
 });

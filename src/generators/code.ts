@@ -19,6 +19,7 @@ export default class Code {
     public appendedCode: Array<Object|string>
     public codeTemplate: string;
     public containers: Object;
+    public definedVars: Array<string>;
     public helpers: Object;
     public identifiers: Object;
     public parent: Code|null;
@@ -30,6 +31,7 @@ export default class Code {
         this.appendedCode = [];
         this.codeTemplate = codeTemplate;
         this.containers = {};
+        this.definedVars = [];
         this.helpers = options.helpers || {};
         this.identifiers = {};
         this.parent = options.parent || null;
@@ -99,6 +101,21 @@ export default class Code {
         }
 
         return this.identifiers[name];
+    }
+
+    public getUniqueIdentifier(name: string): string {
+        let i = 1, currentName = name;
+
+        while (
+            this.definedVars.indexOf(currentName) !== -1 ||
+            this.reservedIdentifiers.indexOf(currentName) !== -1
+        ) {
+            currentName = `${name}_${i++}`;
+        }
+
+        this.definedVars.push(currentName);
+        
+        return currentName;
     }
 
     //

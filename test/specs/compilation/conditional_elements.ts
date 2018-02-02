@@ -125,7 +125,7 @@ describe('conditional branches', () => {
         });
     });
 
-    it.skip('sibling if/else blocks', (done) => {
+    it('sibling if/else blocks', (done) => {
         // block selectors need unique names
         const source = `
             <template>
@@ -138,19 +138,28 @@ describe('conditional branches', () => {
             </template>
         `;
 
-        const output = compile(source);
-        console.log(output);
+        // const output = compile(source);
+        // console.log(output);
 
         const vm = render(source, {
             data: {
-                foo: false,
-                baz: false,
+                foo: true,
+                baz: true,
             },
         });
 
-        console.log(vm.$el.outerHTML);
+        expect(vm.$el.outerHTML).to.equal(`<div><p>foo</p><!----><p>baz</p></div>`);
 
-        done();
+        vm.foo = false;
+        vm.$nextTick(() => {
+            expect(vm.$el.outerHTML).to.equal(`<div><p>bar</p><!----><p>baz</p></div>`);
+
+            vm.baz = false;
+            vm.$nextTick(() => {
+                expect(vm.$el.outerHTML).to.equal(`<div><p>bar</p><!----><p>yar</p></div>`);
+                done();
+            });
+        });
     });
 
     it('sibling stand-alone if blocks', (done) => {

@@ -178,7 +178,7 @@ function processFirstLogicalBranch(code, currentNode, fragment) {
     const directive = getDirective(currentNode, 'if');
     const name = fragment.define(currentNode, 'if_block');
     const currentBlockType = fragment.define(currentNode, 'current_block_type');
-    const selectBlockType = code.getIdentifier('select_block_type');
+    const selectBlockType = code.getUniqueIdentifier('select_block_type');
     const parentName = fragment.define(currentNode.parent, currentNode.parent.tagName);
     
     // create a selector function, and add our if branch to it
