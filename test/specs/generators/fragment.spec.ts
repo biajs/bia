@@ -31,7 +31,7 @@ describe('fragment class', () => {
 
     it('can be cast to a string', () => {
         expect(fragment.toString()).to.equalCode(`
-            function #test_fragment(vm) {
+            function #test_fragment(#vm) {
                 return {
                     c: @noop,
                     h: @noop,
@@ -53,7 +53,7 @@ describe('fragment class', () => {
         fragment.destroy.append('// destroy');
         
         expect(fragment.toString()).to.equalCode(`
-            function #test_fragment(vm) {
+            function #test_fragment(#vm) {
                 return {
                     c: function create() {
                         // create
@@ -122,7 +122,7 @@ describe('fragment class', () => {
         fragment.define(bar, 'div');
 
         expect(fragment.toString()).to.equalCode(`
-            function #test_fragment(vm) {
+            function #test_fragment(#vm) {
                 var div, div_1;
 
                 return {
@@ -141,7 +141,7 @@ describe('fragment class', () => {
         fragment.content.append('// hello world');
         
         expect(fragment.toString()).to.equalCode(`
-            function #test_fragment(vm) {
+            function #test_fragment(#vm) {
                 // hello world
 
                 return {
@@ -161,7 +161,7 @@ describe('fragment class', () => {
         fragment.content.append('// hello world');
 
         expect(fragment.toString()).to.equalCode(`
-            function #test_fragment(vm) {
+            function #test_fragment(#vm) {
                 var foo;
 
                 // hello world
@@ -184,11 +184,45 @@ describe('fragment class', () => {
         fragment.content.append(`// bar`);
 
         expect(fragment.toString()).to.equalCode(`
-            function #test_fragment(vm) {
+            function #test_fragment(#vm) {
                 // foo
 
                 // bar
 
+                return {
+                    c: @noop,
+                    h: @noop,
+                    m: @noop,
+                    p: @noop,
+                    u: @noop,
+                    d: @noop,
+                };
+            }
+        `);
+    });
+
+    it('can keep additional variables in scope', () => {
+        fragment.addToScope('#foo', '#bar');
+
+        expect(fragment.toString()).to.equalCode(`
+            function #test_fragment(#vm, #foo, #bar) {
+                return {
+                    c: @noop,
+                    h: @noop,
+                    m: @noop,
+                    p: @noop,
+                    u: @noop,
+                    d: @noop,
+                };
+            }
+        `);
+
+        const child = fragment.createChild('child', {});
+
+        child.addToScope('#baz');
+
+        expect(child.toString()).to.equalCode(`
+            function #child(#vm, #foo, #bar, #baz) {
                 return {
                     c: @noop,
                     h: @noop,

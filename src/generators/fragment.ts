@@ -27,9 +27,10 @@ export default class Fragment {
     public destroyContent: Array<Code | string>;
     public hydrateContent: Array<Code | string>;
     public mountContent: Array<Code | string>;
-    public parent: null|Fragment;
     public name: string;
     public node: ParsedNode;
+    public parent: null|Fragment;
+    public scopedVars: Array<string>;
     public unmountContent: Array<Code | string>;
     public updateContent: Array<Code | string>;
 
@@ -44,26 +45,27 @@ export default class Fragment {
         this.destroyContent = [];
         this.hydrateContent = [];
         this.mountContent = [];
-        this.node = options.node;
         this.name = options.name;
+        this.node = options.node;
         this.parent = options.parent || null;
+        this.scopedVars = [];
         this.unmountContent = [];
         this.updateContent = [];
     }
 
+    // 
+    // add variables to the scope
     //
-    // create a child fragment
-    //
-    public createChild(name: string, node: ParsedNode): Fragment {
-        return new Fragment(this.baseCode, { name, node, parent: this });
+    public addToScope(...args: Array<string>): void {
+        args.forEach(name => this.scopedVars.push(name));
     }
 
     //
     // code
     //
-    get code() {
+    get code() {        
         return new Code(`
-            function #${this.name}(vm) {
+            function #${this.name}(${ this.signature.join(', ') }) {
                 %definedVars
                 
                 %content
@@ -118,6 +120,17 @@ export default class Fragment {
             partials: {
                 content: this.createContent.join('\n\n'),
             },
+        });
+    }
+
+    //
+    // create a child fragment
+    //
+    public createChild(name: string, node: ParsedNode): Fragment {
+        return new Fragment(this.baseCode, { 
+            name, 
+            node, 
+            parent: this,
         });
     }
 
@@ -284,6 +297,22 @@ export default class Fragment {
                 content: this.mountContent.join('\n\n'),
             },
         });
+    }
+
+    //
+    // signature
+    //
+    get signature() {
+        let signature = ['#vm'];
+
+        let parent = this.parent;
+
+        while (parent) {
+            signature = signature.concat(parent.scopedVars);
+            parent = parent.parent;
+        }
+
+        return signature.concat(this.scopedVars);
     }
 
     //

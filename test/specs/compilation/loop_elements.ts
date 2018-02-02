@@ -1,6 +1,6 @@
 import { compile, expect, render } from '../../utils';
 
-describe.only('loops', () => {
+describe.skip('loops', () => {
     it('renders elements in a loop', () => {
         const source = `
             <template>
