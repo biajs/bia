@@ -47,6 +47,11 @@ export function getPreviousNodeWithDirective(node: ParsedNode, directive: string
     }
 }
 
+// determine if a node has a processing flag
+export function getProcessingFlag(node: ParsedNode, flag: string): any {
+    return node.processingData[flag];
+}
+
 // determine if a node has a conditional
 export function hasConditionalDirective(node: ParsedNode): boolean {
     return nodeHasDirective(node, 'if')
@@ -76,7 +81,7 @@ export function hasOnlyStaticText(node: ParsedNode): boolean {
 
 // determine if a node has a processing flag
 export function hasProcessingFlag(node: ParsedNode, flag: string): boolean {
-    return node.processingData[flag] === true;
+    return typeof node.processingData[flag] !== 'undefined';
 }
 
 // determine if a node has text interpolations
@@ -103,8 +108,8 @@ export function removeProcessedDirective(node: ParsedNode, directive: NodeDirect
 }
 
 // set a processing flag on a node
-export function setProcessingFlag(node: ParsedNode, flag: string): void {
-    node.processingData[flag] = true;
+export function setProcessingFlag(node: ParsedNode, flag: string, value: any = true): void {
+    node.processingData[flag] = value;
 }
 
 // recursively process a node and it's children

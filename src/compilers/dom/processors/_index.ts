@@ -1,6 +1,6 @@
 export default [
     require('./conditional_nodes').default,
-    // loops
+    require('./loop_nodes').default,
     require('./element_nodes').default,
     // show directive
     // static classes
